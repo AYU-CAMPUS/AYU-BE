@@ -34,6 +34,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      # yml 파일 생성
       - name: Create Property
         run: |
           cd ./src/main/resources
