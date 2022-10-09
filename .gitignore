@@ -207,7 +207,7 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,gradle,java
 
-target
+#target
 #src/test
 src/main/resources/application.yml
 #src/main/resources/log4j2.xml
