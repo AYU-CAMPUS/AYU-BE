@@ -35,19 +35,19 @@ public class BoardController {
     @Operation(summary = "게시글 조회"
             , description = "메인 페이지에서 클릭 된 카테고리 별 게시글 조회"
             , parameters = {@Parameter(name = "page", description = "페이지 번호")
-            , @Parameter(name = "mediumCategory", description = "신학대학(0), 인문대학(1), 예술체육대학(2), " +
+            , @Parameter(name = "category", description = "신학대학(0), 인문대학(1), 예술체육대학(2), " +
             "사회과학대학(3), 창의융합대학(4), 인성양성(5), 리더십(6), 융합실무(7), 문제해결(8), 글로벌(9), 의사소통(10),논문(11), 자격증(12)")}
     )
-    @GetMapping("/{mediumCategory}")
+    @GetMapping("/{category}")
     public ResponseEntity<BoardResponse> findBoardList(
-            @PathVariable("mediumCategory") Integer mediumCategory,
+            @PathVariable("category") Integer category,
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(name = "department", required = false, defaultValue = ",") String department,
             @RequestParam(name = "grade", required = false, defaultValue = ",") String grade,
             @RequestParam(name = "type", required = false, defaultValue = ",") String type
     ) {
         return ResponseEntity.ok(boardService
-                .getBoardList(page, mediumCategory, department, grade, type));
+                .getBoardList(page, category, department, grade, type));
     }
 //department, grade, type
 //    @GetMapping("/{mediumCategory}")
