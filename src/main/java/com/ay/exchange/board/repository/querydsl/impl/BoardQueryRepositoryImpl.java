@@ -40,7 +40,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                         , gradeEq(grades)
                         , typeEq(types)
                         , board.approval.eq(apporval)
-                        , board.boardCategory.mediumCategory.eq(Category.valueOf(category.name()))
+                        , board.boardCategory.category.eq(Category.valueOf(category.name()))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -53,7 +53,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                         , gradeEq(grades)
                         , typeEq(types)
                         , board.approval.eq(apporval)
-                        , board.boardCategory.mediumCategory.eq(Category.valueOf(category.name()))
+                        , board.boardCategory.category.eq(Category.valueOf(category.name()))
                 )
                 .fetchOne();
 
@@ -84,9 +84,9 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
         if (departments.size() == 0) return null;
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-        for (String deparment : departments) {
+        for (String department : departments) {
             booleanBuilder.or(board.boardCategory
-                    .smallCategory.eq(DepartmentType.valueOf(deparment)));
+                    .departmentType.eq(DepartmentType.valueOf(department)));
         }
         return booleanBuilder;
     }
