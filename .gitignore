@@ -209,5 +209,5 @@ gradle-app.setting
 
 target
 #src/test
-#src/main/resources/application.yml
+src/main/resources/application.yml
 #src/main/resources/log4j2.xml
