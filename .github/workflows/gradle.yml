@@ -34,12 +34,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      # (3) Gradle build (Test 제외)
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        with:
-          arguments: clean build -x test
-
       - name: Create Property
         env:
           SECRET_DIR: src/main/resources
@@ -51,14 +45,19 @@ jobs:
           RDS_PASSWORD: ${{secrets.RDS_PASSWORD}}
           RDS_URL: ${{secrets.RDS_URL}}
           RDS_USERNAME: ${{secrets.RDS_USERNAME}}
-        run: |
-        echo $JWT_SECRET_KEY | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
-        echo $MAIL_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
-        echo $PAIL_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
-        echo $RDS_DB | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
-        echo $RDS_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
-        echo $RDS_URL | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
-        echo $RDS_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        run: echo $JWT_SECRET_KEY | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
+             echo $MAIL_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
+             echo $PAIL_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
+             echo $RDS_DB | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
+             echo $RDS_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
+             echo $RDS_URL | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
+             echo $RDS_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+
+      # (3) Gradle build (Test 제외)
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
 
 
       # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
