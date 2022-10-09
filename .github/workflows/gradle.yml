@@ -35,13 +35,14 @@ jobs:
           java-version: '11'
 
       - name: Create Property
-        run: echo $JWT_SECRET_KEY | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
-             echo $MAIL_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
-             echo $PAIL_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
-             echo $RDS_DB | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
-             echo $RDS_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
-             echo $RDS_URL | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME &&
-             echo $RDS_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        run: |
+        echo $JWT_SECRET_KEY | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        echo $MAIL_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        echo $PAIL_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        echo $RDS_DB | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        echo $RDS_PASSWORD | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        echo $RDS_URL | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
+        echo $RDS_USERNAME | base64 --decode > $SECRET_DIR/$SECRET_DIR_FILE_NAME
         env:
           SECRET_DIR: src/main/resources
           SECRET_DIR_FILE_NAME: application.yml
