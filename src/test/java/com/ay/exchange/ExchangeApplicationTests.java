@@ -13,10 +13,7 @@ class ExchangeApplicationTests {
 
 	@Test
 	void contextLoads() {
-		String s="qwer";
-		Stream.of(s.split(""))
-				.sorted(Collections.reverseOrder())
-				.collect(Collectors.joining())
+
 	}
 
 }
