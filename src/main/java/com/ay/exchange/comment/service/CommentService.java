@@ -21,7 +21,7 @@ public class CommentService {
 
     public void writeComment(WriteRequest writeRequest) {
         BoardContent boardContent = boardContentRepository
-                .findById(writeRequest.getBoardContentId()) //fk니깐 조회하지 않아도 db단에서 처리가 가능하지 않을까?
+                .findById(writeRequest.getBoardContentId())
                 .orElseThrow(
                         () -> {
                             throw new NotFoundBoardException();

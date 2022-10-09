@@ -3,16 +3,16 @@
 
     <Properties>
         <Property name="logFileName">exchange</Property>
-        <Property name="consoleLayout">%style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}]
-            %style{%C{1.}}{bright,yellow}: %msg%n%throwable
-        </Property>
+<!--        <Property name="consoleLayout">%style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}]-->
+<!--            %style{%C{1.}}{bright,yellow}: %msg%n%throwable-->
+<!--        </Property>-->
         <Property name="fileLayout">%d [%t] %-5level %c(%M:%L) - %m%n</Property>
     </Properties>
 
     <Appenders>
-        <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="${consoleLayout}"/>
-        </Console>
+<!--        <Console name="console" target="SYSTEM_OUT">-->
+<!--            <PatternLayout pattern="${consoleLayout}"/>-->
+<!--        </Console>-->
         <RollingFile name="file" fileName="./${logFileName}.log"
                      filePattern="./${logFileName}.%d{yyyy-MM-dd-hh}.log">
             <PatternLayout pattern="${fileLayout}"/>
