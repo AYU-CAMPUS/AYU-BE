@@ -20,7 +20,6 @@ public class SecurityConfig {
     private final CorsConfig corsConfig;
     private final JwtFilterEntryPoint jwtFilterEntryPoint;
     private final JwtTokenProvider jwtTokenProvider;
-    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -30,14 +29,14 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .cors().configurationSource(corsConfig.corsConfigurationSource())
-//                .and()
-//                .authorizeHttpRequests()
-//                .antMatchers(getPathInSwagger()).permitAll()
+                //.and()
+                //.authorizeHttpRequests().anyRequest().permitAll()
+                //.antMatchers(getPathInSwagger()).permitAll()
                 .and()
                 .formLogin().disable()
                 .addFilterBefore(new JwtFilter(jwtTokenProvider)
                     , UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtExceptionFilter,JwtFilter.class);
+                .addFilterBefore(new JwtExceptionFilter(),JwtFilter.class);
                 //.exceptionHandling().authenticationEntryPoint(jwtFilterEntryPoint);
         return http.build();
     }

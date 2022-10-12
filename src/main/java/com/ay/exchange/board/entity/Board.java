@@ -1,6 +1,7 @@
 package com.ay.exchange.board.entity;
 
 import com.ay.exchange.board.entity.vo.BoardCategory;
+import com.ay.exchange.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,4 +47,8 @@ public class Board {
 
     @Column(nullable = false)
     private Boolean approval;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

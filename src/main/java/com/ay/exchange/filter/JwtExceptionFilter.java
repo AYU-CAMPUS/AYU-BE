@@ -17,11 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Component
-//@AllArgsConstructor
+@AllArgsConstructor
 public class JwtExceptionFilter extends OncePerRequestFilter{
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -39,6 +36,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter{
     private void setErrorResponse(HttpStatus status, HttpServletResponse response, JwtException e) {
         response.setStatus(status.value());
         response.setContentType("application/json; charset=UTF-8");
+
+        //common.util에 리팩토링
+        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             response.getWriter()

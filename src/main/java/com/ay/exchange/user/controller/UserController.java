@@ -8,7 +8,6 @@ import com.ay.exchange.user.dto.response.VerificationCodeResponse;
 import com.ay.exchange.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,30 +43,67 @@ public class UserController {
         return ResponseEntity.ok(userService.signUp(signUpRequest));
     }
 
-    @Operation(summary = "인증번호 요청"
-            , description = "회원가입을 위한 학교 웹메일 인증 or 비밀번호 찾기 시 인증번호 제공"
+    @Operation(summary = "회원가입을 위한 이메일 인증번호 요청"
+            , description = "회원가입을 위한 학교 웹메일 인증 "
             , parameters = {@Parameter(name = "email", description = "학교 웹메일")}
     )
-    @GetMapping({"/sign-up/verification-code"
-            , "/find-password/verification-code"})
-    public ResponseEntity<VerificationCodeResponse> getVerificationCode(
+    @GetMapping("/sign-up/verification-code")
+    public ResponseEntity<VerificationCodeResponse> getVerificationCodeForSignUp(
             @RequestParam("email") String email
     ) {
-        return ResponseEntity.ok(userService.getVerificationCode(email));
+        return ResponseEntity.ok(userService.getVerificationCodeForSignUp(email));
+    }
+
+    @Operation(summary = "회원가입을 위한 인증번호 확인"
+            , description = "회원가입을 위한 인증번호 확인"
+            , parameters = {@Parameter(name = "number", description = "사용자가 입력한 인증번호")
+            , @Parameter(name = "verificationCode", description = "서버에서 제공된 인증번호 토큰")}
+    )
+
+    @PostMapping("/sign-up/confirm/verification-code")
+    public ResponseEntity<Boolean>confirmVerificationForSignUp(
+            @RequestParam("number") String number
+            , @RequestHeader("verificationCode") String verificationCode //validate 걸어야 된다.
+    ){
+        return ResponseEntity.ok(userService.confirmVerificationCode(0, number,verificationCode)); //selection 하드코딩 추후 리팩토링 필요
+    }
+
+
+    @Operation(summary = "비밀번호 찾기를 위한 이메일 인증번호 요청"
+            , description = "비밀번호 찾기 시 인증번호 제공"
+            , parameters = {@Parameter(name = "email", description = "학교 웹메일")}
+    )
+    @GetMapping("/find-password/verification-code")
+    public ResponseEntity<VerificationCodeResponse> getVerificationCodeForPW(
+            @RequestParam("email") String email
+    ) {
+        return ResponseEntity.ok(userService.getVerificationCodeForPW(email));
+    }
+
+    @Operation(summary = "비밀번호 찾기를 위한 인증번호 확인"
+            , description = "비밀번호 찾기를 위한 인증번호 확인"
+            , parameters = {@Parameter(name = "number", description = "사용자가 입력한 인증번호")
+            , @Parameter(name = "verificationCode", description = "서버에서 제공된 인증번호 토큰")}
+    )
+    @PostMapping("/find-password/confirm/verification-code")
+    public ResponseEntity<Boolean>confirmVerificationForPW(
+            @RequestParam("number") String number
+            , @RequestHeader("verificationCode") String verificationCode //validate 걸어야 된다.
+    ){
+        return ResponseEntity.ok(userService.confirmVerificationCode(1, number,verificationCode)); //selection 하드코딩 추후 리팩토링 필요
     }
 
     @Operation(summary = "임시 비밀번호 요청"
             , description = "인증번호 인증 성공 시 임시 비밀번호 제공"
             , parameters = {@Parameter(name = "number", description = "사용자가 입력한 인증번호")
-            , @Parameter(name = "token", description = "토큰에 서버에서 제공된 인증번호가 있음")}
+            , @Parameter(name = "verificationCode", description = "서버에서 제공된 인증번호 토큰")}
     )
     @GetMapping("/temporary-password")
     public ResponseEntity<String> getTemporaryPassword(
             @RequestParam("number") String number
-            , @RequestHeader("token") String verificationCodeToken
+            , @RequestHeader("verificationCode") String verificationCode
     ) {
-        return ResponseEntity.ok(userService
-                .getTemporaryPassword(number, verificationCodeToken));
+        return ResponseEntity.ok(userService.getTemporaryPassword(number, verificationCode));
     }
 
     @Operation(summary = "중복 아이디 확인"
@@ -80,15 +116,15 @@ public class UserController {
         return ResponseEntity.ok(userService.checkExistsUserId(userId));
     }
 
-    @Operation(summary = "중복 이메일 확인"
-            , description = "회원가입 시 중뵥 학교 웹메일인지 확인"
-            , parameters = {@Parameter(name = "email", description = "학교 웹메일")}
+    @Operation(summary = "중복 닉네임 확인"
+            , description = "회원가입 시 중뵥 학교 닉네임인지 확인"
+            , parameters = {@Parameter(name = "nickName", description = "유저 닉네임")}
     )
-    @GetMapping("/existence-email")
-    public ResponseEntity<Boolean> existsEmail(
-            @RequestParam("email") String email
+    @GetMapping("/existence-nickname")
+    public ResponseEntity<Boolean> existsNickName(
+            @RequestParam("nickName") String nickName
     ) {
-        return ResponseEntity.ok(userService.checkExistsNickName(email));
+        return ResponseEntity.ok(userService.checkExistsNickName(nickName));
     }
 
     @Operation(summary = "아이디 찾기"
@@ -96,10 +132,10 @@ public class UserController {
             , parameters = {@Parameter(name = "email", description = "학교 웹메일")}
     )
     @GetMapping("/find-id")
-    public ResponseEntity<String> findUserId(
+    public ResponseEntity<String> findUserIdByEmail(
             @RequestParam("email") String email
     ) {
-        return ResponseEntity.ok(userService.findUserId(email));
+        return ResponseEntity.ok(userService.findUserIdByEmail(email));
     }
 
 

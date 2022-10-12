@@ -13,11 +13,16 @@ import java.util.List;
 @Getter
 public class User extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
+    private Long id;
+
+    @Column(unique = true, nullable = false)
     private String userId;
 
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     private String nickName;
@@ -28,8 +33,7 @@ public class User extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private Date suspendedDate;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<Board> boards;
     protected User() {}
 

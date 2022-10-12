@@ -9,6 +9,8 @@ import com.ay.exchange.user.dto.response.SignUpResponse;
 import com.ay.exchange.user.dto.response.VerificationCodeResponse;
 import com.ay.exchange.user.entity.vo.Authority;
 import com.ay.exchange.user.entity.User;
+import com.ay.exchange.user.exception.ExistsEmailException;
+import com.ay.exchange.user.exception.ExistsUserException;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.exception.NotExistsUserIdException;
 import com.ay.exchange.user.repository.UserRepository;
@@ -46,15 +48,17 @@ public class UserService {
     }
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
-        String pass = passwordEncoder.encode(signUpRequest.getPassword());
-
-        userRepository.save(new User(
-                signUpRequest.getUserId()
-                , pass
-                , signUpRequest.getEmail()
-                , signUpRequest.getNickName()
-                , Authority.User
-        ));
+        try{
+            userRepository.save(new User(
+                    signUpRequest.getUserId()
+                    , passwordEncoder.encode(signUpRequest.getPassword())
+                    , signUpRequest.getEmail()+"@gs.anyang.ac.kr"
+                    , signUpRequest.getNickName()
+                    , Authority.User
+            ));
+        }catch(Exception e){
+            throw new ExistsUserException(); //어처피 회원가입 단계에서 중복 아이디를 체크하기 때문에 없어도 되지 않을까?
+        }
 
         return new SignUpResponse(
                 "ABCDEF"
@@ -63,49 +67,69 @@ public class UserService {
         );
     }
 
-    public VerificationCodeResponse getVerificationCode(String email) {
+    public VerificationCodeResponse getVerificationCodeForSignUp(String email) {
+        if(checkExistsEmail(email)){
+            throw new ExistsEmailException();
+        }
+
+        String verificationCode = createVerificationCode();
+        return new VerificationCodeResponse(
+                jwtTokenProvider.createVerificationCodeToken(0,verificationCode, email),verificationCode);
+    }
+
+    public VerificationCodeResponse getVerificationCodeForPW(String email) {
         String verificationCode = createVerificationCode();
 
-        sendVerificationCodeByMail(email, verificationCode);
-
-        return new VerificationCodeResponse(
-                jwtTokenProvider.createVerificationCodeToken(verificationCode, email));
-    }
-
-    private void sendVerificationCodeByMail(String email, String verificationCode) {
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setTo(email);
-        message.setSubject("자료주냥 인증번호");
-        message.setText(verificationCode);
-
-        javaMailSender.send(message);
-    }
-
-    private String createVerificationCode() {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < 6; i++) {
-            sb.append((int) (Math.random() * 9 + 1));
-        }
-        System.out.println("veriCode: "+sb.toString());
-        return sb.toString();
+        return new VerificationCodeResponse( //selection 0 1 하드코딩 수정
+                jwtTokenProvider.createVerificationCodeToken(1,verificationCode, email),verificationCode);
     }
 
     public Boolean checkExistsUserId(String userId) {
-        return userRepository.existsById(userId);
+        return userRepository.existsByUserId(userId);
     }
 
     public Boolean checkExistsNickName(String nickName) {
-        return userRepository.existsById(nickName);
+        return userRepository.existsByNickName(nickName);
     }
 
-    public String findUserId(String email) {
+    public String findUserIdByEmail(String email) {
         return userRepository
                 .findUserIdByEmail(email)
                 .orElseThrow(() -> {
                     throw new NotExistsUserIdException();
                 }).getUserId();
+    }
+
+    public String getTemporaryPassword(
+            String number, String verificationCode
+    ) {
+        if(isVerificationCode(1,number,verificationCode)){
+            String email=jwtTokenProvider.getEmailByVerificationCode(verificationCode);
+            String temporaryPassword = createTemporaryPassword();
+
+            if(updateUserPassword(email, passwordEncoder.encode(temporaryPassword)))return temporaryPassword;
+        }
+
+        return null;
+    }
+
+    public Boolean confirmVerificationCode(int selection, String number, String verificationCode) {
+        return isVerificationCode(selection, number,verificationCode);
+    }
+
+    private Boolean isVerificationCode(int selection, String number, String verificationCode) {
+        return jwtTokenProvider
+                .getVerificationCode(selection, verificationCode)
+                .equals(number);
+    }
+
+    private String createTemporaryPassword(){
+        StringBuilder password=new StringBuilder();
+
+        for(int i=0;i<9;i++){
+            password.append((char)(Math.random()*26+65));
+        }
+        return password.toString();
     }
 
     private Boolean updateUserPassword(
@@ -115,32 +139,29 @@ public class UserService {
         return true;
     }
 
-    public String getTemporaryPassword(
-            String number, String verificationCodeToken
-    ) {
-        String verificationCode = jwtTokenProvider
-                .getVerificationCode(verificationCodeToken);
+    private void sendVerificationCodeByEmail(String email, String verificationCode) {
+        SimpleMailMessage message = new SimpleMailMessage();
 
-        if(verificationCode.equals(number)){
-            String email=jwtTokenProvider.getEmail(verificationCodeToken);
-            String temporaryPassword = createTemporaryPassword();
+        //@gs.anyang.ac.kr
+        message.setTo(email+"@gs.anyang.ac.kr");
+        message.setSubject("AYU Campus 인증번호");
+        message.setText(verificationCode);
 
-            if(updateUserPassword(
-                    email
-                    ,passwordEncoder.encode(temporaryPassword))
-            ){
-                return temporaryPassword;
-            }
-        }
-        return null;
+        javaMailSender.send(message);
     }
 
-    private String createTemporaryPassword(){
-        StringBuilder password=new StringBuilder();
+    private String createVerificationCode() {
+        StringBuilder verificationCode = new StringBuilder();
 
-        for(int i=0;i<6;i++){
-            password.append((char)(Math.random()*26+65));
+        for (int i = 0; i < 6; i++) {
+            verificationCode.append((int) (Math.random() * 9 + 1));
         }
-        return password.toString();
+
+        //sendVerificationCodeByEmail(email, verificationCode); //배포 시 주석 제거
+        return verificationCode.toString();
+    }
+
+    private Boolean checkExistsEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }
