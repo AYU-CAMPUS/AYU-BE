@@ -43,6 +43,7 @@ public class SecurityConfig {
 
     private String[] getPathInSwagger(){
         return new String[]{
+                "/swagger",
                 "/swagger-ui/index.html",
                 "/swagger-ui/swagger-ui.css",
                 "/swagger-ui/index.css",
