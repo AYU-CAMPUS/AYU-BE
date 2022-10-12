@@ -14,7 +14,7 @@
 <!--            <PatternLayout pattern="${consoleLayout}"/>-->
 <!--        </Console>-->
         <RollingFile name="file" fileName="./${logFileName}.log"
-                     filePattern="./${logFileName}.%d{yyyy-MM-dd-hh}.log">
+                     filePattern="/logs/${logFileName}.%d{yyyy-MM-dd-hh}.log">
             <PatternLayout pattern="${fileLayout}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy modulate="true" interval="1"/><!-- 시간별 로그 파일 생성-->
