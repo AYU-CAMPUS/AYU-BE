@@ -14,7 +14,6 @@ public class JwtFilterEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         String exception= (String)request.getAttribute("exception");
-        System.out.println("JwtFilterEntryPoint=>"+exception);
 
         if(exception==null)return;
         if(exception.equals("AuthorizeError")){
