@@ -138,6 +138,11 @@ public class UserController {
         return ResponseEntity.ok(userService.findUserIdByEmail(email));
     }
 
+    @GetMapping("/slack")
+    public String good(){
+        throw new RuntimeException("slack error");
+    }
+
 
 //    @PatchMapping("/update-password")
 //    public ResponseEntity<Boolean> updatePassword(

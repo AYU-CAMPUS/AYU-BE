@@ -33,7 +33,7 @@ public class SecurityConfig {
                 //.authorizeHttpRequests().anyRequest().permitAll()
                 //.antMatchers(getPathInSwagger()).permitAll()
                 .and()
-                .formLogin().disable()
+                //.formLogin().disable()
                 .addFilterBefore(new JwtFilter(jwtTokenProvider)
                     , UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(),JwtFilter.class);
@@ -54,7 +54,8 @@ public class SecurityConfig {
                 "/swagger-ui/favicon-32x32.png",
                 "/v3/api-docs/user-api",
                 "/v3/api-docs/board-api",
-                "/v3/api-docs/comment-api"
+                "/v3/api-docs/comment-api",
+                "/favicon.ico"
         };
     }
 
