@@ -14,11 +14,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Validated
 @Tag(name = "유저", description = "유저 관련 api")
 public class UserController {
     private final UserService userService;
@@ -30,7 +36,7 @@ public class UserController {
     ) //추후 requestBody는 제거하고 responses는 예외처리 사항에 대해서 추가한다
     @PostMapping("/sign-in")
     public ResponseEntity<SignInResponse> signIn(
-            @RequestBody SignInRequest signInRequest
+            @RequestBody @Valid SignInRequest signInRequest
     ) {
         return ResponseEntity.ok(userService.signIn(signInRequest));
     }
@@ -38,7 +44,7 @@ public class UserController {
     @Operation(summary = "회원가입", description = "회원가입 요청")
     @PostMapping("/sign-up")
     public ResponseEntity<SignUpResponse> signUp(
-            @RequestBody SignUpRequest signUpRequest
+            @RequestBody @Valid SignUpRequest signUpRequest
     ) {
         return ResponseEntity.ok(userService.signUp(signUpRequest));
     }
@@ -49,7 +55,7 @@ public class UserController {
     )
     @GetMapping("/sign-up/verification-code")
     public ResponseEntity<VerificationCodeResponse> getVerificationCodeForSignUp(
-            @RequestParam("email") String email
+            @RequestParam("email") @Valid @Pattern(regexp = "^[a-zA-Z\\d-_.]{3,30}$") String email
     ) {
         return ResponseEntity.ok(userService.getVerificationCodeForSignUp(email));
     }
@@ -59,11 +65,10 @@ public class UserController {
             , parameters = {@Parameter(name = "number", description = "사용자가 입력한 인증번호")
             , @Parameter(name = "verificationCode", description = "서버에서 제공된 인증번호 토큰")}
     )
-
     @PostMapping("/sign-up/confirm/verification-code")
     public ResponseEntity<Boolean>confirmVerificationForSignUp(
-            @RequestParam("number") String number
-            , @RequestHeader("verificationCode") String verificationCode //validate 걸어야 된다.
+            @RequestParam("number") @Valid @NotBlank String number
+            , @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode //validate 걸어야 된다.
     ){
         return ResponseEntity.ok(userService.confirmVerificationCode(0, number,verificationCode)); //selection 하드코딩 추후 리팩토링 필요
     }
@@ -75,7 +80,7 @@ public class UserController {
     )
     @GetMapping("/find-password/verification-code")
     public ResponseEntity<VerificationCodeResponse> getVerificationCodeForPW(
-            @RequestParam("email") String email
+            @RequestParam("email") @Valid @Pattern(regexp = "^[a-zA-Z\\d-_.]{3,30}$") String email
     ) {
         return ResponseEntity.ok(userService.getVerificationCodeForPW(email));
     }
@@ -87,8 +92,8 @@ public class UserController {
     )
     @PostMapping("/find-password/confirm/verification-code")
     public ResponseEntity<Boolean>confirmVerificationForPW(
-            @RequestParam("number") String number
-            , @RequestHeader("verificationCode") String verificationCode //validate 걸어야 된다.
+            @RequestParam("number") @Valid @NotBlank String number
+            , @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode //validate 걸어야 된다.
     ){
         return ResponseEntity.ok(userService.confirmVerificationCode(1, number,verificationCode)); //selection 하드코딩 추후 리팩토링 필요
     }
@@ -100,8 +105,8 @@ public class UserController {
     )
     @GetMapping("/temporary-password")
     public ResponseEntity<String> getTemporaryPassword(
-            @RequestParam("number") String number
-            , @RequestHeader("verificationCode") String verificationCode
+            @RequestParam("number") @Valid @NotBlank String number
+            , @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode
     ) {
         return ResponseEntity.ok(userService.getTemporaryPassword(number, verificationCode));
     }
@@ -111,7 +116,7 @@ public class UserController {
             , parameters = {@Parameter(name = "userId", description = "유저 아이디")})
     @GetMapping("/existence-id")
     public ResponseEntity<Boolean> existsUserId(
-            @RequestParam("userId") String userId
+            @RequestParam("userId") @Valid @Pattern(regexp = "^[a-zA-Z\\d]{6,15}$") String userId
     ) {
         return ResponseEntity.ok(userService.checkExistsUserId(userId));
     }
@@ -122,7 +127,7 @@ public class UserController {
     )
     @GetMapping("/existence-nickname")
     public ResponseEntity<Boolean> existsNickName(
-            @RequestParam("nickName") String nickName
+            @RequestParam("nickName") @Valid @Pattern(regexp = "^[a-zA-Z\\d가-힣]{1,8}$") String nickName
     ) {
         return ResponseEntity.ok(userService.checkExistsNickName(nickName));
     }
@@ -133,14 +138,9 @@ public class UserController {
     )
     @GetMapping("/find-id")
     public ResponseEntity<String> findUserIdByEmail(
-            @RequestParam("email") String email
+            @RequestParam("email") @Valid @Pattern(regexp = "^[a-zA-Z\\d-_.]{3,30}$") String email
     ) {
         return ResponseEntity.ok(userService.findUserIdByEmail(email));
-    }
-
-    @GetMapping("/slack")
-    public String good(){
-        throw new RuntimeException("slack error");
     }
 
 

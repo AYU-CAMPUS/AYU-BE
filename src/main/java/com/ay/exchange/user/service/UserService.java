@@ -57,7 +57,7 @@ public class UserService {
                     , Authority.User
             ));
         }catch(Exception e){
-            throw new ExistsUserException(); //어처피 회원가입 단계에서 중복 아이디를 체크하기 때문에 없어도 되지 않을까?
+            throw new ExistsUserException();
         }
 
         return new SignUpResponse(
