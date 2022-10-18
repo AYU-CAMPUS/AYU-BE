@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
@@ -62,9 +64,15 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return (web) -> web
+                .httpFirewall(defaultHttpFirewall())
                 .ignoring()//"/get/authorize"
                 .antMatchers("/user/**","/board/**")
                 .antMatchers(getPathInSwagger());
+    }
+
+    @Bean
+    public HttpFirewall defaultHttpFirewall(){
+        return new DefaultHttpFirewall();
     }
 
 }
