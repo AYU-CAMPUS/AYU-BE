@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.firewall.RequestRejectedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<ErrorDto> validateError(
+    public ResponseEntity<ErrorDto> handleValidateException(
             final Exception e
     ){
         return ResponseEntity
@@ -44,7 +45,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ErrorDto> handleError(
+    public ResponseEntity<ErrorDto> handleJwtException(
             final JwtException e
     ){
         return ResponseEntity
@@ -54,4 +55,26 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorDto>  handle405Error(
+            final HttpRequestMethodNotSupportedException e
+    ){
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(
+                        new ErrorDto(e.getMessage(), "잘못된 메소드 요청입니다.")
+                );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDto> handleJwtEx(
+            final Exception e
+    ){
+        System.out.println(e);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        new ErrorDto(e.getMessage(),e.getMessage())
+                );
+    }
 }
