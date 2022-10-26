@@ -1,16 +1,20 @@
 package com.ay.exchange.user.controller;
 
+import com.ay.exchange.common.error.dto.ErrorDto;
+import com.ay.exchange.common.error.dto.ErrorMessage;
 import com.ay.exchange.user.dto.request.SignInRequest;
 import com.ay.exchange.user.dto.request.SignUpRequest;
 import com.ay.exchange.user.dto.response.SignInResponse;
 import com.ay.exchange.user.dto.response.SignUpResponse;
 import com.ay.exchange.user.dto.response.VerificationCodeResponse;
+import com.ay.exchange.user.exception.NotExistsUserIdException;
 import com.ay.exchange.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -108,6 +112,7 @@ public class UserController {
             @RequestParam("number") @Valid @NotBlank String number
             , @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode
     ) {
+        //잘못된 요청이면 null이 리턴되는데 예외처리를 해야될지 프론트와 상의해봐야함.
         return ResponseEntity.ok(userService.getTemporaryPassword(number, verificationCode));
     }
 
@@ -136,6 +141,10 @@ public class UserController {
             , description = "학교 웹메일로 아이디 찾기"
             , parameters = {@Parameter(name = "email", description = "학교 웹메일")}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+            , @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @GetMapping("/find-id")
     public ResponseEntity<String> findUserIdByEmail(
             @RequestParam("email") @Valid @Pattern(regexp = "^[a-zA-Z\\d-_.]{3,30}$") String email
