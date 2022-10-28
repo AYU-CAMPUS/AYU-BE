@@ -12,7 +12,8 @@ public class BoardContentService {
     private final BoardContentRepository boardContentRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void deleteBoard(String token, DeleteRequest deleteRequest) {
+    //추후 accessToken 권한 검증
+    public void deleteBoard(String accessToken, DeleteRequest deleteRequest) {
         boardContentRepository.deleteById(deleteRequest.getBoardContentId());
 //        if(isAuthorized(token)){
 //            boardContentRepository.deleteByBoardId(deleteRequest.getBoardId());

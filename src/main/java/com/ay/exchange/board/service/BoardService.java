@@ -8,11 +8,15 @@ import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.entity.vo.*;
 import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.board.repository.BoardRepository;
+import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +27,15 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardContentRepository boardContentRepository;
+    private final AwsS3Service awsS3Service;
+    private final JwtTokenProvider jwtTokenProvider;
     private final String REGEX="[0-9]+";
 
-    public void writeBoard(WriteRequest writeRequest) {
+    //트랜잭션 걸어야 되는데 알아보고 걸자.
+    @Transactional(rollbackFor = Exception.class)
+    public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String accessToken) {
+        String userId=jwtTokenProvider.getUserId(accessToken);
+
         BoardCategory boardCategory = BoardCategory.builder()
                 .category(getCategory(writeRequest.getCategoryDto().getCategory()))
                 .departmentType(getDepartmentType(writeRequest.getCategoryDto().getDepartmentType()))
@@ -37,22 +47,22 @@ public class BoardService {
 
         Board board = Board.builder()
                 .title(writeRequest.getTitle())
-                .writer(writeRequest.getWriter())
+                .writer(jwtTokenProvider.getNickName(accessToken))
                 .numberOfFilePages(writeRequest.getNumberOfFilePages())
                 .numberOfSuccessfulExchanges(0)
                 .approval(false)
                 .views(1)
                 .boardCategory(boardCategory)
+                .userId(userId)
                 .build();
         boardRepository.save(board);
 
         BoardContent boardContent = BoardContent.builder()
                 .content(writeRequest.getContent())
-                .filePath("PATH")
+                .filePath(awsS3Service.uploadFile(multipartFile,userId))
                 .board(board)
                 .build();
         boardContentRepository.save(boardContent);
-
     }
 
     private GradeType getGradeType(int gradeType) {

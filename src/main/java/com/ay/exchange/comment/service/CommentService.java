@@ -34,7 +34,7 @@ public class CommentService {
                 .content(writeRequest.getContent())
                 .depth(writeRequest.getDepth())
                 .groupId(writeRequest.getGroupId())
-                .email(writeRequest.getUserId())
+                .userId(writeRequest.getUserId())
                 .build();
 
         commentRepository.save(comment);

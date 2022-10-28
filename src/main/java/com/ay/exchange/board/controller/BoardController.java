@@ -1,5 +1,6 @@
 package com.ay.exchange.board.controller;
 
+import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardResponse;
@@ -8,12 +9,16 @@ import com.ay.exchange.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,13 +27,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final AwsS3Service awsS3Service;
 
     @Operation(summary = "게시글 작성", description = "게시글 작성")
     @PostMapping("/write")
     public ResponseEntity<Boolean> writeBoard(
-            @RequestBody WriteRequest writeRequest
+            @RequestPart WriteRequest writeRequest
+            , @RequestPart("file") MultipartFile multipartFile
+            , @RequestHeader("token") String accessToken
     ) {
-        boardService.writeBoard(writeRequest);
+        boardService.writeBoard(writeRequest, multipartFile, accessToken);
         return ResponseEntity.ok(true);
     }
 
@@ -49,11 +57,25 @@ public class BoardController {
         return ResponseEntity.ok(boardService
                 .getBoardList(page, category, department, grade, type));
     }
-//department, grade, type
-//    @GetMapping("/{mediumCategory}")
-//    public ResponseEntity<Boolean> getq(
-//            @RequestParam("asdf")String asdf
-//    ){
-//        return ResponseEntity.ok(true);
-//    }
+
+
+    //tkddls8900/김상인파일_1666970104756.txt
+    //bpax7m4BI/김상인파일.txt
+    @GetMapping(value = "/file/download")
+    public ResponseEntity<ByteArrayResource>downloadFile(
+            @RequestParam("filePath")String filePath
+    ){
+        byte[] data=awsS3Service.downloadFile(filePath);
+        ByteArrayResource resource=new ByteArrayResource(data);
+
+        HttpHeaders headers= new HttpHeaders();
+        headers.setContentLength(data.length);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(AwsS3Service.createContentDisposition(filePath));
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(resource);
+    }
 }

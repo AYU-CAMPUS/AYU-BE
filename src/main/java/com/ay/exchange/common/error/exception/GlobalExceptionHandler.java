@@ -1,5 +1,6 @@
 package com.ay.exchange.common.error.exception;
 
+import com.ay.exchange.aws.exception.FileUploadFailedException;
 import com.ay.exchange.common.error.dto.ErrorDto;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +11,11 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.io.FileNotFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -20,8 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ErrorException.class)
     public ResponseEntity<ErrorDto> handleErrorException(
-            final ErrorException e,
-            final HttpServletRequest request
+            final ErrorException e
     ) {
         return ResponseEntity
                 .status(e.getErrorMessage().getStatus())
@@ -63,6 +65,17 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(
                         new ErrorDto(e.getMessage(), "잘못된 메소드 요청입니다.")
+                );
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorDto> handleMaxUpLoadSizeEexception(
+            final MaxUploadSizeExceededException e
+    ){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        new ErrorDto(e.getMessage(), "파일 용량이 초과되었습니다.")
                 );
     }
 

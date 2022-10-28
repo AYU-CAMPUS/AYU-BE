@@ -30,7 +30,7 @@ public class Comment {
     private String writer;
 
     @Column(nullable = false)
-    private String email;
+    private String userId;
 
     @Column(nullable = false)
     private String content;

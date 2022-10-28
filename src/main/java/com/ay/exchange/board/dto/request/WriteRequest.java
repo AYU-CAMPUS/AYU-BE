@@ -13,9 +13,6 @@ public class WriteRequest {
     @Schema(description = "글 제목")
     private String title;
 
-    @Schema(description = "글쓴이")
-    private String writer;
-
     @Schema(description = "카테고리")
     private CategoryDto categoryDto;
 
