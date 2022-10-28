@@ -33,8 +33,8 @@ public class User extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private Date suspendedDate;
 
-    @OneToMany(mappedBy = "user")
-    private List<Board> boards;
+//    @OneToMany(mappedBy = "user")
+//    private List<Board> boards;
     protected User() {}
 
     public User(String userId,String password, String email, String nickName, Authority authority) {

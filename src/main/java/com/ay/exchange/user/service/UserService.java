@@ -38,7 +38,7 @@ public class UserService {
         if (passwordEncoder.matches(signInRequest.getPassword(),
                 userInfoDto.getPassword())) {
             return new SignInResponse(
-                    jwtTokenProvider.createToken(signInRequest.getUserId(),userInfoDto.getAuthority())
+                    jwtTokenProvider.createToken(signInRequest.getUserId(), userInfoDto.getNickName(), userInfoDto.getAuthority())
                     , userInfoDto.getNickName()
                     , userInfoDto.getAuthority()
                     , userInfoDto.getSuspendedDate()
@@ -61,7 +61,7 @@ public class UserService {
         }
 
         return new SignUpResponse(
-                jwtTokenProvider.createToken(signUpRequest.getUserId(),Authority.User)
+                jwtTokenProvider.createToken(signUpRequest.getUserId(),signUpRequest.getNickName(), Authority.User)
                 , signUpRequest.getNickName()
                 , Authority.User
         );

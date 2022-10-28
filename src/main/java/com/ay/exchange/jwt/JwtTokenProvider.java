@@ -46,10 +46,11 @@ public class JwtTokenProvider {
         findUserMasterKey =Keys.hmacShaKeyFor(keyBytes3);
     }
 
-    public String createToken(String userId, Authority authority) {
+    public String createToken(String userId, String nickName, Authority authority) {
         Claims claims = Jwts.claims();
         claims.setSubject(userId);
         claims.put("authority", authority);
+        claims.put("nickName",nickName);
 
         return Jwts.builder()
                 .setClaims(claims)
