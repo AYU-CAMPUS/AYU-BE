@@ -38,7 +38,7 @@ public class UserService {
         if (passwordEncoder.matches(signInRequest.getPassword(),
                 userInfoDto.getPassword())) {
             return new SignInResponse(
-                    "ABCD"
+                    jwtTokenProvider.createToken(signInRequest.getUserId(),userInfoDto.getAuthority())
                     , userInfoDto.getNickName()
                     , userInfoDto.getAuthority()
                     , userInfoDto.getSuspendedDate()
@@ -61,7 +61,7 @@ public class UserService {
         }
 
         return new SignUpResponse(
-                "ABCDEF"
+                jwtTokenProvider.createToken(signUpRequest.getUserId(),Authority.User)
                 , signUpRequest.getNickName()
                 , Authority.User
         );
