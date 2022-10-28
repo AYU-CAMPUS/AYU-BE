@@ -144,6 +144,19 @@ public class JwtTokenProvider {
         }
     }
 
+    public String getNickName(String accessToken){
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretMasterKey)
+                    .build()
+                    .parseClaimsJws(accessToken)
+                    .getBody()
+                    .get("nickName",String.class);
+        } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
+            throw new JwtException("유효하지 않은 토큰");
+        }
+    }
+
     public String getEmailByVerificationCode(String verificationCodeToken) {
         try {
             return Jwts.parserBuilder()
