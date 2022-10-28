@@ -34,15 +34,15 @@ public class CommentService {
                 .content(writeRequest.getContent())
                 .depth(writeRequest.getDepth())
                 .groupId(writeRequest.getGroupId())
-                .email(writeRequest.getEmail())
+                .email(writeRequest.getUserId())
                 .build();
 
         commentRepository.save(comment);
     }
 
-    public void deleteComment(DeleteRequest deleteRequest, String token) {
+    public void deleteComment(DeleteRequest deleteRequest, String accessToken) {
 
-        if (isAuthorized(token, deleteRequest.getEmail())) { //추후 @PreAuthorize로 해결하자
+        if (isAuthorized(accessToken, deleteRequest.getUserId())) { //추후 @PreAuthorize로 해결하자
             if (deleteRequest.getDepth()) //자식 댓글
                 commentRepository.deleteById(deleteRequest.getCommentId());
             else //부모 댓글
@@ -52,7 +52,7 @@ public class CommentService {
         }
     }
 
-    private boolean isAuthorized(String token, String email) {
-        return jwtTokenProvider.getEmail(token).equals(email);
+    private boolean isAuthorized(String accessToken, String userId) {
+        return jwtTokenProvider.getUserId(accessToken).equals(userId);
     }
 }

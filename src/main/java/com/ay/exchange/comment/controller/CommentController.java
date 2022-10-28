@@ -30,9 +30,9 @@ public class CommentController {
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean>deleteComment(
             @RequestBody DeleteRequest deleteRequest,
-            @RequestHeader("token") String token
+            @RequestHeader("token") String accessToken
     ){
-        commentService.deleteComment(deleteRequest, token);
+        commentService.deleteComment(deleteRequest, accessToken);
         return ResponseEntity.ok(true);
     }
 }

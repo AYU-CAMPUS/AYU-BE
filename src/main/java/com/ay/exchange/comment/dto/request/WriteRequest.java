@@ -12,8 +12,8 @@ public class WriteRequest {
     @Schema(description ="게시글 고유 식별 번호")
     private Long boardContentId;
 
-    @Schema(description ="학교 웹메일")
-    private String email;
+    @Schema(description ="유저 아이디")
+    private String userId;
 
     @Schema(description ="글쓴이")
     private String writer;
