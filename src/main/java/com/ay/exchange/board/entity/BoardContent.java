@@ -20,10 +20,6 @@ public class BoardContent {
     @Column(name = "board_content_id")
     private Long id;
 
-    @OneToMany(mappedBy = "boardContent"
-            , cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment>comments;
-
     @Column(nullable = false, length = 200)
     private String content;
 
@@ -34,5 +30,6 @@ public class BoardContent {
             , cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "board_id")
     private Board board;
+
 
 }

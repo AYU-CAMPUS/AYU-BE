@@ -1,6 +1,6 @@
 package com.ay.exchange.comment.entity;
 
-import com.ay.exchange.board.entity.BoardContent;
+import com.ay.exchange.board.entity.Board;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,8 +23,8 @@ public class Comment {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_content_id")
-    private BoardContent boardContent;
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     @Column(nullable = false)
     private String writer;

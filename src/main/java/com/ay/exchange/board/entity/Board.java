@@ -1,6 +1,7 @@
 package com.ay.exchange.board.entity;
 
 import com.ay.exchange.board.entity.vo.BoardCategory;
+import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,6 +49,14 @@ public class Board {
 
     @Column(nullable = false)
     private Boolean approval;
+
+    @OneToOne(mappedBy = "board", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    private BoardContent boardContent;
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
 //    @ManyToOne(fetch = FetchType.LAZY) jwt에서 id를 확인하는데 굳이 연관관계를 맺을 필요가 있을까?
 //    @JoinColumn(name = "user_id")

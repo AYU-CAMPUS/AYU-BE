@@ -1,8 +1,9 @@
 package com.ay.exchange.comment.service;
 
-import com.ay.exchange.board.entity.BoardContent;
+import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.exception.NotFoundBoardException;
 import com.ay.exchange.board.repository.BoardContentRepository;
+import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
 import com.ay.exchange.comment.entity.Comment;
@@ -17,11 +18,12 @@ import org.springframework.stereotype.Service;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardContentRepository boardContentRepository;
+    private final BoardRepository boardRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     public void writeComment(WriteRequest writeRequest) {
-        BoardContent boardContent = boardContentRepository
-                .findById(writeRequest.getBoardContentId())
+        Board board = boardRepository
+                .findById(writeRequest.getBoardId())
                 .orElseThrow(
                         () -> {
                             throw new NotFoundBoardException();
@@ -29,14 +31,13 @@ public class CommentService {
                 );
 
         Comment comment = Comment.builder()
-                .boardContent(boardContent)
+                .board(board)
                 .writer(writeRequest.getWriter())
                 .content(writeRequest.getContent())
                 .depth(writeRequest.getDepth())
                 .groupId(writeRequest.getGroupId())
                 .userId(writeRequest.getUserId())
                 .build();
-
         commentRepository.save(comment);
     }
 

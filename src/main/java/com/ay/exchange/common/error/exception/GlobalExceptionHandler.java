@@ -79,15 +79,15 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDto> handleJwtEx(
-            final Exception e
-    ){
-        System.out.println(e);
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(
-                        new ErrorDto(e.getMessage(),e.getMessage())
-                );
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorDto> handleJwtEx(
+//            final Exception e
+//    ){
+//        System.out.println(e);
+//        return ResponseEntity
+//                .status(HttpStatus.UNAUTHORIZED)
+//                .body(
+//                        new ErrorDto(e.getMessage(),e.getMessage())
+//                );
+//    }
 }

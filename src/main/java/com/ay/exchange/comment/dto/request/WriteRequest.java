@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class WriteRequest {
     @Schema(description ="게시글 고유 식별 번호")
-    private Long boardContentId;
+    private Long boardId;
 
     @Schema(description ="유저 아이디")
     private String userId;
