@@ -32,16 +32,21 @@ public class BoardContentController {
     }
 
     @GetMapping("/content/{boardId}")
-    //@Transactional
+    @Transactional
+    @Operation(summary = "게시글 보기", description = "게시글 목록에서 글을 눌렀을 때"
+            , parameters = {
+            @Parameter(name = "boardId", description = "게시글 번호"),
+            @Parameter(name = "token", description = "액세스 토큰")}
+    )
     public ResponseEntity<BoardContentResponse> getBoardContent(
-            @PathVariable("boardId") Long boardId
-            //@RequestHeader("token") String token
-    ){
+            @PathVariable("boardId") Long boardId,
+            @RequestHeader("token") String token
+    ) {
         return ResponseEntity.ok(boardContentService.getBoardContent(boardId));
     }
 
     @GetMapping("/entity")
-    public Comment getComment(){
+    public Comment getComment() {
         return commentRepository.findById(1L).get();
     }
 }
