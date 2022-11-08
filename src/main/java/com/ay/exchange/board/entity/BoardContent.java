@@ -1,10 +1,7 @@
 package com.ay.exchange.board.entity;
 
 import com.ay.exchange.comment.entity.Comment;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -12,7 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class BoardContent {
     @Id
@@ -26,8 +23,7 @@ public class BoardContent {
     @Column(nullable = false)
     private String filePath;
 
-    @OneToOne(fetch = FetchType.LAZY
-            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 

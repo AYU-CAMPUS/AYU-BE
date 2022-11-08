@@ -2,14 +2,18 @@ package com.ay.exchange.user.entity;
 
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.common.entity.BaseEntity;
+import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.user.entity.vo.Authority;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class User extends BaseEntity {
     @Id
@@ -33,15 +37,10 @@ public class User extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private Date suspendedDate;
 
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private Exchange exchange;
+
 //    @OneToMany(mappedBy = "user")
 //    private List<Board> boards;
-    protected User() {}
 
-    public User(String userId,String password, String email, String nickName, Authority authority) {
-        this.userId=userId;
-        this.password = password;
-        this.email = email;
-        this.nickName = nickName;
-        this.authority = authority;
-    }
 }
