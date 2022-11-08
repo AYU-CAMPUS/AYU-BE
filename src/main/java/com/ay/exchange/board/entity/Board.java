@@ -2,6 +2,7 @@ package com.ay.exchange.board.entity;
 
 import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.comment.entity.Comment;
+import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -52,6 +53,9 @@ public class Board {
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> comments;
+
+    @OneToOne(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Exchange exchange;
 
 //    @ManyToOne(fetch = FetchType.LAZY) jwt에서 id를 확인하는데 굳이 연관관계를 맺을 필요가 있을까?
 //    @JoinColumn(name = "user_id")
