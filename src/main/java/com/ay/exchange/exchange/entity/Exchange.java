@@ -32,7 +32,7 @@ public class Exchange {
     private User user;
 
     @Column(nullable = false)
-    private Boolean type;
+    private Integer type;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
