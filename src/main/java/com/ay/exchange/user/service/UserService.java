@@ -48,40 +48,42 @@ public class UserService {
     }
 
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
-        try{
-            userRepository.save(new User(
-                    signUpRequest.getUserId()
-                    , passwordEncoder.encode(signUpRequest.getPassword())
-                    , signUpRequest.getEmail()+"@gs.anyang.ac.kr"
-                    , signUpRequest.getNickName()
-                    , Authority.User
-            ));
-        }catch(Exception e){
+        try {
+            userRepository.save(
+                    User.builder()
+                            .userId(signUpRequest.getUserId())
+                            .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                            .email(signUpRequest.getEmail() + "@gs.anyang.ac.kr")
+                            .nickName(signUpRequest.getNickName())
+                            .authority(Authority.User)
+                            .build()
+            );
+        } catch (Exception e) {
             throw new ExistsUserException();
         }
 
         return new SignUpResponse(
-                jwtTokenProvider.createToken(signUpRequest.getUserId(),signUpRequest.getNickName(), Authority.User)
+                jwtTokenProvider.createToken(signUpRequest.getUserId(), signUpRequest.getNickName(), Authority.User)
                 , signUpRequest.getNickName()
                 , Authority.User
         );
     }
 
     public VerificationCodeResponse getVerificationCodeForSignUp(String email) {
-        if(checkExistsEmail(email)){
+        if (checkExistsEmail(email)) {
             throw new ExistsEmailException();
         }
 
         String verificationCode = createVerificationCode();
         return new VerificationCodeResponse(
-                jwtTokenProvider.createVerificationCodeToken(0,verificationCode, email),verificationCode);
+                jwtTokenProvider.createVerificationCodeToken(0, verificationCode, email), verificationCode);
     }
 
     public VerificationCodeResponse getVerificationCodeForPW(String email) {
         String verificationCode = createVerificationCode();
 
         return new VerificationCodeResponse( //selection 0 1 하드코딩 수정
-                jwtTokenProvider.createVerificationCodeToken(1,verificationCode, email),verificationCode);
+                jwtTokenProvider.createVerificationCodeToken(1, verificationCode, email), verificationCode);
     }
 
     public Boolean checkExistsUserId(String userId) {
@@ -103,18 +105,18 @@ public class UserService {
     public String getTemporaryPassword(
             String number, String verificationCode
     ) {
-        if(isVerificationCode(1,number,verificationCode)){
-            String email=jwtTokenProvider.getEmailByVerificationCode(verificationCode);
+        if (isVerificationCode(1, number, verificationCode)) {
+            String email = jwtTokenProvider.getEmailByVerificationCode(verificationCode);
             String temporaryPassword = createTemporaryPassword();
 
-            if(updateUserPassword(email, passwordEncoder.encode(temporaryPassword)))return temporaryPassword;
+            if (updateUserPassword(email, passwordEncoder.encode(temporaryPassword))) return temporaryPassword;
         }
 
         return null;
     }
 
     public Boolean confirmVerificationCode(int selection, String number, String verificationCode) {
-        return isVerificationCode(selection, number,verificationCode);
+        return isVerificationCode(selection, number, verificationCode);
     }
 
     private Boolean isVerificationCode(int selection, String number, String verificationCode) {
@@ -123,11 +125,11 @@ public class UserService {
                 .equals(number);
     }
 
-    private String createTemporaryPassword(){
-        StringBuilder password=new StringBuilder();
+    private String createTemporaryPassword() {
+        StringBuilder password = new StringBuilder();
 
-        for(int i=0;i<9;i++){
-            password.append((char)(Math.random()*26+65));
+        for (int i = 0; i < 9; i++) {
+            password.append((char) (Math.random() * 26 + 65));
         }
         return password.toString();
     }
@@ -143,7 +145,7 @@ public class UserService {
         SimpleMailMessage message = new SimpleMailMessage();
 
         //@gs.anyang.ac.kr
-        message.setTo(email+"@gs.anyang.ac.kr");
+        message.setTo(email + "@gs.anyang.ac.kr");
         message.setSubject("AYU Campus 인증번호");
         message.setText(verificationCode);
 

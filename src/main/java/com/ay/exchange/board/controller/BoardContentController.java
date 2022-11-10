@@ -42,7 +42,7 @@ public class BoardContentController {
             @PathVariable("boardId") Long boardId,
             @RequestHeader("token") String token
     ) {
-        return ResponseEntity.ok(boardContentService.getBoardContent(boardId));
+        return ResponseEntity.ok(boardContentService.getBoardContent(boardId, token));
     }
 
     @GetMapping("/entity")

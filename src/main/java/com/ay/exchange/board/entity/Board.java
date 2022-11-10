@@ -48,14 +48,17 @@ public class Board {
     @Column(nullable = false)
     private Boolean approval;
 
-    @OneToOne(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(mappedBy = "board", fetch = FetchType.LAZY,
+            orphanRemoval = true)
     private BoardContent boardContent;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,
+            orphanRemoval = true)
     private List<Comment> comments;
 
-    @OneToOne(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
-    private Exchange exchange;
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,
+            orphanRemoval = true)
+    private List<Exchange> exchanges;
 
 //    @ManyToOne(fetch = FetchType.LAZY) jwt에서 id를 확인하는데 굳이 연관관계를 맺을 필요가 있을까?
 //    @JoinColumn(name = "user_id")

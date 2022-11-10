@@ -23,7 +23,7 @@ public class Exchange {
     @Column(name = "exchange_id")
     private Long Id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 

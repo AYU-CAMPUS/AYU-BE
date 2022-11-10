@@ -17,17 +17,15 @@ import java.util.List;
 @Getter
 public class User extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
-    private Long id;
-
-    @Column(unique = true, nullable = false)
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
     @Column(nullable = false)
     private String password;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String nickName;
 
@@ -37,7 +35,7 @@ public class User extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private Date suspendedDate;
 
-    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY,orphanRemoval = true)
     private Exchange exchange;
 
 //    @OneToMany(mappedBy = "user")

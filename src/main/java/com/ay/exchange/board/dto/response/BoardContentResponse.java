@@ -41,4 +41,6 @@ public class BoardContentResponse {
     @Schema(description = "작성일")
     private String createdDate;
 
+    @Schema(description = "교환 정보 0: 신청 / 1: 진행중 / 2: 완료")
+    private Integer exchangeType;
 }
