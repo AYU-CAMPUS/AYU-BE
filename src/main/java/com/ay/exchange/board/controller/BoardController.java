@@ -3,8 +3,10 @@ package com.ay.exchange.board.controller;
 import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
+import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.entity.Board;
+import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +19,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final BoardContentService boardContentService;
     private final AwsS3Service awsS3Service;
 
     @Operation(summary = "게시글 작성", description = "게시글 작성")
@@ -57,6 +61,33 @@ public class BoardController {
         return ResponseEntity.ok(boardService
                 .getBoardList(page, category, department, grade, type));
     }
+
+    @GetMapping("/content/{boardId}")
+    @Transactional
+    @Operation(summary = "게시글 보기", description = "게시글 목록에서 글을 눌렀을 때"
+            , parameters = {
+            @Parameter(name = "boardId", description = "게시글 번호"),
+            @Parameter(name = "token", description = "액세스 토큰")}
+    )
+    public ResponseEntity<BoardContentResponse> getBoardContent(
+            @PathVariable("boardId") Long boardId,
+            @RequestHeader("token") String token
+    ) {
+        return ResponseEntity.ok(boardContentService.getBoardContent(boardId, token));
+    }
+
+    @Operation(summary = "게시글 삭제", description = "게시글 삭제(대댓글과 파일이 삭제됨)"
+            , parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+    )
+    @DeleteMapping("/delete")
+    public ResponseEntity<Boolean> deleteBoard(
+            @RequestBody DeleteRequest deleteRequest,
+            @RequestHeader("token") String token
+    ) {
+        boardService.deleteBoard(token, deleteRequest);
+        return ResponseEntity.ok(true);
+    }
+
 
 
     //tkddls8900/김상인파일_1666970104756.txt

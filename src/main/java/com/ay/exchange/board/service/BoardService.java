@@ -1,6 +1,7 @@
 package com.ay.exchange.board.service;
 
 import com.ay.exchange.board.dto.query.BoardInfoDto;
+import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.entity.Board;
@@ -63,6 +64,37 @@ public class BoardService {
                 .board(board)
                 .build();
         boardContentRepository.save(boardContent);
+    }
+
+    public BoardResponse getBoardList(Integer page, int category,
+                                      String department, String grade, String type
+    ) {
+        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 1, 2,
+                Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<BoardInfoDto> pages = boardRepository.findBoards(
+                false //추후 approval true로 변경해야함
+                , getCategory(category)
+                , pageRequest
+                , getSeparateDepartmentConditions(department)
+                , getSeparateGradeConditions(grade)
+                , getSeparateTypeConditions(type));
+
+//        System.out.println(pages.getTotalPages());
+//        System.out.println(pages.getTotalElements());
+//        System.out.println(pages.getNumber());
+
+        return new BoardResponse(pages.getTotalPages(), pages.getContent());
+    }
+
+    //추후 accessToken 권한 검증
+    public void deleteBoard(String accessToken, DeleteRequest deleteRequest) {
+        boardRepository.deleteById(deleteRequest.getBoardId());
+//        if(isAuthorized(token)){
+//            boardContentRepository.deleteByBoardId(deleteRequest.getBoardId());
+//        }else{
+//            throw new InvalidUserRoleException();
+//        }
     }
 
     private GradeType getGradeType(int gradeType) {
@@ -179,28 +211,6 @@ public class BoardService {
             default:
                 return null;
         }
-    }
-
-
-    public BoardResponse getBoardList(Integer page, int category,
-                                      String department, String grade, String type
-    ) {
-        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 1, 2,
-                Sort.by(Sort.Direction.DESC, "id"));
-
-        Page<BoardInfoDto> pages = boardRepository.findBoards(
-                false //추후 approval true로 변경해야함
-                , getCategory(category)
-                , pageRequest
-                , getSeparateDepartmentConditions(department)
-                , getSeparateGradeConditions(grade)
-                , getSeparateTypeConditions(type));
-
-//        System.out.println(pages.getTotalPages());
-//        System.out.println(pages.getTotalElements());
-//        System.out.println(pages.getNumber());
-
-        return new BoardResponse(pages.getTotalPages(), pages.getContent());
     }
 
     private List<String> getSeparateTypeConditions(String type) {

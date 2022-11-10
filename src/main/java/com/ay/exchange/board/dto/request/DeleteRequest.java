@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DeleteRequest{
     @Schema(description = "게시글 고유 식별 번호")
-    private Long boardContentId;
+    private Long boardId;
 }
