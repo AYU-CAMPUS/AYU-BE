@@ -48,7 +48,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             boardContent.board.numberOfFilePages,
                             boardContent.board.numberOfSuccessfulExchanges,
                             boardContent.board.createdDate,
-                            exchange.type.coalesce(0).as("exchangeType") //null
+                            exchange.type.coalesce(0).as("exchangeType"), //null
+                            boardContent.board.userId
                     ))
                     .from(boardContent)
                     .leftJoin(exchange)
@@ -70,7 +71,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     boardContentInfo2Dto.getNumberOfFilePages(),
                     boardContentInfo2Dto.getNumberOfSuccessfulExchanges(),
                     boardContentInfo2Dto.getCreatedDate(),
-                    boardContentInfo2Dto.getExchangeType()
+                    boardContentInfo2Dto.getUserId().equals(userId) ? -1 : boardContentInfo2Dto.getExchangeType() //-1이면 내가 쓴 글임
             );
         }
 
@@ -93,7 +94,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 resultBoard.getNumberOfFilePages(),
                 resultBoard.getNumberOfSuccessfulExchanges(),
                 resultBoard.getCreatedDate(),
-                result.get(0).getExchangeType()
+                resultBoard.getUserId().equals(userId) ? -1 : result.get(0).getExchangeType()
         );
 
 //        Map<Long, BoardContentInfoDto> boardContentInfoDto = queryFactory
