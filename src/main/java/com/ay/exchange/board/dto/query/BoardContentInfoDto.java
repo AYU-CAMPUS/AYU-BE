@@ -2,11 +2,7 @@ package com.ay.exchange.board.dto.query;
 
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
-import com.ay.exchange.comment.dto.CommentInfoDto;
-import com.ay.exchange.comment.dto.QCommentInfoDto;
 import com.querydsl.core.annotations.QueryProjection;
-import com.querydsl.core.types.QList;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,9 +22,10 @@ public class BoardContentInfoDto {
     private BoardContent boardContent;
     private Board board;
     private Integer exchangeType;
+    private String profileImage;
 
     @QueryProjection
-    public BoardContentInfoDto(String writer, String content, Boolean depth, Long groupId, String createdDate, BoardContent boardContent, Board board, Integer exchangeType) {
+    public BoardContentInfoDto(String writer, String content, Boolean depth, Long groupId, String createdDate, BoardContent boardContent, Board board, Integer exchangeType, String profileImage) {
         this.writer = writer;
         this.content = content;
         this.depth = depth;
@@ -37,6 +34,7 @@ public class BoardContentInfoDto {
         this.boardContent = boardContent;
         this.board = board;
         this.exchangeType=exchangeType;
+        this.profileImage=profileImage;
     }
     //    private String title;
 //    private String writer;

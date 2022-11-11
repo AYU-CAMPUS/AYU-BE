@@ -34,11 +34,11 @@ public class BoardController {
     private final AwsS3Service awsS3Service;
 
     @Operation(summary = "게시글 작성", description = "게시글 작성")
-    @PostMapping("/write")
+    @PostMapping(value = "/write")
     public ResponseEntity<Boolean> writeBoard(
-            @RequestPart WriteRequest writeRequest
-            , @RequestPart("file") MultipartFile multipartFile
-            , @RequestHeader("token") String accessToken
+            @RequestPart("writeRequest") WriteRequest writeRequest,
+            @RequestPart("file") MultipartFile multipartFile,
+            @RequestHeader("token") String accessToken
     ) {
         boardService.writeBoard(writeRequest, multipartFile, accessToken);
         return ResponseEntity.ok(true);
@@ -89,17 +89,16 @@ public class BoardController {
     }
 
 
-
     //tkddls8900/김상인파일_1666970104756.txt
     //bpax7m4BI/김상인파일.txt
     @GetMapping(value = "/file/download")
-    public ResponseEntity<ByteArrayResource>downloadFile(
-            @RequestParam("filePath")String filePath
-    ){
-        byte[] data=awsS3Service.downloadFile(filePath);
-        ByteArrayResource resource=new ByteArrayResource(data);
+    public ResponseEntity<ByteArrayResource> downloadFile(
+            @RequestParam("filePath") String filePath
+    ) {
+        byte[] data = awsS3Service.downloadFile(filePath);
+        ByteArrayResource resource = new ByteArrayResource(data);
 
-        HttpHeaders headers= new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
         headers.setContentLength(data.length);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDisposition(AwsS3Service.createContentDisposition(filePath));

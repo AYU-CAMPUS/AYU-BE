@@ -20,6 +20,7 @@ import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.comment.entity.QComment.comment;
 import static com.ay.exchange.exchange.entity.QExchange.*;
+import static com.ay.exchange.user.entity.QUser.user;
 
 @RequiredArgsConstructor
 public class BoardContentQueryRepositoryImpl implements BoardContentQueryRepository {
@@ -129,7 +130,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     boardContentInfo.getContent(),
                     boardContentInfo.getDepth(),
                     boardContentInfo.getGroupId(),
-                    boardContentInfo.getCreatedDate()
+                    boardContentInfo.getCreatedDate(),
+                    boardContentInfo.getProfileImage()
             ));
         }
     }
@@ -146,9 +148,12 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         //comment.board.boardContent,
                         boardContent,
                         board,
-                        exchange.type.coalesce(0).as("exchangeType")
+                        exchange.type.coalesce(0).as("exchangeType"),
+                        user.profileImage.coalesce("default.svg")
                 ))
                 .from(comment)
+                .innerJoin(user)
+                .on(comment.userId.eq(user.userId))
                 .leftJoin(exchange)
                 .on(comment.board.id.eq(exchange.board.id)
                         .and(exchange.user.userId.eq(userId)))

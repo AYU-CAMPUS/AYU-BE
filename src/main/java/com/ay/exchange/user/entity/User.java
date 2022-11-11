@@ -35,6 +35,9 @@ public class User extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private Date suspendedDate;
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY,orphanRemoval = true)
     private Exchange exchange;
 

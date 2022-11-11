@@ -60,7 +60,7 @@ public class BoardService {
 
         BoardContent boardContent = BoardContent.builder()
                 .content(writeRequest.getContent())
-                .filePath(awsS3Service.uploadFile(multipartFile,userId))
+                .filePath(awsS3Service.uploadFile(multipartFile,userId,0))
                 .board(board)
                 .build();
         boardContentRepository.save(boardContent);
