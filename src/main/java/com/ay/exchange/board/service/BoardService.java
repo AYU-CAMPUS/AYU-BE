@@ -69,7 +69,7 @@ public class BoardService {
     public BoardResponse getBoardList(Integer page, int category,
                                       String department, String grade, String type
     ) {
-        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 1, 2,
+        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
 
         Page<BoardInfoDto> pages = boardRepository.findBoards(

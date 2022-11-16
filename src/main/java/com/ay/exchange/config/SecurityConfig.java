@@ -66,7 +66,7 @@ public class SecurityConfig {
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()//"/get/authorize"
-                .antMatchers("/user/**","/board/**")
+                .antMatchers("/user/**","/board/**","/comment/**")
                 .antMatchers(getPathInSwagger());
     }
 
