@@ -8,6 +8,7 @@ import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -37,8 +38,8 @@ public class User extends BaseEntity implements Persistable<String> {
     @Column(name = "profile_image")
     private String profileImage;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
-    private Exchange exchange;
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Exchange> exchange;
 
     @Override
     public String getId() {

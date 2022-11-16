@@ -46,7 +46,7 @@ public class CommentController {
             }
     )
     @GetMapping("/{boardId}")
-    public List<CommentInfoDto> getComments(
+    public List<CommentInfoDto> getComments( //validate page과 board값이 최대값을 넘어서면 안된다.
             @PathVariable("boardId") Long boardId,
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ) {

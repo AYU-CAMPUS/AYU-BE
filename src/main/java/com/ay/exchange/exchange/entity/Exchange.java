@@ -27,7 +27,7 @@ public class Exchange {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
