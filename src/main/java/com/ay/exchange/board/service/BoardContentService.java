@@ -1,6 +1,5 @@
 package com.ay.exchange.board.service;
 
-import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.jwt.JwtTokenProvider;

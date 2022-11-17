@@ -16,7 +16,9 @@ public enum ErrorMessage {
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다." ),
 
     FILE_UPLOAD_ERROR(HttpStatus.NOT_FOUND,"파일 업로드에 실패하였습니다."),
-    FILE_NOT_EXISTS(HttpStatus.NOT_FOUND,"파일이 없습니다.");
+    FILE_NOT_EXISTS(HttpStatus.NOT_FOUND,"파일이 없습니다."),
+
+    UNABLE_EXCHANGE(HttpStatus.NOT_FOUND, "교환신청에 실패하였습니다.");
 
     private final HttpStatus status;
     private final String description;
