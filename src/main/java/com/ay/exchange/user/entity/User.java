@@ -1,5 +1,6 @@
 package com.ay.exchange.user.entity;
 
+import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.user.entity.vo.Authority;
@@ -41,6 +42,12 @@ public class User extends BaseEntity implements Persistable<String> {
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<Exchange> exchange;
 
+    @Column(nullable = false)
+    private Integer exchangeSuccessCount;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Board> boards;
+
     @Override
     public String getId() {
         return userId;
@@ -50,8 +57,5 @@ public class User extends BaseEntity implements Persistable<String> {
     public boolean isNew() {
         return getCreatedDate() == null;
     }
-
-//    @OneToMany(mappedBy = "user")
-//    private List<Board> boards;
 
 }
