@@ -1,18 +1,22 @@
 package com.ay.exchange.user.controller;
 
+import com.ay.exchange.user.dto.request.PasswordChangeRequest;
 import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/mypage")
 @RequiredArgsConstructor
+@Validated
+@Tag(name = "마이페이지", description = "마이페이지 관련 api")
 public class MyPageController {
     private final MyPageService myPageService;
 
@@ -23,7 +27,15 @@ public class MyPageController {
     @GetMapping("")
     public MyPageResponse getMyPage(
             @RequestHeader("token") String token
-    ){
+    ) {
         return myPageService.getMypage(token);
+    }
+
+    @PatchMapping("/password")
+    public Boolean updatePassword(
+            @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
+            @RequestHeader("token") String token
+    ) {
+        return myPageService.updatePassword(passwordChangeRequest, token);
     }
 }

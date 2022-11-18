@@ -6,6 +6,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -46,5 +47,13 @@ public class UserQueryRepository {
                 .from(exchange)
                 .where(exchange.boardId.in(boards))
                 .fetchOne();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updatePassword(String userId, String password){
+        return queryFactory.update(user)
+                .where(user.userId.eq(userId))
+                .set(user.password, password)
+                .execute() == 1L;
     }
 }

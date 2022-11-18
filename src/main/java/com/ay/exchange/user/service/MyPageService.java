@@ -2,9 +2,11 @@ package com.ay.exchange.user.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.query.MyPageInfo;
+import com.ay.exchange.user.dto.request.PasswordChangeRequest;
 import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.repository.querydsl.UserQueryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class MyPageService {
     private final UserQueryRepository userQueryRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     public MyPageResponse getMypage(String token) {
         MyPageInfo myPageInfo = userQueryRepository.getMyPage(jwtTokenProvider.getUserId(token));
@@ -23,5 +26,9 @@ public class MyPageService {
                 myPageInfo.getDownloadCount(),
                 userQueryRepository.getExchangeRequestCount(myPageInfo.getMyDataCount())
         );
+    }
+
+    public Boolean updatePassword(PasswordChangeRequest passwordChangeRequest, String token) {
+        return userQueryRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
     }
 }
