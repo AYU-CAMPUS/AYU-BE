@@ -31,6 +31,10 @@ public class MyPageController {
         return myPageService.getMypage(token);
     }
 
+    @Operation(summary = "비밀번호 변경"
+            , description = "비밀번호 변경"
+            , parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+    )
     @PatchMapping("/password")
     public Boolean updatePassword(
             @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
