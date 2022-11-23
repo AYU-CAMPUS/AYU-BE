@@ -1,6 +1,7 @@
 package com.ay.exchange.user.controller;
 
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
+import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +42,21 @@ public class MyPageController {
             @RequestHeader("token") String token
     ) {
         return myPageService.updatePassword(passwordChangeRequest, token);
+    }
+
+    @Operation(summary = "내가 올린 자료 조회",
+            description = "내가 올린 자료 조회",
+            parameters = {
+                    @Parameter(name = "page", description = "페이지 번호"),
+                    @Parameter(name = "token", description = "액세스 토큰")
+            }
+    )
+    @GetMapping("/data")
+    public MyDataResponse getData(
+            @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+            @RequestHeader("token") String token
+    ) {
+        return myPageService.getMyData(page, token);
     }
 
 }

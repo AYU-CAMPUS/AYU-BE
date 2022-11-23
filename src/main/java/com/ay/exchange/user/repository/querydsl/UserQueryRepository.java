@@ -2,12 +2,15 @@ package com.ay.exchange.user.repository.querydsl;
 
 
 import com.ay.exchange.user.dto.query.MyPageInfo;
+import com.ay.exchange.user.dto.response.MyDataInfo;
+import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,4 +62,25 @@ public class UserQueryRepository {
                 .execute() == 1L;
     }
 
+    public MyDataResponse getMyData(PageRequest pageRequest, String userId) {
+        Long count = queryFactory.select(board.count())
+                .from(board)
+                .where(board.userId.eq("tkddls8900"))
+                .fetchOne();
+
+        List<MyDataInfo> myDataInfos = queryFactory
+                .select(Projections.fields(
+                        MyDataInfo.class,
+                        board.createdDate,
+                        board.title,
+                        board.id.as("boardId")
+                ))
+                .from(board)
+                .where(board.userId.eq(userId))
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+
+        return new MyDataResponse(count, myDataInfos);
+    }
 }
