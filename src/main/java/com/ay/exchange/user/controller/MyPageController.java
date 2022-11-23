@@ -21,9 +21,9 @@ import javax.validation.Valid;
 public class MyPageController {
     private final MyPageService myPageService;
 
-    @Operation(summary = "마이페이지 조회"
-            , description = "마이페이지 첫 화면"
-            , parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+    @Operation(summary = "마이페이지 조회",
+            description = "마이페이지 첫 화면",
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
     )
     @GetMapping("")
     public MyPageResponse getMyPage(
@@ -32,9 +32,9 @@ public class MyPageController {
         return myPageService.getMypage(token);
     }
 
-    @Operation(summary = "비밀번호 변경"
-            , description = "비밀번호 변경"
-            , parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+    @Operation(summary = "비밀번호 변경",
+            description = "비밀번호 변경",
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
     )
     @PatchMapping("/password")
     public Boolean updatePassword(

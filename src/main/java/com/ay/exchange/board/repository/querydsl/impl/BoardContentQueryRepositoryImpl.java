@@ -6,7 +6,7 @@ import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
-import com.ay.exchange.comment.dto.CommentInfoDto;
+import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;

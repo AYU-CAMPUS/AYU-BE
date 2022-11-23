@@ -1,6 +1,6 @@
 package com.ay.exchange.comment.repository.querydsl;
 
-import com.ay.exchange.comment.dto.CommentInfoDto;
+import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

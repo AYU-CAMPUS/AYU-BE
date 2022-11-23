@@ -1,7 +1,7 @@
 package com.ay.exchange.board.dto.response;
 
 import com.ay.exchange.board.entity.vo.BoardCategory;
-import com.ay.exchange.comment.dto.CommentInfoDto;
+import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

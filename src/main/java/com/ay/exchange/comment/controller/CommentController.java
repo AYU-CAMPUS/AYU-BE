@@ -1,6 +1,6 @@
 package com.ay.exchange.comment.controller;
 
-import com.ay.exchange.comment.dto.CommentInfoDto;
+import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
 import com.ay.exchange.comment.service.CommentService;

@@ -2,9 +2,8 @@ package com.ay.exchange.comment.service;
 
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.exception.NotFoundBoardException;
-import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.board.repository.BoardRepository;
-import com.ay.exchange.comment.dto.CommentInfoDto;
+import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
 import com.ay.exchange.comment.entity.Comment;

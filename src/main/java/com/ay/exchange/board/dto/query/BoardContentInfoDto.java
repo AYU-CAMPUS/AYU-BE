@@ -36,12 +36,5 @@ public class BoardContentInfoDto {
         this.exchangeType=exchangeType;
         this.profileImage=profileImage;
     }
-    //    private String title;
-//    private String writer;
-//    private BoardCategory boardCategory;
-//    private Integer views;
-//    private Integer numberOfFilePages;
-//    private Integer numberOfSuccessfulExchanges;
-//    private String createdDate;
 
 }
