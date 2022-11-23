@@ -42,4 +42,5 @@ public class MyPageController {
     ) {
         return myPageService.updatePassword(passwordChangeRequest, token);
     }
+
 }

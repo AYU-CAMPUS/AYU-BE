@@ -88,6 +88,11 @@ public class BoardController {
         return ResponseEntity.ok(true);
     }
 
+//    @GetMapping("/edit")
+//    public ResponseEntity<Boolean> editBoard(){
+//        return ResponseEntity.ok(boardContentService.editBoard());
+//    }
+
 
     //tkddls8900/김상인파일_1666970104756.txt
     //bpax7m4BI/김상인파일.txt
@@ -108,4 +113,5 @@ public class BoardController {
                 .headers(headers)
                 .body(resource);
     }
+
 }

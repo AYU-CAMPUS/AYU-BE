@@ -17,7 +17,7 @@ public class JpaAuditingConfig {
         return new AuditorAware<String>() {
             @Override
             public Optional<String> getCurrentAuditor() {
-                return Optional.of(new SimpleDateFormat("yy-MM-dd")
+                return Optional.of(new SimpleDateFormat("yyyy-MM-dd")
                         .format(new Date()));
             }
         };

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -48,8 +49,10 @@ public class Exchange {
     @Column(nullable = false)
     private Integer type;
 
-    @CreatedDate
+    @CreatedBy
     @Column(nullable = false, updatable = false)
     private String createdDate;
 
+    @Column(nullable = true)
+    private Integer deadline;
 }

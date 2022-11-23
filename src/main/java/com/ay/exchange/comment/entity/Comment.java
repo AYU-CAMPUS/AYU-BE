@@ -2,7 +2,7 @@ package com.ay.exchange.comment.entity;
 
 import com.ay.exchange.board.entity.Board;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -38,7 +38,7 @@ public class Comment {
     @Column(nullable = false)
     private Long groupId;
 
-    @CreatedDate
+    @CreatedBy
     @Column(nullable = false, updatable = false)
     private String createdDate;
 

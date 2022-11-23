@@ -7,13 +7,19 @@ import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.comment.dto.CommentInfoDto;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.DateTemplate;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static com.ay.exchange.board.entity.QBoard.board;
@@ -167,5 +173,30 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    public Boolean isModifiable() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -3);
+        Date date = new Date(calendar.getTimeInMillis());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Long count = queryFactory.select(exchange.count())
+                .from(exchange)
+                .where(getExchangeDate().gt(simpleDateFormat.format(date))
+                        .or(exchange.type.eq(1))
+                        .and(exchange.board.id.eq(2L)))
+                .limit(1L)
+                .fetchOne();
+        return count == 0;
+    }
+
+    private DateTemplate getExchangeDate() {
+        return Expressions.dateTemplate(
+                String.class,
+                "DATE_FORMAT({0}, {1})",
+                exchange.createdDate,
+                ConstantImpl.create("%Y-%m-%d")
+        );
     }
 }

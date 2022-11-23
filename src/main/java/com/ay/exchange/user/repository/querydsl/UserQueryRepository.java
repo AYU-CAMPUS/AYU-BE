@@ -2,15 +2,17 @@ package com.ay.exchange.user.repository.querydsl;
 
 
 import com.ay.exchange.user.dto.query.MyPageInfo;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static com.ay.exchange.user.entity.QUser.user;
 import static com.ay.exchange.board.entity.QBoard.board;
@@ -50,10 +52,11 @@ public class UserQueryRepository {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Boolean updatePassword(String userId, String password){
+    public Boolean updatePassword(String userId, String password) {
         return queryFactory.update(user)
                 .where(user.userId.eq(userId))
                 .set(user.password, password)
                 .execute() == 1L;
     }
+
 }
