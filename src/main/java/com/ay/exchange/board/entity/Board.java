@@ -6,7 +6,6 @@ import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -40,7 +39,7 @@ public class Board extends BaseEntity {
     private Integer numberOfFilePages;
 
     @Column(nullable = false)
-    private Integer numberOfSuccessfulExchanges;
+    private Integer exchangeSuccessCount;
 
     @Column(nullable = false)
     private String filePath;
