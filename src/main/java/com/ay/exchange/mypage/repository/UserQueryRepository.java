@@ -5,6 +5,7 @@ import com.ay.exchange.mypage.dto.*;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
+import com.ay.exchange.mypage.exception.FailAcceptFileException;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -149,7 +150,8 @@ public class UserQueryRepository {
                         exchange.createdDate.as("applicationDate"),
                         user.nickName.as("applicant"),
                         board.title,
-                        board.id.as("boardId")
+                        board.id.as("boardId"),
+                        exchange.userId.as("applicantId")
                 ))
                 .from(exchange)
                 .innerJoin(user)
