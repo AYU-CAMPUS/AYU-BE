@@ -1,7 +1,10 @@
 package com.ay.exchange.user.repository.querydsl;
 
 
+import com.ay.exchange.board.entity.QBoardContent;
 import com.ay.exchange.user.dto.query.MyPageInfo;
+import com.ay.exchange.user.dto.response.DownloadableInfo;
+import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.MyDataInfo;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.querydsl.core.types.ConstantImpl;
@@ -65,7 +68,7 @@ public class UserQueryRepository {
     public MyDataResponse getMyData(PageRequest pageRequest, String userId) {
         Long count = queryFactory.select(board.count())
                 .from(board)
-                .where(board.userId.eq("tkddls8900"))
+                .where(board.userId.eq(userId))
                 .fetchOne();
 
         List<MyDataInfo> myDataInfos = queryFactory
@@ -83,4 +86,32 @@ public class UserQueryRepository {
 
         return new MyDataResponse(count, myDataInfos);
     }
+
+    public DownloadableResponse getDownloadable(PageRequest pageRequest, String userId) {
+        Long count = queryFactory.select(exchange.count())
+                .from(exchange)
+                .where(exchange.userId.eq(userId)
+                        .and(exchange.type.eq(2)))
+                .fetchOne();
+
+        List<DownloadableInfo> downloadableInfos = queryFactory
+                .select(Projections.fields(
+                        DownloadableInfo.class,
+                        exchange.lastModifiedDate.as("exchangeDate"),
+                        board.title,
+                        board.writer,
+                        board.id.as("boardId")
+                ))
+                .from(exchange)
+                .innerJoin(board)
+                .on(exchange.boardId.eq(board.id))
+                .where(exchange.userId.eq(userId)
+                        .and(exchange.type.eq(2)))
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+
+        return new DownloadableResponse(count,downloadableInfos);
+    }
+
 }

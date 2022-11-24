@@ -1,6 +1,7 @@
 package com.ay.exchange.user.controller;
 
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
+import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.service.MyPageService;
@@ -57,6 +58,21 @@ public class MyPageController {
             @RequestHeader("token") String token
     ) {
         return myPageService.getMyData(page, token);
+    }
+
+    @Operation(summary = "다운로드 가능한 자료 조회",
+            description = "다운로드 가능한 자료 조회",
+            parameters = {
+                    @Parameter(name = "page", description = "페이지 번호"),
+                    @Parameter(name = "token", description = "액세스 토큰")
+            }
+    )
+    @GetMapping("/downloadable")
+    public DownloadableResponse getDownloadable(
+            @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+            @RequestHeader("token") String token
+    ) {
+        return myPageService.getDownloadable(page, token);
     }
 
 }

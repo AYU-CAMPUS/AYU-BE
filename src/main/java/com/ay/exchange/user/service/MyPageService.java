@@ -3,6 +3,7 @@ package com.ay.exchange.user.service;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.query.MyPageInfo;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
+import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.repository.querydsl.UserQueryRepository;
@@ -36,9 +37,14 @@ public class MyPageService {
     }
 
     public MyDataResponse getMyData(Integer page, String token) {
-
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
         return userQueryRepository.getMyData(pageRequest, jwtTokenProvider.getUserId(token));
+    }
+
+    public DownloadableResponse getDownloadable(Integer page, String token) {
+        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
+                Sort.by(Sort.Direction.DESC, "id"));
+        return userQueryRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserId(token));
     }
 }

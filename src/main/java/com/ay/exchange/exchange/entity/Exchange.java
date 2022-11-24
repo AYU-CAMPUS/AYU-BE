@@ -1,6 +1,7 @@
 package com.ay.exchange.exchange.entity;
 
 import com.ay.exchange.board.entity.Board;
+import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ import javax.persistence.*;
                 )
         }
 )
-public class Exchange {
+public class Exchange extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exchange_id")
@@ -49,10 +50,8 @@ public class Exchange {
     @Column(nullable = false)
     private Integer type;
 
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private String createdDate;
+//    @CreatedBy
+//    @Column(nullable = false, updatable = false)
+//    private String createdDate;
 
-    @Column(nullable = true)
-    private Integer deadline;
 }
