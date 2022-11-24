@@ -1,6 +1,5 @@
 package com.ay.exchange.board.controller;
 
-import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
@@ -10,9 +9,6 @@ import com.ay.exchange.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class BoardController {
     private final BoardService boardService;
     private final BoardContentService boardContentService;
-    private final AwsS3Service awsS3Service;
 
     @Operation(summary = "게시글 작성", description = "게시글 작성")
     @PostMapping(value = "/write")
@@ -88,26 +83,5 @@ public class BoardController {
 //    public ResponseEntity<Boolean> editBoard(){
 //        return ResponseEntity.ok(boardContentService.editBoard());
 //    }
-
-
-    //tkddls8900/김상인파일_1666970104756.txt
-    //bpax7m4BI/김상인파일.txt
-    @GetMapping(value = "/file/download")
-    public ResponseEntity<ByteArrayResource> downloadFile(
-            @RequestParam("filePath") String filePath
-    ) {
-        byte[] data = awsS3Service.downloadFile(filePath);
-        ByteArrayResource resource = new ByteArrayResource(data);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentLength(data.length);
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDisposition(AwsS3Service.createContentDisposition(filePath));
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(resource);
-    }
 
 }

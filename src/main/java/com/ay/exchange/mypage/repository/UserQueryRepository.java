@@ -1,25 +1,17 @@
-package com.ay.exchange.user.repository.querydsl;
+package com.ay.exchange.mypage.repository;
 
 
-import com.ay.exchange.board.entity.QBoardContent;
-import com.ay.exchange.user.dto.query.MyPageInfo;
-import com.ay.exchange.user.dto.response.DownloadableInfo;
-import com.ay.exchange.user.dto.response.DownloadableResponse;
-import com.ay.exchange.user.dto.response.MyDataInfo;
-import com.ay.exchange.user.dto.response.MyDataResponse;
-import com.querydsl.core.types.ConstantImpl;
+import com.ay.exchange.mypage.dto.*;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.user.entity.QUser.user;
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.exchange.entity.QExchange.exchange;
@@ -111,7 +103,22 @@ public class UserQueryRepository {
                 .limit(pageRequest.getPageSize())
                 .fetch();
 
-        return new DownloadableResponse(count,downloadableInfos);
+        return new DownloadableResponse(count, downloadableInfos);
     }
 
+    public FilePathInfo getFilePath(Long boardId) {
+        FilePathInfo filePathInfo = queryFactory.select(Projections.fields(
+                        FilePathInfo.class,
+                        board.userId,
+                        board.filePath
+                ))
+                .from(exchange)
+                .innerJoin(board)
+                .on(board.id.eq(exchange.boardId))
+                .where(exchange.userId.eq("ksiisk99")
+                        .and(exchange.type.eq(2))
+                        .and(exchange.boardId.eq(boardId)))
+                .fetchOne();
+        return filePathInfo;
+    }
 }

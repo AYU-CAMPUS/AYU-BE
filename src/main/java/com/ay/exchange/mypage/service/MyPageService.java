@@ -1,12 +1,10 @@
-package com.ay.exchange.user.service;
+package com.ay.exchange.mypage.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
-import com.ay.exchange.user.dto.query.MyPageInfo;
+import com.ay.exchange.mypage.dto.*;
+import com.ay.exchange.mypage.exception.NotExistsFileException;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
-import com.ay.exchange.user.dto.response.DownloadableResponse;
-import com.ay.exchange.user.dto.response.MyDataResponse;
-import com.ay.exchange.user.dto.response.MyPageResponse;
-import com.ay.exchange.user.repository.querydsl.UserQueryRepository;
+import com.ay.exchange.mypage.repository.UserQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -46,5 +44,13 @@ public class MyPageService {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
         return userQueryRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserId(token));
+    }
+
+    public String getFilePath(Long boardId) {
+        FilePathInfo filePathInfo = userQueryRepository.getFilePath(boardId);
+        if (filePathInfo == null) {
+            throw new NotExistsFileException();
+        }
+        return filePathInfo.toString();
     }
 }

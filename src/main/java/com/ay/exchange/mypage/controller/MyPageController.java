@@ -1,14 +1,19 @@
-package com.ay.exchange.user.controller;
+package com.ay.exchange.mypage.controller;
 
+import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
-import com.ay.exchange.user.dto.response.DownloadableResponse;
-import com.ay.exchange.user.dto.response.MyDataResponse;
-import com.ay.exchange.user.dto.response.MyPageResponse;
-import com.ay.exchange.user.service.MyPageService;
+import com.ay.exchange.mypage.dto.DownloadableResponse;
+import com.ay.exchange.mypage.dto.MyDataResponse;
+import com.ay.exchange.mypage.dto.MyPageResponse;
+import com.ay.exchange.mypage.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +26,7 @@ import javax.validation.Valid;
 @Tag(name = "마이페이지", description = "마이페이지 관련 api")
 public class MyPageController {
     private final MyPageService myPageService;
+    private final AwsS3Service awsS3Service;
 
     @Operation(summary = "마이페이지 조회",
             description = "마이페이지 첫 화면",
@@ -75,4 +81,33 @@ public class MyPageController {
         return myPageService.getDownloadable(page, token);
     }
 
+    @Operation(summary = "다운로드 가능한 자료 조회",
+            description = "다운로드 가능한 자료 조회",
+            parameters = {
+                    @Parameter(name = "boardId", description = "게시물 번호"),
+                    @Parameter(name = "token", description = "액세스 토큰")
+            }
+    )
+    @GetMapping(value = "/download/{boardId}")
+    public ResponseEntity<ByteArrayResource> downloadFile(
+            @PathVariable("boardId") Long boardId,
+            @RequestHeader("token") String token
+    ) {
+        //tkddls8900/김상인파일_1666970104756.txt
+        //bpax7m4BI/김상인파일.txt
+        String filePath = myPageService.getFilePath(boardId);
+
+        byte[] data = awsS3Service.downloadFile(filePath);
+        ByteArrayResource resource = new ByteArrayResource(data);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentLength(data.length);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(AwsS3Service.createContentDisposition(filePath));
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(resource);
+    }
 }

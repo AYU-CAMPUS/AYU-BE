@@ -30,12 +30,12 @@ public class BoardService {
     private final BoardContentRepository boardContentRepository;
     private final AwsS3Service awsS3Service;
     private final JwtTokenProvider jwtTokenProvider;
-    private final String REGEX="[0-9]+";
+    private final String REGEX = "[0-9]+";
 
     //트랜잭션 걸어야 되는데 알아보고 걸자.
     @Transactional(rollbackFor = Exception.class)
     public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String accessToken) {
-        String userId=jwtTokenProvider.getUserId(accessToken);
+        String userId = jwtTokenProvider.getUserId(accessToken);
 
         BoardCategory boardCategory = BoardCategory.builder()
                 .category(getCategory(writeRequest.getCategoryDto().getCategory()))
@@ -55,12 +55,12 @@ public class BoardService {
                 .views(1)
                 .boardCategory(boardCategory)
                 .userId(userId)
+                .filePath(awsS3Service.uploadFile(multipartFile, userId, 0))
                 .build();
         boardRepository.save(board);
 
         BoardContent boardContent = BoardContent.builder()
                 .content(writeRequest.getContent())
-                .filePath(awsS3Service.uploadFile(multipartFile,userId,0))
                 .board(board)
                 .build();
         boardContentRepository.save(boardContent);
@@ -215,28 +215,28 @@ public class BoardService {
 
     private List<String> getSeparateTypeConditions(String type) {
         return Arrays.stream(type.split(","))
-                .filter(t->t.matches(REGEX))
-                .map(t->Integer.parseInt(t))
-                .filter(t->(t>=0 && t<=3))
-                .map(t->getFileType(t).name())
+                .filter(t -> t.matches(REGEX))
+                .map(t -> Integer.parseInt(t))
+                .filter(t -> (t >= 0 && t <= 3))
+                .map(t -> getFileType(t).name())
                 .collect(Collectors.toList());
     }
 
     private List<String> getSeparateGradeConditions(String grade) {
         return Arrays.stream(grade.split(","))
-                .filter(g->g.matches(REGEX))
-                .map(g->Integer.parseInt(g))
-                .filter(g->(g>=0 && g<=3))
-                .map(g->getGradeType(g).name())
+                .filter(g -> g.matches(REGEX))
+                .map(g -> Integer.parseInt(g))
+                .filter(g -> (g >= 0 && g <= 3))
+                .map(g -> getGradeType(g).name())
                 .collect(Collectors.toList());
     }
 
     private List<String> getSeparateDepartmentConditions(String department) {
         return Arrays.stream(department.split(","))
-                .filter(d->d.matches(REGEX))
-                .map(d->Integer.parseInt(d))
-                .filter(d->(d>=0 && d<=22)) //[하드코딩 리팩토링] 구현이 바뀔수도 있어서 나중에 할 예정
-                .map(d-> getDepartmentType(d).name())
+                .filter(d -> d.matches(REGEX))
+                .map(d -> Integer.parseInt(d))
+                .filter(d -> (d >= 0 && d <= 22)) //[하드코딩 리팩토링] 구현이 바뀔수도 있어서 나중에 할 예정
+                .map(d -> getDepartmentType(d).name())
                 .collect(Collectors.toList());
     }
 

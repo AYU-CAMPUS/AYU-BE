@@ -18,7 +18,9 @@ public enum ErrorMessage {
     FILE_UPLOAD_ERROR(HttpStatus.NOT_FOUND,"파일 업로드에 실패하였습니다."),
     FILE_NOT_EXISTS(HttpStatus.NOT_FOUND,"파일이 없습니다."),
 
-    UNABLE_EXCHANGE(HttpStatus.NOT_FOUND, "교환신청에 실패하였습니다.");
+    UNABLE_EXCHANGE(HttpStatus.NOT_FOUND, "교환신청에 실패하였습니다."),
+
+    NOT_EXISTS_FILE(HttpStatus.CONFLICT, "파일이 존재하지 않거나 올바른 사용자가 아닙니다.");
 
     private final HttpStatus status;
     private final String description;

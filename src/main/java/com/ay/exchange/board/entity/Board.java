@@ -42,9 +42,8 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private Integer numberOfSuccessfulExchanges;
 
-//    @CreatedDate
-//    @Column(nullable = false, updatable = false)
-//    private String createdDate;
+    @Column(nullable = false)
+    private String filePath;
 
     @Column(nullable = false)
     private Boolean approval;

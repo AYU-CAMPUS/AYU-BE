@@ -20,12 +20,8 @@ public class BoardContent {
     @Column(nullable = false, length = 200)
     private String content;
 
-    @Column(nullable = false)
-    private String filePath;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
-
 
 }
