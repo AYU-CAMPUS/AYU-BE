@@ -1,4 +1,4 @@
-package com.ay.exchange.mypage.dto;
+package com.ay.exchange.mypage.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

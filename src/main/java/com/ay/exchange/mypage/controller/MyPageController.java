@@ -1,10 +1,11 @@
 package com.ay.exchange.mypage.controller;
 
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
-import com.ay.exchange.mypage.dto.DownloadableResponse;
-import com.ay.exchange.mypage.dto.MyDataResponse;
-import com.ay.exchange.mypage.dto.MyPageResponse;
+import com.ay.exchange.mypage.dto.response.DownloadableResponse;
+import com.ay.exchange.mypage.dto.response.MyDataResponse;
+import com.ay.exchange.mypage.dto.response.MyPageResponse;
 import com.ay.exchange.mypage.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -95,7 +96,7 @@ public class MyPageController {
     ) {
         //tkddls8900/김상인파일_1666970104756.txt
         //bpax7m4BI/김상인파일.txt
-        String filePath = myPageService.getFilePath(boardId);
+        String filePath = myPageService.getFilePath(boardId, token);
 
         byte[] data = awsS3Service.downloadFile(filePath);
         ByteArrayResource resource = new ByteArrayResource(data);
@@ -109,5 +110,20 @@ public class MyPageController {
                 .ok()
                 .headers(headers)
                 .body(resource);
+    }
+
+    @Operation(summary = "교환신청 조회",
+            description = "교환신청 조회",
+            parameters = {
+                    @Parameter(name = "page", description = "페이지 번호"),
+                    @Parameter(name = "token", description = "액세스 토큰")
+            }
+    )
+    @GetMapping("/exchange")
+    public ExchangeResponse getExchanges(
+            @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+            @RequestHeader("token") String token
+    ) {
+        return myPageService.getExchanges(page, token);
     }
 }
