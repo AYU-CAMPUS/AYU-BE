@@ -23,4 +23,7 @@ public class ExchangeInfo {
 
     @Schema(description = "게시글 번호")
     private Long boardId;
+
+    @Schema(description = "신청자 고유 아이디")
+    private String applicantId;
 }
