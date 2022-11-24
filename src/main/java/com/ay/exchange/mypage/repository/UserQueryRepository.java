@@ -145,6 +145,7 @@ public class UserQueryRepository {
         List<ExchangeInfo> exchangeInfos = queryFactory
                 .select(Projections.fields(
                         ExchangeInfo.class,
+                        exchange.Id.as("exchangeId"),
                         exchange.createdDate.as("applicationDate"),
                         user.nickName.as("applicant"),
                         board.title,
@@ -163,4 +164,5 @@ public class UserQueryRepository {
 
         return new ExchangeResponse(count, exchangeInfos);
     }
+
 }

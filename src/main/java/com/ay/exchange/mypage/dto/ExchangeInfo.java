@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class ExchangeInfo {
+    @Schema(description = "교환 식별 번호")
+    private Long exchangeId;
+
     @Schema(description = "신청일")
     private String applicationDate;
 
