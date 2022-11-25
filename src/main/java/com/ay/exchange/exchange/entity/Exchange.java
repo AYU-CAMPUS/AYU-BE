@@ -23,7 +23,7 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintExchange",
-                        columnNames = {"board_id", "user_id"}
+                        columnNames = {"board_id", "requester_board_id", "user_id", "requester_user_id"}
                 )
         }
 )
@@ -47,11 +47,21 @@ public class Exchange extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "requester_board_id", nullable = false, insertable = false, updatable = false)
+    private Board requesterBoard;
+
+    @Column(name = "requester_board_id", nullable = false)
+    private Long requesterBoardId;
+
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "requester_user_id", nullable = false, insertable = false, updatable = false)
+    private User requesterUser;
+
+    @Column(name = "requester_user_id", nullable = false)
+    private String requesterUserId;
+
     @Column(nullable = false)
     private Integer type;
-
-//    @CreatedBy
-//    @Column(nullable = false, updatable = false)
-//    private String createdDate;
 
 }

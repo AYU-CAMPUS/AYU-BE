@@ -1,4 +1,4 @@
-package com.ay.exchange.mypage.dto.request;
+package com.ay.exchange.exchange.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ExchangeRequest {
-    @Schema(description = "신청자 고유 아이디")
-    private String applicantId;
+public class ExchangeInfo {
+    @Schema(description = "자료명")
+    private String title;
 
-    @Schema(description = "게시글 번호")
+    @Schema(description = "자료명 게시글 번호")
     private Long boardId;
 }

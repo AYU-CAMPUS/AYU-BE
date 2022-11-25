@@ -59,6 +59,10 @@ public class Board extends BaseEntity {
             orphanRemoval = true)
     private List<Exchange> exchanges;
 
+    @OneToMany(mappedBy = "requesterBoard", fetch = FetchType.LAZY,
+            orphanRemoval = true)
+    private List<Exchange> requesterExchanges;
+
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private User user;

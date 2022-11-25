@@ -50,7 +50,7 @@ public class BoardService {
                 .title(writeRequest.getTitle())
                 .writer(jwtTokenProvider.getNickName(accessToken))
                 .numberOfFilePages(writeRequest.getNumberOfFilePages())
-                .numberOfSuccessfulExchanges(0)
+                .exchangeSuccessCount(0)
                 .approval(false)
                 .views(1)
                 .boardCategory(boardCategory)

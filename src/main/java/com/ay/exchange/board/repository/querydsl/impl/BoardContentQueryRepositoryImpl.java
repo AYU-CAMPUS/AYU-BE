@@ -52,15 +52,17 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             boardContent.board.boardCategory,
                             boardContent.board.views,
                             boardContent.board.numberOfFilePages,
-                            boardContent.board.numberOfSuccessfulExchanges,
+                            boardContent.board.exchangeSuccessCount,
                             boardContent.board.createdDate,
                             exchange.type.coalesce(0).as("exchangeType"), //null
                             boardContent.board.userId
                     ))
                     .from(boardContent)
                     .leftJoin(exchange)
-                    .on(boardContent.board.id.eq(exchange.board.id)
-                            .and(exchange.user.userId.eq(userId)))
+                    .on(boardContent.board.id.eq(exchange.boardId)
+                            .or(boardContent.board.id.eq(exchange.requesterBoardId))
+                            .and(exchange.board.userId.eq(userId))
+                            .or(exchange.requesterBoard.userId.eq(userId)))
                     .innerJoin(boardContent.board, board)
                     .where(board.id.eq(boardId)
                             .and(boardContent.board.id.eq(boardId)))
@@ -98,7 +100,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 resultBoard.getBoardCategory(),
                 resultBoard.getViews(),
                 resultBoard.getNumberOfFilePages(),
-                resultBoard.getNumberOfSuccessfulExchanges(),
+                resultBoard.getExchangeSuccessCount(),
                 resultBoard.getCreatedDate(),
                 resultBoard.getUserId().equals(userId) ? -1 : result.get(0).getExchangeType()
         );
@@ -147,7 +149,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         return queryFactory
                 .select(Projections.constructor(
                         BoardContentInfoDto.class,
-                        comment.writer,
+                        user.nickName.as("writer"),
                         comment.content,
                         comment.depth,
                         comment.groupId.longValue(),
@@ -162,8 +164,10 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .innerJoin(user)
                 .on(comment.userId.eq(user.userId))
                 .leftJoin(exchange)
-                .on(comment.board.id.eq(exchange.board.id)
-                        .and(exchange.user.userId.eq(userId)))
+                .on(boardContent.board.id.eq(exchange.boardId)
+                        .or(boardContent.board.id.eq(exchange.requesterBoardId))
+                        .and(exchange.board.userId.eq(userId))
+                        .or(exchange.requesterBoard.userId.eq(userId)))
                 .leftJoin(boardContent)
                 .on(comment.board.id.eq(boardContent.board.id))
                 .innerJoin(comment.board, board)

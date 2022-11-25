@@ -32,7 +32,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                         , board.views
                         , board.boardCategory
                         , board.numberOfFilePages
-                        , board.numberOfSuccessfulExchanges
+                        , board.exchangeSuccessCount
                         , board.createdDate
                 ))
                 .from(board)

@@ -1,6 +1,7 @@
 package com.ay.exchange.user.entity;
 
 import com.ay.exchange.board.entity.Board;
+import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.user.entity.vo.Authority;
@@ -39,11 +40,17 @@ public class User extends BaseEntity implements Persistable<String> {
     @Column(name = "profile_image")
     private String profileImage;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<Exchange> exchange;
-
     @Column(nullable = false)
     private Integer exchangeSuccessCount;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Exchange> exchanges;
+
+    @OneToMany(mappedBy = "requesterUser", orphanRemoval = true)
+    private List<Exchange> requesterExchanges;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<Board> boards;

@@ -52,4 +52,6 @@ public class CommentController {
     ) {
         return commentService.getComments(boardId, page);
     }
+
+
 }
