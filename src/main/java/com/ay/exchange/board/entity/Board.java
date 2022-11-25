@@ -4,6 +4,7 @@ import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.exchange.entity.Exchange;
+import com.ay.exchange.exchange.entity.ExchangeCompletion;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -69,4 +70,7 @@ public class Board extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
     private String userId;
+
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
+    private List<ExchangeCompletion> exchangeCompletions;
 }
