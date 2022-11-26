@@ -34,8 +34,8 @@ public class BoardService {
 
     //트랜잭션 걸어야 되는데 알아보고 걸자.
     @Transactional(rollbackFor = Exception.class)
-    public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String accessToken) {
-        String userId = jwtTokenProvider.getUserId(accessToken);
+    public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String token) {
+        String userId = jwtTokenProvider.getUserId(token);
 
         BoardCategory boardCategory = BoardCategory.builder()
                 .category(getCategory(writeRequest.getCategoryDto().getCategory()))
@@ -48,7 +48,7 @@ public class BoardService {
 
         Board board = Board.builder()
                 .title(writeRequest.getTitle())
-                .writer(jwtTokenProvider.getNickName(accessToken))
+                .writer(jwtTokenProvider.getNickName(token))
                 .numberOfFilePages(writeRequest.getNumberOfFilePages())
                 .exchangeSuccessCount(0)
                 .approval(false)
@@ -88,7 +88,7 @@ public class BoardService {
     }
 
     //추후 accessToken 권한 검증
-    public void deleteBoard(String accessToken, DeleteRequest deleteRequest) {
+    public void deleteBoard(String token, DeleteRequest deleteRequest) {
         boardRepository.deleteById(deleteRequest.getBoardId());
 //        if(isAuthorized(token)){
 //            boardContentRepository.deleteByBoardId(deleteRequest.getBoardId());

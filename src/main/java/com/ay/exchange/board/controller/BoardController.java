@@ -1,5 +1,6 @@
 package com.ay.exchange.board.controller;
 
+import com.ay.exchange.board.dto.CategoryDto;
 import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
@@ -22,14 +23,42 @@ public class BoardController {
     private final BoardService boardService;
     private final BoardContentService boardContentService;
 
-    @Operation(summary = "게시글 작성", description = "게시글 작성")
+    @Operation(summary = "게시글 작성", description = "게시글 작성",
+            parameters = {
+                    @Parameter(name = "title", description = "글제목"),
+                    @Parameter(name = "category", description = "신학대학(0), 인문대학(1), 예술체육대학(2), " +
+                            "사회과학대학(3), 창의융합대학(4), 인성양성(5), 리더십(6), 융합실무(7), 문제해결(8), 글로벌(9), 의사소통(10),논문(11), 자격증(12)"),
+                    @Parameter(name = "departmentType", description = "신학과(0), 기독교교육과(1), 국어국문학과(2), 영미언어문화학과(3), " +
+                            "러시아언어문화학과(4), 중국언어문화학과(5), 유아교육과(6), 공연예술학과(7), 음악학과(8), " +
+                            "디지털미디어디자인학과(9), 화장품발명디자인학과(10), 뷰티메디컬디자인학과(11), " +
+                            "글로벌경영학과(12), 행정학과(13), 관광경영학과(14), 식품영양학과(15), " +
+                            "컴퓨터공학과(16), 정보전기전자공학과(17), 통계데이터사이언스학과(18), 소프트웨어학과(19), " +
+                            "도시정보공학과(20), 환경에너지공학과(21), AI융합학과(22)"),
+                    @Parameter(name = "fileType", description = "중간고사(0), 기말고사(1), 과제(2), 요약(3)"),
+                    @Parameter(name = "gradeType", description = "Freshman(0), Sophomore(1), Junior(2), Senior(3)"),
+                    @Parameter(name = "subjectName", description = "전공 또는 교양 선택 시 과목명 입력"),
+                    @Parameter(name = "professorName", description = "전공 또는 교양 선택 시 교수명 입력"),
+                    @Parameter(name = "numberOfFilePages", description = "파일 페이지 수"),
+                    @Parameter(name = "content", description = "글 내용"),
+                    @Parameter(name = "file", description = "파일"),
+                    @Parameter(name = "token", description = "액세스 토큰"),
+            })
     @PostMapping(value = "/write")
     public ResponseEntity<Boolean> writeBoard(
-            @RequestPart("writeRequest") WriteRequest writeRequest,
+            @RequestPart("title") String title,
+            @RequestPart("category") Integer category,
+            @RequestPart("departmentType") Integer departmentType,
+            @RequestPart("fileType") Integer fileType,
+            @RequestPart("gradeType") Integer gradeType,
+            @RequestPart("subjectName") String subjectName,
+            @RequestPart("professorName") String professorName,
+            @RequestPart("numberOfFilePages") Integer numberOfFilePages,
+            @RequestPart("content;") String content,
             @RequestPart("file") MultipartFile multipartFile,
-            @RequestHeader("token") String accessToken
+            @RequestHeader("token") String token
     ) {
-        boardService.writeBoard(writeRequest, multipartFile, accessToken);
+        CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);
+        boardService.writeBoard(new WriteRequest(title, categoryDto, numberOfFilePages, content), multipartFile, token);
         return ResponseEntity.ok(true);
     }
 
