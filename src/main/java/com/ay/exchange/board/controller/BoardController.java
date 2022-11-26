@@ -53,7 +53,7 @@ public class BoardController {
             @RequestPart("subjectName") String subjectName,
             @RequestPart("professorName") String professorName,
             @RequestPart("numberOfFilePages") Integer numberOfFilePages,
-            @RequestPart("content;") String content,
+            @RequestPart("content") String content,
             @RequestPart("file") MultipartFile multipartFile,
             @RequestHeader("token") String token
     ) {
