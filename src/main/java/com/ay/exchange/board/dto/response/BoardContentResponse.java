@@ -23,7 +23,7 @@ public class BoardContentResponse {
     @Schema(description = "제목")
     private String title;
 
-    @Schema(description = "작성자")
+    @Schema(description = "글 작성자 닉네임")
     private String writer;
 
     @Schema(description = "카테고리")
@@ -41,6 +41,6 @@ public class BoardContentResponse {
     @Schema(description = "작성일")
     private String createdDate;
 
-    @Schema(description = "교환 정보 0: 신청 / 1: 진행중 / 2: 완료")
+    @Schema(description = "교환 정보 => 내가 쓴 자료(-1) / 교환완료(1이상) / 교환중(-2) / 교환신청가능(0)")
     private Integer exchangeType;
 }

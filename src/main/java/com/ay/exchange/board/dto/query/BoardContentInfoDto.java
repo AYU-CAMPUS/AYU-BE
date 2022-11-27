@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class BoardContentInfoDto {
+    private Long commentId;
     private String writer;
     private String content;
     private Boolean depth;
@@ -25,7 +26,8 @@ public class BoardContentInfoDto {
     private String profileImage;
 
     @QueryProjection
-    public BoardContentInfoDto(String writer, String content, Boolean depth, Long groupId, String createdDate, BoardContent boardContent, Board board, Integer exchangeType, String profileImage) {
+    public BoardContentInfoDto(Long commentId, String writer, String content, Boolean depth, Long groupId, String createdDate, BoardContent boardContent, Board board, Integer exchangeType, String profileImage) {
+        this.commentId = commentId;
         this.writer = writer;
         this.content = content;
         this.depth = depth;
@@ -33,8 +35,8 @@ public class BoardContentInfoDto {
         this.createdDate = createdDate;
         this.boardContent = boardContent;
         this.board = board;
-        this.exchangeType=exchangeType;
-        this.profileImage=profileImage;
+        this.exchangeType = exchangeType;
+        this.profileImage = profileImage;
     }
 
 }

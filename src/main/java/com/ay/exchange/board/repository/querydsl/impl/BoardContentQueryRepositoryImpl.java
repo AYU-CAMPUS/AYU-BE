@@ -26,6 +26,7 @@ import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.comment.entity.QComment.comment;
 import static com.ay.exchange.exchange.entity.QExchange.*;
+import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
 
 @RequiredArgsConstructor
@@ -34,36 +35,39 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
 
     @Override
     public BoardContentResponse findBoardContent(Long boardId, Pageable pageable, String userId) {
-        List<CommentInfoDto> commentList = new ArrayList<>();
-
         Long count = queryFactory
                 .select(comment.count())
                 .from(comment)
                 .where(comment.board.id.eq(boardId))
                 .fetchOne();
 
+        List<CommentInfoDto> commentList = new ArrayList<>();
         if (count == 0) {
+            //SELECT ex.type FROM board_content bc LEFT JOIN exchange ex ON (bc.board_id=ex.board_id AND ex.user_id='ksiisk99') OR (bc.board_id=ex.requester_board_id AND ex.requester_user_id='ksiisk99') INNER JOIN board b LEFT JOIN exchange_completion ec ON ec.board_id=bc.board_id AND ec.user_id='ksiisk99' WHERE b.board_id=3 AND bc.board_id=3;
             BoardContentInfo2Dto boardContentInfo2Dto = queryFactory
                     .select(Projections.fields(
                             BoardContentInfo2Dto.class,
                             boardContent.content,
-                            boardContent.board.title,
-                            boardContent.board.writer,
-                            boardContent.board.boardCategory,
-                            boardContent.board.views,
-                            boardContent.board.numberOfFilePages,
-                            boardContent.board.exchangeSuccessCount,
-                            boardContent.board.createdDate,
-                            exchange.type.coalesce(0).as("exchangeType"), //null
-                            boardContent.board.userId
+                            board.title,
+                            board.writer,
+                            board.boardCategory,
+                            board.views,
+                            board.numberOfFilePages,
+                            board.exchangeSuccessCount.as("numberOfSuccessfulExchanges"),
+                            board.createdDate,
+                            exchange.type.coalesce(exchangeCompletion.Id.coalesce(0L)).as("exchangeType"), //null
+                            board.userId
                     ))
                     .from(boardContent)
                     .leftJoin(exchange)
                     .on(boardContent.board.id.eq(exchange.boardId)
-                            .or(boardContent.board.id.eq(exchange.requesterBoardId))
-                            .and(exchange.board.userId.eq(userId))
-                            .or(exchange.requesterBoard.userId.eq(userId)))
+                            .and(exchange.userId.eq(userId))
+                            .or(boardContent.board.id.eq(exchange.requesterBoardId)
+                                    .and(exchange.requesterUserId.eq(userId))))
                     .innerJoin(boardContent.board, board)
+                    .leftJoin(exchangeCompletion)
+                    .on(exchangeCompletion.board.eq(boardContent.board)
+                            .and(exchangeCompletion.userId.eq(userId)))
                     .where(board.id.eq(boardId)
                             .and(boardContent.board.id.eq(boardId)))
                     .fetchOne();
@@ -105,36 +109,12 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 resultBoard.getUserId().equals(userId) ? -1 : result.get(0).getExchangeType()
         );
 
-//        Map<Long, BoardContentInfoDto> boardContentInfoDto = queryFactory
-//                .from(comment)
-//                .innerJoin(comment.boardContent, boardContent)
-//                .where(comment.boardContent.id.eq(boardId))
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .transform(
-//                        groupBy(boardContent.id).as(new QBoardContentInfoDto(
-//                                boardContent.content,
-//                                list(
-//                                        new QCommentInfoDto(
-//                                                comment.writer,
-//                                                comment.content,
-//                                                comment.depth,
-//                                                comment.groupId.longValue(),
-//                                                comment.createdDate
-//                                        )
-//                                )
-//                        ))
-//                );
-//        List<BoardContentInfoDto> comments=boardContentInfoDto.keySet().stream()
-//                .map(boardContentInfoDto::get)
-//                .collect(Collectors.toList());
-//        System.out.println("LASTSIZE:"+ comments.get(0).getCommentInfoList().size());
-// return result.get(0);
     }
 
     private void addCommentList(List<BoardContentInfoDto> result, List<CommentInfoDto> commentList) {
         for (BoardContentInfoDto boardContentInfo : result) {
             commentList.add(new CommentInfoDto(
+                    boardContentInfo.getCommentId(),
                     boardContentInfo.getWriter(),
                     boardContentInfo.getContent(),
                     boardContentInfo.getDepth(),
@@ -149,28 +129,32 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         return queryFactory
                 .select(Projections.constructor(
                         BoardContentInfoDto.class,
+                        comment.id.as("commentId"),
                         user.nickName.as("writer"),
                         comment.content,
                         comment.depth,
                         comment.groupId.longValue(),
                         comment.createdDate,
-                        //comment.board.boardContent,
                         boardContent,
                         board,
-                        exchange.type.coalesce(0).as("exchangeType"),
+                        exchange.type.coalesce(exchangeCompletion.Id.coalesce(0L)).as("exchangeType"),
                         user.profileImage.coalesce("default.svg")
                 ))
                 .from(comment)
                 .innerJoin(user)
                 .on(comment.userId.eq(user.userId))
+                .innerJoin(board)
+                .on(comment.boardId.eq(board.id))
+                .innerJoin(boardContent)
+                .on(comment.board.eq(boardContent.board))
                 .leftJoin(exchange)
-                .on(boardContent.board.id.eq(exchange.boardId)
-                        .or(boardContent.board.id.eq(exchange.requesterBoardId))
-                        .and(exchange.board.userId.eq(userId))
-                        .or(exchange.requesterBoard.userId.eq(userId)))
-                .leftJoin(boardContent)
-                .on(comment.board.id.eq(boardContent.board.id))
-                .innerJoin(comment.board, board)
+                .on(board.id.eq(exchange.boardId)
+                        .and(exchange.userId.eq(userId))
+                        .or(board.id.eq(exchange.requesterBoardId)
+                                .and(exchange.requesterUserId.eq(userId))))
+                .leftJoin(exchangeCompletion)
+                .on(exchangeCompletion.boardId.eq(board.id)
+                        .and(exchangeCompletion.userId.eq(userId)))
                 .where(comment.board.id.eq(boardId)
                         .and(board.id.eq(boardId))
                         .and(boardContent.board.id.eq(boardId)))
@@ -179,7 +163,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .fetch();
     }
 
-    public Boolean isModifiable() {
+    public Boolean isModifiable() {//추후 boardId추가
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
         Date date = new Date(calendar.getTimeInMillis());
@@ -188,7 +172,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         Long count = queryFactory.select(exchange.count())
                 .from(exchange)
                 .where(getExchangeDate().gt(simpleDateFormat.format(date))
-                        .or(exchange.type.eq(1))
+                        .or(exchange.type.eq(-2))
                         .and(exchange.board.id.eq(2L)))
                 .limit(1L)
                 .fetchOne();
