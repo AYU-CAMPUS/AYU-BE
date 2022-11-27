@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static com.ay.exchange.board.entity.QBoard.board;
+import static com.ay.exchange.user.entity.QUser.user;
 
 @RequiredArgsConstructor
 public class BoardQueryRepositoryImpl implements BoardQueryRepository {
@@ -27,15 +28,16 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
         List<BoardInfoDto> pages = queryFactory
                 .select(Projections.constructor(BoardInfoDto.class,
                         board.id,
-                        board.title
-                        //, board.writer,
-                        // board.views,
-                        // board.boardCategory,
-                        // board.numberOfFilePages,
-                        // board.exchangeSuccessCount,
-                        // board.createdDate
+                        board.title,
+                        user.nickName.as("writer"),
+                        board.views,
+                        board.boardCategory,
+                        board.exchangeSuccessCount,
+                        board.createdDate
                 ))
                 .from(board)
+                .innerJoin(user)
+                .on(board.userId.eq(user.userId))
                 .where(departmentEq(departments),
                         gradeEq(grades),
                         typeEq(types),
@@ -46,7 +48,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count=queryFactory
+        Long count = queryFactory
                 .select(board.count())
                 .from(board)
                 .where(departmentEq(departments),
@@ -57,7 +59,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 )
                 .fetchOne();
 
-        return new PageImpl<>(pages,pageable,count);
+        return new PageImpl<>(pages, pageable, count);
     }
 
     private BooleanBuilder typeEq(List<String> types) {
