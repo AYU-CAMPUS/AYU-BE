@@ -27,7 +27,6 @@ public class BoardCategory {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DepartmentType departmentType;
 

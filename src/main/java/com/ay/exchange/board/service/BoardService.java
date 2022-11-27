@@ -205,9 +205,21 @@ public class BoardService {
             case 10:
                 return Category.의사소통;
             case 11:
-                return Category.논문;
+                return Category.레포트;
             case 12:
-                return Category.자격증;
+                return Category.PPT템플릿;
+            case 13:
+                return Category.한국사자격증;
+            case 14:
+                return Category.토익;
+            case 15:
+                return Category.토플;
+            case 16:
+                return Category.논문;
+            case 17:
+                return Category.이력서;
+            case 18:
+                return Category.컴활자격증;
             default:
                 return null;
         }
