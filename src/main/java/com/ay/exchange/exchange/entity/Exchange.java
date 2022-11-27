@@ -35,28 +35,28 @@ public class Exchange extends BaseEntity {
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
-    private Board board;
+    private Board board; //현재 게시물
 
     @Column(name = "board_id", nullable = false)
     private Long boardId;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
-    private User user;
+    private User user; //게시물 작성자
 
     @Column(name = "user_id", nullable = false)
     private String userId;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_board_id", nullable = false, insertable = false, updatable = false)
-    private Board requesterBoard;
+    private Board requesterBoard; //요청자 게시물
 
     @Column(name = "requester_board_id", nullable = false)
     private Long requesterBoardId;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_user_id", nullable = false, insertable = false, updatable = false)
-    private User requesterUser;
+    private User requesterUser; //요청자 아이디
 
     @Column(name = "requester_user_id", nullable = false)
     private String requesterUserId;
