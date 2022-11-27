@@ -27,9 +27,6 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String writer;
-
     @Embedded
     private BoardCategory boardCategory;
 

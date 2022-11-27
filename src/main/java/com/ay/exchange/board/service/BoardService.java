@@ -48,7 +48,6 @@ public class BoardService {
 
         Board board = Board.builder()
                 .title(writeRequest.getTitle())
-                .writer(jwtTokenProvider.getNickName(token))
                 .numberOfFilePages(writeRequest.getNumberOfFilePages())
                 .exchangeSuccessCount(0)
                 .approval(false)
@@ -73,12 +72,12 @@ public class BoardService {
                 Sort.by(Sort.Direction.DESC, "id"));
 
         Page<BoardInfoDto> pages = boardRepository.findBoards(
-                false //추후 approval true로 변경해야함
-                , getCategory(category)
-                , pageRequest
-                , getSeparateDepartmentConditions(department)
-                , getSeparateGradeConditions(grade)
-                , getSeparateTypeConditions(type));
+                false, //추후 approval true로 변경해야함
+                getCategory(category),
+                pageRequest,
+                getSeparateDepartmentConditions(department),
+                getSeparateGradeConditions(grade),
+                getSeparateTypeConditions(type));
 
 //        System.out.println(pages.getTotalPages());
 //        System.out.println(pages.getTotalElements());
@@ -98,7 +97,7 @@ public class BoardService {
     }
 
     private GradeType getGradeType(Integer gradeType) {
-        if(gradeType==null)return null;
+        if (gradeType == null) return null;
         switch (gradeType) {
             case 0:
                 return GradeType.Freshman;
@@ -114,7 +113,7 @@ public class BoardService {
     }
 
     private FileType getFileType(Integer fileType) {
-        if(fileType==null)return null;
+        if (fileType == null) return null;
         switch (fileType) {
             case 0:
                 return FileType.중간고사;
@@ -130,7 +129,7 @@ public class BoardService {
     }
 
     private DepartmentType getDepartmentType(Integer departmentType) {
-        if(departmentType == null)return null;
+        if (departmentType == null) return null;
         switch (departmentType) {
             case 0:
                 return DepartmentType.신학과;

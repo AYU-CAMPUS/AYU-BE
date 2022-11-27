@@ -25,22 +25,22 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     @Override
     public Page<BoardInfoDto> findBoards(boolean apporval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types) {
         List<BoardInfoDto> pages = queryFactory
-                .select(Projections.constructor(BoardInfoDto.class
-                        , board.id
-                        , board.title
-                        , board.writer
-                        , board.views
-                        , board.boardCategory
-                        , board.numberOfFilePages
-                        , board.exchangeSuccessCount
-                        , board.createdDate
+                .select(Projections.constructor(BoardInfoDto.class,
+                        board.id,
+                        board.title
+                        //, board.writer,
+                        // board.views,
+                        // board.boardCategory,
+                        // board.numberOfFilePages,
+                        // board.exchangeSuccessCount,
+                        // board.createdDate
                 ))
                 .from(board)
-                .where(departmentEq(departments)
-                        , gradeEq(grades)
-                        , typeEq(types)
-                        , board.approval.eq(apporval)
-                        , board.boardCategory.category.eq(Category.valueOf(category.name()))
+                .where(departmentEq(departments),
+                        gradeEq(grades),
+                        typeEq(types),
+                        board.approval.eq(apporval),
+                        board.boardCategory.category.eq(Category.valueOf(category.name()))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -49,11 +49,11 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
         Long count=queryFactory
                 .select(board.count())
                 .from(board)
-                .where(departmentEq(departments)
-                        , gradeEq(grades)
-                        , typeEq(types)
-                        , board.approval.eq(apporval)
-                        , board.boardCategory.category.eq(Category.valueOf(category.name()))
+                .where(departmentEq(departments),
+                        gradeEq(grades),
+                        typeEq(types),
+                        board.approval.eq(apporval),
+                        board.boardCategory.category.eq(Category.valueOf(category.name()))
                 )
                 .fetchOne();
 

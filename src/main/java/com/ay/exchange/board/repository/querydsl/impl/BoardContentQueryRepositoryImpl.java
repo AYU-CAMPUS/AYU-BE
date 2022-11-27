@@ -49,7 +49,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             BoardContentInfo2Dto.class,
                             boardContent.content,
                             board.title,
-                            board.writer,
+                            user.nickName.as("writer"),
                             board.boardCategory,
                             board.views,
                             board.numberOfFilePages,
@@ -65,6 +65,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             .or(boardContent.board.id.eq(exchange.requesterBoardId)
                                     .and(exchange.requesterUserId.eq(userId))))
                     .innerJoin(boardContent.board, board)
+                    .innerJoin(user)
+                    .on(board.userId.eq(user.userId))
                     .leftJoin(exchangeCompletion)
                     .on(exchangeCompletion.board.eq(boardContent.board)
                             .and(exchangeCompletion.userId.eq(userId)))
@@ -100,7 +102,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 commentList,
                 resultBoardContent.getContent(),
                 resultBoard.getTitle(),
-                resultBoard.getWriter(),
+                result.get(0).getNickName(),
                 resultBoard.getBoardCategory(),
                 resultBoard.getViews(),
                 resultBoard.getNumberOfFilePages(),
@@ -138,7 +140,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         boardContent,
                         board,
                         exchange.type.coalesce(exchangeCompletion.Id.coalesce(0L)).as("exchangeType"),
-                        user.profileImage.coalesce("default.svg")
+                        user.profileImage.coalesce("default.svg"),
+                        board.user.nickName
                 ))
                 .from(comment)
                 .innerJoin(user)
