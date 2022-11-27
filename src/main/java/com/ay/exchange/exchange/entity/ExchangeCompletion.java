@@ -27,7 +27,7 @@ import javax.persistence.*;
 public class ExchangeCompletion{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "exchange_id")
+    @Column(name = "exchange_completion_id")
     private Long Id;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
