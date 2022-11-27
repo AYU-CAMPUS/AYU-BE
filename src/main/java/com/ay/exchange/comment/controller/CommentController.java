@@ -23,9 +23,10 @@ public class CommentController {
     @PostMapping("/write")
     @Operation(summary = "대댓글 작성", description = "댓글 및 대댓글 작성")
     public ResponseEntity<Boolean> writeComment(
-            @RequestBody WriteRequest writeRequest
+            @RequestBody WriteRequest writeRequest,
+            @RequestHeader("token") String token
     ) {
-        commentService.writeComment(writeRequest);
+        commentService.writeComment(writeRequest, token);
         return ResponseEntity.ok(true);
     }
 
@@ -33,9 +34,9 @@ public class CommentController {
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteComment(
             @RequestBody DeleteRequest deleteRequest,
-            @RequestHeader("token") String accessToken
+            @RequestHeader("token") String token
     ) {
-        commentService.deleteComment(deleteRequest, accessToken);
+        commentService.deleteComment(deleteRequest, token);
         return ResponseEntity.ok(true);
     }
 

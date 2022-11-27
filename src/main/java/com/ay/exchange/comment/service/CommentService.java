@@ -1,7 +1,5 @@
 package com.ay.exchange.comment.service;
 
-import com.ay.exchange.board.entity.Board;
-import com.ay.exchange.board.exception.NotFoundBoardException;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
@@ -26,24 +24,17 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void writeComment(WriteRequest writeRequest) {
-        Board board = boardRepository
-                .findById(writeRequest.getBoardId())
-                .orElseThrow(
-                        () -> {
-                            throw new NotFoundBoardException();
-                        }
-                );
-
+    public void writeComment(WriteRequest writeRequest, String token) {
         Comment comment = Comment.builder()
-                .board(board)
-                .writer(writeRequest.getWriter())
                 .content(writeRequest.getContent())
                 .depth(writeRequest.getDepth())
                 .groupId(writeRequest.getGroupId())
-                .userId(writeRequest.getUserId())
+                .userId(jwtTokenProvider.getUserId(token))
+                .boardId(writeRequest.getBoardId())
                 .build();
+
         commentRepository.save(comment);
+
     }
 
     public void deleteComment(DeleteRequest deleteRequest, String accessToken) {

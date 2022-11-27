@@ -20,7 +20,8 @@ public class CommentQueryRepository {
     public List<CommentInfoDto> getComments(Pageable pageable, Long boardId) {
         return queryFactory.select(Projections.fields(
                         CommentInfoDto.class,
-                        comment.writer,
+                        comment.id.as("commentId"),
+                        user.nickName.as("writer"),
                         comment.content,
                         comment.depth,
                         comment.groupId,
