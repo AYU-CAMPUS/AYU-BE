@@ -15,15 +15,19 @@ public class ExchangeInfo {
     @Schema(description = "신청일")
     private String applicationDate;
 
-    @Schema(description = "신청자")
-    private String applicant;
+    @Schema(description = "신청자 닉네임")
+    private String requesterNickName;
+
+    @Schema(description = "신청자 아이디")
+    private String requesterId;
 
     @Schema(description = "자료명")
     private String title;
 
-    @Schema(description = "게시글 번호")
-    private Long boardId;
+    @Schema(description = "내 게시글 번호")
+    private Long BoardId;
 
-    @Schema(description = "신청자 고유 아이디")
-    private String applicantId;
+    @Schema(description = "신청자 게시글 번호")
+    private Long requesterBoardId;
+
 }

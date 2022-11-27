@@ -18,6 +18,6 @@ public class DownloadableInfo {
     @Schema(description = "작성자")
     private String writer;
 
-    @Schema(description = "게시글 번호")
-    private Long boardId;
+    @Schema(description = "요청자 게시글 번호")
+    private Long requesterBoardId;
 }
