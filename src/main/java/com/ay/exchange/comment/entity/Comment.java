@@ -14,29 +14,21 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "constraintComment",
-                        columnNames = {"user_id"}
-                )
-        }
-)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", nullable = false)
+    @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board;
 
-    @Column(nullable = false)
-    private String writer;
+    @Column(name = "board_id", nullable = false)
+    private Long boardId;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @JoinColumn( name = "user_id", updatable = false, insertable = false, nullable = false)
+    @JoinColumn(name = "user_id", updatable = false, insertable = false, nullable = false)
     private User user;
 
     @Column(name = "user_id", nullable = false)
