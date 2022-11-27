@@ -66,7 +66,7 @@ public class BoardService {
         boardContentRepository.save(boardContent);
     }
 
-    public BoardResponse getBoardList(Integer page, int category,
+    public BoardResponse getBoardList(Integer page, Integer category,
                                       String department, String grade, String type
     ) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
@@ -97,7 +97,8 @@ public class BoardService {
 //        }
     }
 
-    private GradeType getGradeType(int gradeType) {
+    private GradeType getGradeType(Integer gradeType) {
+        if(gradeType==null)return null;
         switch (gradeType) {
             case 0:
                 return GradeType.Freshman;
@@ -112,7 +113,8 @@ public class BoardService {
         }
     }
 
-    private FileType getFileType(int fileType) {
+    private FileType getFileType(Integer fileType) {
+        if(fileType==null)return null;
         switch (fileType) {
             case 0:
                 return FileType.중간고사;
@@ -127,7 +129,8 @@ public class BoardService {
         }
     }
 
-    private DepartmentType getDepartmentType(int departmentType) {
+    private DepartmentType getDepartmentType(Integer departmentType) {
+        if(departmentType == null)return null;
         switch (departmentType) {
             case 0:
                 return DepartmentType.신학과;
@@ -180,7 +183,7 @@ public class BoardService {
         }
     }
 
-    private Category getCategory(int category) {
+    private Category getCategory(Integer category) {
         switch (category) {
             case 0:
                 return Category.신학대학;
