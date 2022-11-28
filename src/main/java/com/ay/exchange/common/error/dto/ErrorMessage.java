@@ -21,7 +21,8 @@ public enum ErrorMessage {
     UNABLE_EXCHANGE(HttpStatus.NOT_FOUND, "교환신청에 실패하였습니다."),
 
     NOT_EXISTS_FILE(HttpStatus.CONFLICT, "파일이 존재하지 않거나 올바른 사용자가 아닙니다."),
-    FAIL_ACCEPT_FILE(HttpStatus.PRECONDITION_FAILED, "파일 교환에 수락 또는 거절에 실패하였습니다.");
+    FAIL_ACCEPT_FILE(HttpStatus.PRECONDITION_FAILED, "교환 수락에 실패하였습니다."),
+    FAIL_REFUSAL_FILE(HttpStatus.PRECONDITION_FAILED, "교환 거절에 실패하였습니다.");
 
     private final HttpStatus status;
     private final String description;

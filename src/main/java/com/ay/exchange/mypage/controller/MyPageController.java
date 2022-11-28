@@ -1,7 +1,8 @@
 package com.ay.exchange.mypage.controller;
 
 import com.ay.exchange.aws.service.AwsS3Service;
-import com.ay.exchange.mypage.dto.request.ExchangeRequest;
+import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
+import com.ay.exchange.mypage.dto.request.ExchangeAccept;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
@@ -130,18 +131,26 @@ public class MyPageController {
 
     @Operation(summary = "교환신청 수락",
             description = "교환신청 수락",
-            parameters = {
-                    @Parameter(name = "exchangeId", description = "교환 번호"),
-                    @Parameter(name = "token", description = "액세스 토큰")
-            }
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
     )
-    @PostMapping("/exchange/accept/{exchangeId}")
+    @PostMapping("/exchange/accept")
     public Boolean acceptExchange(
-            @PathVariable("exchangeId") Long exchangeId,
-            @RequestBody ExchangeRequest exchangeRequest,
+            @RequestBody ExchangeAccept exchangeAccept,
             @RequestHeader("token") String token
     ) {
-        return myPageService.acceptExchange(exchangeId, exchangeRequest, token);
+        return myPageService.acceptExchange(exchangeAccept, token);
+    }
+
+    @Operation(summary = "교환신청 거절",
+            description = "교환신청 거절",
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+    )
+    @DeleteMapping("/exchange/refusal")
+    public Boolean refuseExchange(
+            @RequestBody ExchangeRefusal exchangeRefusal,
+            @RequestHeader("token") String token
+    ) {
+        return myPageService.refuseExchange(exchangeRefusal, token);
     }
 
 }

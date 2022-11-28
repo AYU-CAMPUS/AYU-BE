@@ -3,11 +3,13 @@ package com.ay.exchange.mypage.repository;
 
 import com.ay.exchange.common.util.DateGenerator;
 import com.ay.exchange.mypage.dto.*;
-import com.ay.exchange.mypage.dto.request.ExchangeRequest;
+import com.ay.exchange.mypage.dto.request.ExchangeAccept;
+import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.exception.FailAcceptFileException;
+import com.ay.exchange.mypage.exception.FailRefusalFileException;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -165,12 +167,12 @@ public class UserQueryRepository {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void acceptExchange(Long exchangeId, ExchangeRequest exchangeRequest, String userId) {
+    public void acceptExchange(ExchangeAccept exchangeAccept, String userId) {
         //교환신청삭제
         Long count = queryFactory.delete(exchange)
-                .where(exchange.Id.eq(exchangeId)
-                        .or(exchange.boardId.eq(exchangeRequest.getRequesterBoardId())
-                                .and(exchange.userId.eq(exchangeRequest.getRequesterId()))))
+                .where(exchange.Id.eq(exchangeAccept.getExchangeId())
+                        .or(exchange.boardId.eq(exchangeAccept.getRequesterBoardId())
+                                .and(exchange.userId.eq(exchangeAccept.getRequesterId()))))
                 .execute();
         if (count != 2L) throw new FailAcceptFileException();
 
@@ -178,22 +180,22 @@ public class UserQueryRepository {
         String date = DateGenerator.getCurrentDate();
         String sql = "INSERT INTO exchange_completion(board_id,date,user_id) VALUES(?,?,?),(?,?,?)";
         Query query = em.createNativeQuery(sql)
-                .setParameter(1, exchangeRequest.getRequesterBoardId())
+                .setParameter(1, exchangeAccept.getRequesterBoardId())
                 .setParameter(2, date)
                 .setParameter(3, userId)
-                .setParameter(4, exchangeRequest.getBoardId())
+                .setParameter(4, exchangeAccept.getBoardId())
                 .setParameter(5, date)
-                .setParameter(6, exchangeRequest.getRequesterId());
+                .setParameter(6, exchangeAccept.getRequesterId());
         if (query.executeUpdate() != 2) throw new FailAcceptFileException();
 
         //게시글과 사용자 교환 완료 증가
         sql = "UPDATE board b, user u SET b.exchange_success_count=b.exchange_success_count+1" +
                 ", u.exchange_success_count=u.exchange_success_count+1 WHERE b.user_id=u.user_id AND b.board_id=? AND u.user_id = ? OR b.board_id=? AND u.user_id=?";
         query = em.createNativeQuery(sql)
-                .setParameter(1, exchangeRequest.getBoardId())
+                .setParameter(1, exchangeAccept.getBoardId())
                 .setParameter(2, userId)
-                .setParameter(3, exchangeRequest.getRequesterBoardId())
-                .setParameter(4, exchangeRequest.getRequesterId());
+                .setParameter(3, exchangeAccept.getRequesterBoardId())
+                .setParameter(4, exchangeAccept.getRequesterId());
         if (query.executeUpdate() != 4) {
             throw new FailAcceptFileException();
         }
@@ -202,4 +204,15 @@ public class UserQueryRepository {
         //exchangeRequest.getApplicantId(); //사용자 고유 아이디로 알림을 주자
     }
 
+    public void refuseExchange(ExchangeRefusal exchangeRefusal, String userId) {
+        if (queryFactory.delete(exchange)
+                .where(exchange.Id.eq(exchangeRefusal.getExchangeId())
+                        .or(exchange.requesterUserId.eq(userId)
+                                .and(exchange.userId.eq(exchangeRefusal.getRequesterId()))
+                                .and(exchange.boardId.eq(exchangeRefusal.getRequesterBoardId()))
+                                .and(exchange.requesterBoardId.eq(exchangeRefusal.getBoardId()))))
+                .execute() != 2L) {
+            throw new FailRefusalFileException();
+        }
+    }
 }

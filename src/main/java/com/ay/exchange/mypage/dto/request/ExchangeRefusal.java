@@ -8,7 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ExchangeRequest {
+public class ExchangeRefusal {
+    @Schema(description = "교환 고유 번호")
+    private Long exchangeId;
+
     @Schema(description = "신청자 고유 아이디")
     private String requesterId;
 

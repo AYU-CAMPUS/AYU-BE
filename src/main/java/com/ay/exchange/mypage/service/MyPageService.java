@@ -2,7 +2,8 @@ package com.ay.exchange.mypage.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.mypage.dto.*;
-import com.ay.exchange.mypage.dto.request.ExchangeRequest;
+import com.ay.exchange.mypage.dto.request.ExchangeAccept;
+import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
@@ -65,8 +66,16 @@ public class MyPageService {
         return userQueryRepository.getExchanges(pageRequest, jwtTokenProvider.getUserId(token));
     }
 
-    public Boolean acceptExchange(Long exchangeId, ExchangeRequest exchangeRequest, String token) {
-        userQueryRepository.acceptExchange(exchangeId, exchangeRequest, jwtTokenProvider.getUserId(token));
+    public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
+        userQueryRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserId(token));
+        //알림도 생성
+        return true;
+    }
+
+    public Boolean refuseExchange(ExchangeRefusal exchangeRefusal, String token) {
+        userQueryRepository.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserId(token));
+
+        //알림도 생성
         return true;
     }
 }
