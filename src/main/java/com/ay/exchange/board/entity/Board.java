@@ -5,6 +5,7 @@ import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.entity.ExchangeCompletion;
+import com.ay.exchange.report.entity.ReportBoard;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -60,6 +61,9 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "requesterBoard", fetch = FetchType.LAZY,
             orphanRemoval = true)
     private List<Exchange> requesterExchanges;
+
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
+    private List<ReportBoard> reportBoards;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)

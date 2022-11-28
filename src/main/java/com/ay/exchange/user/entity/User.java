@@ -5,6 +5,8 @@ import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.entity.ExchangeCompletion;
+import com.ay.exchange.report.entity.ReportBoard;
+import com.ay.exchange.report.entity.ReportComment;
 import com.ay.exchange.user.entity.vo.Authority;
 import lombok.*;
 import org.springframework.data.domain.Persistable;
@@ -58,6 +60,12 @@ public class User extends BaseEntity implements Persistable<String> {
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<ExchangeCompletion> exchangeCompletions;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<ReportBoard> reportBoards;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<ReportComment> reportComments;
 
     @Override
     public String getId() {
