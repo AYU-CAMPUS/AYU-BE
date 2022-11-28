@@ -1,5 +1,6 @@
 package com.ay.exchange.mypage.service;
 
+import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.mypage.dto.*;
 import com.ay.exchange.mypage.dto.request.ExchangeAccept;
@@ -10,50 +11,54 @@ import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.dto.response.MyPageResponse;
 import com.ay.exchange.mypage.exception.NotExistsFileException;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
-import com.ay.exchange.mypage.repository.ExchangeQueryRepository;
+import com.ay.exchange.mypage.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class MyPageService {
-    private final ExchangeQueryRepository exchangeQueryRepository;
+    private final MyPageRepository myPageRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final AwsS3Service awsS3Service;
+    private final int UPDATE_PROFILE = 1;
 
     public MyPageResponse getMypage(String token) {
-        MyPageInfo myPageInfo = exchangeQueryRepository.getMyPage(jwtTokenProvider.getUserId(token));
+        MyPageInfo myPageInfo = myPageRepository.getMyPage(jwtTokenProvider.getUserId(token));
 
         return new MyPageResponse(myPageInfo.getNickName(),
                 myPageInfo.getProfileImage(),
                 myPageInfo.getExchangeSuccessCount(),
                 myPageInfo.getMyDataCounts().size(),
                 myPageInfo.getDownloadCount(),
-                exchangeQueryRepository.getExchangeRequestCount(myPageInfo.getMyDataCount())
+                myPageRepository.getExchangeRequestCount(myPageInfo.getMyDataCount())
         );
     }
 
     public Boolean updatePassword(PasswordChangeRequest passwordChangeRequest, String token) {
-        return exchangeQueryRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
+        return myPageRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
     }
 
     public MyDataResponse getMyData(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return exchangeQueryRepository.getMyData(pageRequest, jwtTokenProvider.getUserId(token));
+        return myPageRepository.getMyData(pageRequest, jwtTokenProvider.getUserId(token));
     }
 
     public DownloadableResponse getDownloadable(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return exchangeQueryRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserId(token));
+        return myPageRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserId(token));
     }
 
     public String getFilePath(Long boardId, String token) {
-        FilePathInfo filePathInfo = exchangeQueryRepository.getFilePath(boardId, jwtTokenProvider.getUserId(token));
+        FilePathInfo filePathInfo = myPageRepository.getFilePath(boardId, jwtTokenProvider.getUserId(token));
         if (filePathInfo == null) {
             throw new NotExistsFileException();
         }
@@ -63,19 +68,32 @@ public class MyPageService {
     public ExchangeResponse getExchanges(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return exchangeQueryRepository.getExchanges(pageRequest, jwtTokenProvider.getUserId(token));
+        return myPageRepository.getExchanges(pageRequest, jwtTokenProvider.getUserId(token));
     }
 
     public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
-        exchangeQueryRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserId(token));
+        myPageRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserId(token));
         //알림도 생성
         return true;
     }
 
     public Boolean refuseExchange(ExchangeRefusal exchangeRefusal, String token) {
-        exchangeQueryRepository.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserId(token));
+        myPageRepository.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserId(token));
 
         //알림도 생성
+        return true;
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updateProfile(MultipartFile multipartFile, String token) {
+        String userId = jwtTokenProvider.getUserId(token);
+        String beforeProfilePath = myPageRepository.findProfilePath(userId);
+        myPageRepository.updateProfile(userId, awsS3Service.uploadFile(multipartFile, userId, UPDATE_PROFILE));
+
+        if (beforeProfilePath != null)
+            awsS3Service.deleteProfile("profile/" + beforeProfilePath); //기본 프로필이 아니라면 이전 프로필 삭제
+
         return true;
     }
 }

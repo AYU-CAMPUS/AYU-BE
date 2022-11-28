@@ -156,7 +156,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         .or(board.id.eq(exchange.requesterBoardId)
                                 .and(exchange.requesterUserId.eq(userId))))
                 .leftJoin(exchangeCompletion)
-                .on(exchangeCompletion.boardId.eq(board.id)
+                .on(exchangeCompletion.requesterBoardId.eq(board.id)
                         .and(exchangeCompletion.userId.eq(userId)))
                 .where(comment.board.id.eq(boardId)
                         .and(board.id.eq(boardId))

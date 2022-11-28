@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 public class AwsS3Service {
     private final AmazonS3Client amazonS3Client;
     private final String FILE_EXTENSION_SEPARATOR = ".";
+    private final int UPLOAD_FILE = 0;
+    private final int UPDATE_PROFILE = 1;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -29,19 +31,18 @@ public class AwsS3Service {
         validateFileExists(multipartFile);
 
         String fileName = buildFileName(multipartFile.getOriginalFilename(), userId, type);
-
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, objectMetadata)
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, type == UPDATE_PROFILE ? "profile/" + fileName : fileName, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             throw new FileUploadFailedException();
         }
-        System.out.println("amazon Url: " + amazonS3Client.getUrl(bucketName, fileName).toString());
+        //System.out.println("amazon Url: " + amazonS3Client.getUrl(bucketName, fileName).toString());
+        // https://exchange-data-s3-bucket.s3.ap-northeast-2.amazonaws.com/profile
         return fileName;
-        //return amazonS3Client.getUrl(bucketName,fileName).toString();
     }
 
     public byte[] downloadFile(String filePath) {
@@ -55,6 +56,11 @@ public class AwsS3Service {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void deleteProfile(String path) {
+        System.out.println("delete path: " + path);
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, path));
     }
 
 
@@ -76,12 +82,10 @@ public class AwsS3Service {
         String now = String.valueOf(System.currentTimeMillis());
 
         StringBuilder sb = new StringBuilder();
-        if (type == 0) {
+        if (type == UPLOAD_FILE) { //0이면 자료 1이면 프로필
             sb.append(userId);
-        } else {
-            sb.append("profile");
+            sb.append("/");
         }
-        sb.append("/");
         sb.append(fileName);
         sb.append("_");
         sb.append(now);

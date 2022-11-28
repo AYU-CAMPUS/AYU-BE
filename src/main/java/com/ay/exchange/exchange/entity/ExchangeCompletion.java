@@ -18,11 +18,11 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintExchangeCompletion",
-                        columnNames = {"user_id", "board_id"}
+                        columnNames = {"user_id", "requester_board_id"}
                 )
         }
 )
-public class ExchangeCompletion{
+public class ExchangeCompletion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exchange_completion_id")
@@ -39,7 +39,7 @@ public class ExchangeCompletion{
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board; //다운 가능한 게시물
 
-    @Column(name = "board_id", nullable = false)
+    @Column(name = "requester_board_id", nullable = false)
     private Long requesterBoardId; //요청자 게시물 번호
 
     @Column(nullable = false)

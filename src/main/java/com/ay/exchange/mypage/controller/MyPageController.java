@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -151,6 +152,14 @@ public class MyPageController {
             @RequestHeader("token") String token
     ) {
         return myPageService.refuseExchange(exchangeRefusal, token);
+    }
+
+    @PatchMapping("/profile")
+    public Boolean updateProfile(
+            @RequestPart("file") MultipartFile multipartFile,
+            @RequestHeader("token") String token
+    ) {
+        return myPageService.updateProfile(multipartFile, token);
     }
 
 }

@@ -10,6 +10,7 @@ import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.exception.FailAcceptFileException;
 import com.ay.exchange.mypage.exception.FailRefusalFileException;
+import com.ay.exchange.mypage.exception.FailUpdateProfileException;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ import static com.querydsl.core.group.GroupBy.*;
 
 @Repository
 @RequiredArgsConstructor
-public class ExchangeQueryRepository {
+public class MyPageRepository {
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 
@@ -204,6 +205,7 @@ public class ExchangeQueryRepository {
         //exchangeRequest.getApplicantId(); //사용자 고유 아이디로 알림을 주자
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void refuseExchange(ExchangeRefusal exchangeRefusal, String userId) {
         if (queryFactory.delete(exchange)
                 .where(exchange.Id.eq(exchangeRefusal.getExchangeId())
@@ -214,5 +216,23 @@ public class ExchangeQueryRepository {
                 .execute() != 2L) {
             throw new FailRefusalFileException();
         }
+    }
+
+    public void updateProfile(String userId, String filePath) {
+        System.out.println(filePath);
+        if (queryFactory.update(user)
+                .set(user.profileImage, filePath)
+                .where(user.userId.eq(userId))
+                .execute() != 1L) {
+            throw new FailUpdateProfileException();
+        }
+    }
+
+    public String findProfilePath(String userId) {
+        String profileImage = queryFactory.select(user.profileImage)
+                .from(user)
+                .where(user.userId.eq(userId))
+                .fetchOne();
+        return profileImage;
     }
 }
