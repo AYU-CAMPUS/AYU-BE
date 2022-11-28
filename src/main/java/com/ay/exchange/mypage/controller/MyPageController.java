@@ -154,6 +154,13 @@ public class MyPageController {
         return myPageService.refuseExchange(exchangeRefusal, token);
     }
 
+    @Operation(summary = "프로필 이미지 변경",
+            description = "프로필 이미지 변경",
+            parameters = {
+                    @Parameter(name = "file", description = "이미지"), //validate해서 .png, .svg,. jpeg만 가능하도록 하자
+                    @Parameter(name = "token", description = "액세스 토큰")
+            }
+    )
     @PatchMapping("/profile")
     public Boolean updateProfile(
             @RequestPart("file") MultipartFile multipartFile,
