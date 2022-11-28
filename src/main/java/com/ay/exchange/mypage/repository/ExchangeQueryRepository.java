@@ -30,7 +30,7 @@ import static com.querydsl.core.group.GroupBy.*;
 
 @Repository
 @RequiredArgsConstructor
-public class UserQueryRepository {
+public class ExchangeQueryRepository {
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 

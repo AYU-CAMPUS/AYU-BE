@@ -10,7 +10,7 @@ import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.dto.response.MyPageResponse;
 import com.ay.exchange.mypage.exception.NotExistsFileException;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
-import com.ay.exchange.mypage.repository.UserQueryRepository;
+import com.ay.exchange.mypage.repository.ExchangeQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,40 +20,40 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MyPageService {
-    private final UserQueryRepository userQueryRepository;
+    private final ExchangeQueryRepository exchangeQueryRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
     public MyPageResponse getMypage(String token) {
-        MyPageInfo myPageInfo = userQueryRepository.getMyPage(jwtTokenProvider.getUserId(token));
+        MyPageInfo myPageInfo = exchangeQueryRepository.getMyPage(jwtTokenProvider.getUserId(token));
 
         return new MyPageResponse(myPageInfo.getNickName(),
                 myPageInfo.getProfileImage(),
                 myPageInfo.getExchangeSuccessCount(),
                 myPageInfo.getMyDataCounts().size(),
                 myPageInfo.getDownloadCount(),
-                userQueryRepository.getExchangeRequestCount(myPageInfo.getMyDataCount())
+                exchangeQueryRepository.getExchangeRequestCount(myPageInfo.getMyDataCount())
         );
     }
 
     public Boolean updatePassword(PasswordChangeRequest passwordChangeRequest, String token) {
-        return userQueryRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
+        return exchangeQueryRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
     }
 
     public MyDataResponse getMyData(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return userQueryRepository.getMyData(pageRequest, jwtTokenProvider.getUserId(token));
+        return exchangeQueryRepository.getMyData(pageRequest, jwtTokenProvider.getUserId(token));
     }
 
     public DownloadableResponse getDownloadable(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return userQueryRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserId(token));
+        return exchangeQueryRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserId(token));
     }
 
     public String getFilePath(Long boardId, String token) {
-        FilePathInfo filePathInfo = userQueryRepository.getFilePath(boardId, jwtTokenProvider.getUserId(token));
+        FilePathInfo filePathInfo = exchangeQueryRepository.getFilePath(boardId, jwtTokenProvider.getUserId(token));
         if (filePathInfo == null) {
             throw new NotExistsFileException();
         }
@@ -63,17 +63,17 @@ public class MyPageService {
     public ExchangeResponse getExchanges(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return userQueryRepository.getExchanges(pageRequest, jwtTokenProvider.getUserId(token));
+        return exchangeQueryRepository.getExchanges(pageRequest, jwtTokenProvider.getUserId(token));
     }
 
     public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
-        userQueryRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserId(token));
+        exchangeQueryRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserId(token));
         //알림도 생성
         return true;
     }
 
     public Boolean refuseExchange(ExchangeRefusal exchangeRefusal, String token) {
-        userQueryRepository.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserId(token));
+        exchangeQueryRepository.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserId(token));
 
         //알림도 생성
         return true;
