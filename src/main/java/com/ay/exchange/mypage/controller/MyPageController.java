@@ -1,9 +1,11 @@
 package com.ay.exchange.mypage.controller;
 
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.common.util.FileValidator;
 import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
 import com.ay.exchange.mypage.dto.request.ExchangeAccept;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
+import com.ay.exchange.mypage.exception.FailUpdateProfileException;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
@@ -166,7 +168,10 @@ public class MyPageController {
             @RequestPart("file") MultipartFile multipartFile,
             @RequestHeader("token") String token
     ) {
-        return myPageService.updateProfile(multipartFile, token);
+        if (FileValidator.isAllowedImageType(multipartFile)) {
+            return myPageService.updateProfile(multipartFile, token);
+        }
+        throw new FailUpdateProfileException();
     }
 
 }
