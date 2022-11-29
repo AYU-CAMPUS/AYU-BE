@@ -120,9 +120,7 @@ public class BoardService {
             case 1:
                 return FileType.기말고사;
             case 2:
-                return FileType.과제;
-            case 3:
-                return FileType.요약;
+                return FileType.필기요약;
             default:
                 return null;
         }
