@@ -64,6 +64,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-aws-context
 	implementation 'io.awspring.cloud:spring-cloud-aws-context:2.4.1'
 
+	// https://mvnrepository.com/artifact/org.apache.tika/tika-core
+	implementation 'org.apache.tika:tika-core:2.4.0'
+
 }
 
 //tasks.withType<Test> {
