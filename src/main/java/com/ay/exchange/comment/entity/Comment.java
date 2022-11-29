@@ -1,14 +1,12 @@
 package com.ay.exchange.comment.entity;
 
 import com.ay.exchange.board.entity.Board;
-import com.ay.exchange.report.entity.ReportComment;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
@@ -44,9 +42,6 @@ public class Comment {
 
     @Column(nullable = false)
     private Long groupId;
-
-    @OneToMany(mappedBy = "comment", orphanRemoval = true)
-    private List<ReportComment> reportComments;
 
     @CreatedBy
     @Column(nullable = false, updatable = false)

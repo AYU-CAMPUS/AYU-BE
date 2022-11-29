@@ -2,6 +2,7 @@ package com.ay.exchange.report.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.report.dto.request.ReportBoardRequest;
+import com.ay.exchange.report.dto.request.ReportCommentRequest;
 import com.ay.exchange.report.repository.ReportQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,11 @@ public class ReportService {
 
     public Boolean reportBoard(ReportBoardRequest reportBoardRequest, String token) {
         reportQueryRepository.reportBoard(reportBoardRequest, jwtTokenProvider.getUserId(token));
+        return true;
+    }
+
+    public Boolean reportComment(ReportCommentRequest reportCommentRequest, String token) {
+        reportQueryRepository.reportComment(reportCommentRequest,jwtTokenProvider.getUserId(token));
         return true;
     }
 }

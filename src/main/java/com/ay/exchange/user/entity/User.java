@@ -67,6 +67,9 @@ public class User extends BaseEntity implements Persistable<String> {
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<ReportComment> reportComments;
 
+    @OneToMany(mappedBy = "targetUser", orphanRemoval = true)
+    private List<ReportComment> reportTargetComments;
+
     @Override
     public String getId() {
         return userId;
