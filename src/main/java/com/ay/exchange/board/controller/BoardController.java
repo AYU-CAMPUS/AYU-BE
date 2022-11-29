@@ -5,8 +5,10 @@ import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.BoardResponse;
+import com.ay.exchange.board.exception.FileInvalidException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
+import com.ay.exchange.common.util.FileValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -58,9 +60,12 @@ public class BoardController {
             @RequestPart("file") MultipartFile multipartFile,
             @RequestHeader("token") String token
     ) {
-        CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);
-        boardService.writeBoard(new WriteRequest(title, categoryDto, numberOfFilePages, content), multipartFile, token);
-        return ResponseEntity.ok(true);
+        if (FileValidator.isAllowedFileType(multipartFile)) {
+            CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);
+            boardService.writeBoard(new WriteRequest(title, categoryDto, numberOfFilePages, content), multipartFile, token);
+            return ResponseEntity.ok(true);
+        }
+        throw new FileInvalidException();
     }
 
     @Operation(summary = "게시글 조회", description = "메인 페이지에서 클릭 된 카테고리 별 게시글 조회",
