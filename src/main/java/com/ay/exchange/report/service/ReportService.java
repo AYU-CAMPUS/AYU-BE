@@ -1,2 +1,20 @@
-package com.ay.exchange.report.service;public class ReportService {
+package com.ay.exchange.report.service;
+
+import com.ay.exchange.jwt.JwtTokenProvider;
+import com.ay.exchange.report.dto.request.ReportBoardRequest;
+import com.ay.exchange.report.repository.ReportQueryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class ReportService {
+    private final ReportQueryRepository reportQueryRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+
+
+    public Boolean reportBoard(ReportBoardRequest reportBoardRequest, String token) {
+        reportQueryRepository.reportBoard(reportBoardRequest, jwtTokenProvider.getUserId(token));
+        return true;
+    }
 }

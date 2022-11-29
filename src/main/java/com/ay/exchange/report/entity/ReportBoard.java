@@ -22,6 +22,7 @@ import javax.persistence.*;
 public class ReportBoard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "report_board_id")
     private Long id;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
@@ -36,7 +37,7 @@ public class ReportBoard {
     private User user;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId; //신고자 아이디
+    private String userId; //신고자 아이디
 
     @Column(length = 100, nullable = false)
     private String reason; //사유
