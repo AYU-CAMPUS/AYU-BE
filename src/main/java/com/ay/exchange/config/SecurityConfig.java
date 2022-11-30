@@ -15,35 +15,38 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final CorsConfig corsConfig;
+    //private final CorsConfig corsConfig;
     private final JwtFilterEntryPoint jwtFilterEntryPoint;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .and()
                 .httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .cors()
                 //.and()
                 //.authorizeHttpRequests().anyRequest().permitAll()
                 //.antMatchers(getPathInSwagger()).permitAll()
                 .and()
                 //.formLogin().disable()
                 .addFilterBefore(new JwtFilter(jwtTokenProvider)
-                    , UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtExceptionFilter(),JwtFilter.class);
-                //.exceptionHandling().authenticationEntryPoint(jwtFilterEntryPoint);
+                        , UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
+        //.exceptionHandling().authenticationEntryPoint(jwtFilterEntryPoint);
         return http.build();
     }
 
-    private String[] getPathInSwagger(){
+    private String[] getPathInSwagger() {
         return new String[]{
                 "/swagger",
                 "/swagger-ui/index.html",
@@ -62,17 +65,30 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
+    public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()//"/get/authorize"
-                .antMatchers("/user/**","/board/**","/comment/**","/exchange/**","/mypage/**")
+                .antMatchers("/user/**", "/board/**", "/comment/**", "/exchange/**", "/mypage/**")
                 .antMatchers(getPathInSwagger());
     }
 
     @Bean
-    public HttpFirewall defaultHttpFirewall(){
+    public HttpFirewall defaultHttpFirewall() {
         return new DefaultHttpFirewall();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowCredentials(true); //내 서버가 응답할 때 json을 자바스크립트에서 처리할 수 있게 할지를 설정
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
