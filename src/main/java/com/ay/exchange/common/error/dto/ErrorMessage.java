@@ -27,7 +27,9 @@ public enum ErrorMessage {
     FAIL_UPDATE_PROFILE(HttpStatus.PRECONDITION_FAILED, "프로필 변경에 실패하였습니다."),
     FAIL_WITHDRAWAL(HttpStatus.PRECONDITION_FAILED, "회원 탈퇴에 실패하였습니다."),
 
-    FAIL_REPORT(HttpStatus.PRECONDITION_FAILED, "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다.");
+    FAIL_REPORT(HttpStatus.PRECONDITION_FAILED, "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다."),
+
+    FAIL_WRITE_COMMENT(HttpStatus.PRECONDITION_FAILED, "댓글 작성에 실패하였습니다.");
 
     private final HttpStatus status;
     private final String description;

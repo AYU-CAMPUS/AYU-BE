@@ -1,6 +1,5 @@
 package com.ay.exchange.comment.service;
 
-import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
@@ -8,6 +7,7 @@ import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.comment.repository.CommentRepository;
 import com.ay.exchange.comment.repository.querydsl.CommentQueryRepository;
 import com.ay.exchange.jwt.JwtTokenProvider;
+import com.ay.exchange.mypage.exception.FailWithdrawalException;
 import com.ay.exchange.user.exception.InvalidUserRoleException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +21,6 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentQueryRepository commentQueryRepository;
-    private final BoardRepository boardRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     public void writeComment(WriteRequest writeRequest, String token) {
@@ -32,8 +31,11 @@ public class CommentService {
                 .userId(jwtTokenProvider.getUserId(token))
                 .boardId(writeRequest.getBoardId())
                 .build();
-
-        commentRepository.save(comment);
+        try {
+            commentRepository.save(comment);
+        } catch (Exception e) {
+            throw new FailWithdrawalException();
+        }
 
     }
 
