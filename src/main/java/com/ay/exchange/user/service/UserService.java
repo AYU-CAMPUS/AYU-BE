@@ -56,6 +56,7 @@ public class UserService {
                             .email(signUpRequest.getEmail() + "@gs.anyang.ac.kr")
                             .nickName(signUpRequest.getNickName())
                             .authority(Authority.User)
+                            .exchangeSuccessCount(0)
                             .build()
             );
         } catch (Exception e) {

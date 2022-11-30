@@ -11,7 +11,11 @@ import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.exception.FailAcceptFileException;
 import com.ay.exchange.mypage.exception.FailRefusalFileException;
 import com.ay.exchange.mypage.exception.FailUpdateProfileException;
+import com.ay.exchange.mypage.exception.FailWithdrawalException;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.DateTemplate;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -21,8 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.ay.exchange.board.entity.QBoardContent.boardContent;
+import static com.ay.exchange.comment.entity.QComment.comment;
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
 import static com.ay.exchange.board.entity.QBoard.board;
@@ -179,14 +186,16 @@ public class MyPageRepository {
 
         //교환완료
         String date = DateGenerator.getCurrentDate();
-        String sql = "INSERT INTO exchange_completion(board_id,date,user_id) VALUES(?,?,?),(?,?,?)";
+        String sql = "INSERT INTO exchange_completion(board_id,date,user_id,requester_board_id) VALUES(?,?,?,?),(?,?,?,?)";
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, exchangeAccept.getRequesterBoardId())
                 .setParameter(2, date)
                 .setParameter(3, userId)
                 .setParameter(4, exchangeAccept.getBoardId())
-                .setParameter(5, date)
-                .setParameter(6, exchangeAccept.getRequesterId());
+                .setParameter(5, exchangeAccept.getBoardId())
+                .setParameter(6, date)
+                .setParameter(7, exchangeAccept.getRequesterId())
+                .setParameter(8, exchangeAccept.getRequesterBoardId());
         if (query.executeUpdate() != 2) throw new FailAcceptFileException();
 
         //게시글과 사용자 교환 완료 증가
@@ -234,5 +243,39 @@ public class MyPageRepository {
                 .where(user.userId.eq(userId))
                 .fetchOne();
         return profileImage;
+    }
+
+    public void withdrawalUser(String userId) {
+        if (canWithdrawal(userId)) {
+            queryFactory.delete(user)
+                    .where(user.userId.eq(userId))
+                    .execute();
+            return;
+        }
+        throw new FailWithdrawalException();
+    }
+
+    private Boolean canWithdrawal(String userId) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -3);
+        Date date = new Date(calendar.getTimeInMillis());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Long count = queryFactory.select(exchangeCompletion.count())
+                .from(exchangeCompletion)
+                .where(getExchangeDate().gt(simpleDateFormat.format(date))
+                        .and(exchangeCompletion.userId.eq(userId)))
+                .limit(1L)
+                .fetchOne();
+        return count == 0L;
+    }
+
+    private DateTemplate getExchangeDate() {
+        return Expressions.dateTemplate(
+                String.class,
+                "DATE_FORMAT({0}, {1})",
+                exchangeCompletion.date,
+                ConstantImpl.create("%Y-%m-%d")
+        );
     }
 }

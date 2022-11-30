@@ -1,20 +1,24 @@
 package com.ay.exchange.aws.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.ay.exchange.aws.exception.EmptyFileException;
 import com.ay.exchange.aws.exception.FileUploadFailedException;
+import com.ay.exchange.mypage.exception.FailWithdrawalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +63,28 @@ public class AwsS3Service {
     }
 
     public void deleteProfile(String path) {
-        System.out.println("delete path: " + path);
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, path));
+    }
+
+    public static ContentDisposition createContentDisposition(String filePath) {
+        String fileName = filePath.substring(
+                filePath.lastIndexOf("/") + 1);
+
+        return ContentDisposition.builder("attachment")
+                .filename(fileName, StandardCharsets.UTF_8)
+                .build();
+    }
+
+    public void deleteUserFiles(String userId) {
+        ObjectListing objectListing = amazonS3Client.listObjects(bucketName, userId);
+        List<S3ObjectSummary> objectSummaries = objectListing.getObjectSummaries();
+        String[] keys = new String[objectSummaries.size()];
+        int cnt = 0;
+        for (S3ObjectSummary summary : objectSummaries) {
+            keys[cnt++] = summary.getKey();
+        }
+        DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName).withKeys(keys);
+        amazonS3Client.deleteObjects(deleteObjectsRequest);
     }
 
 
@@ -91,15 +115,6 @@ public class AwsS3Service {
         sb.append(now);
         sb.append(fileExtension);
         return sb.toString();
-    }
-
-    public static ContentDisposition createContentDisposition(String filePath) {
-        String fileName = filePath.substring(
-                filePath.lastIndexOf("/") + 1);
-
-        return ContentDisposition.builder("attachment")
-                .filename(fileName, StandardCharsets.UTF_8)
-                .build();
     }
 
 }

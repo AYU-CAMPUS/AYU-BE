@@ -96,4 +96,14 @@ public class MyPageService {
 
         return true;
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean withdrawalUser(String token) {
+        String userId= jwtTokenProvider.getUserId(token);
+        String profilePath = myPageRepository.findProfilePath(userId);
+        myPageRepository.withdrawalUser(userId);
+        awsS3Service.deleteProfile("profile/"+profilePath);
+        awsS3Service.deleteUserFiles(userId);
+        return true;
+    }
 }
