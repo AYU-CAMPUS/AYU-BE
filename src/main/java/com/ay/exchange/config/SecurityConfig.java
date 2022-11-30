@@ -7,6 +7,7 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -29,13 +30,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors()
+                .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                //.and()
-                //.authorizeHttpRequests().anyRequest().permitAll()
+                .and()
+                .authorizeHttpRequests().mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 //.antMatchers(getPathInSwagger()).permitAll()
                 .and()
                 //.formLogin().disable()
