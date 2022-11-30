@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -29,6 +31,7 @@ public class ExchangeCompletion {
     private Long Id;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private User user;
 
@@ -36,6 +39,7 @@ public class ExchangeCompletion {
     private String userId;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board; //다운 가능한 게시물
 

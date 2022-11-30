@@ -8,6 +8,8 @@ import com.ay.exchange.exchange.entity.ExchangeCompletion;
 import com.ay.exchange.report.entity.ReportBoard;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -66,6 +68,7 @@ public class Board extends BaseEntity {
     private List<ReportBoard> reportBoards;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private User user;
 

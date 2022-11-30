@@ -3,6 +3,8 @@ package com.ay.exchange.comment.entity;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -21,6 +23,7 @@ public class Comment {
     private Long id;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board;
 
@@ -28,6 +31,7 @@ public class Comment {
     private Long boardId;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", updatable = false, insertable = false, nullable = false)
     private User user;
 

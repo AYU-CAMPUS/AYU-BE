@@ -2,6 +2,8 @@ package com.ay.exchange.board.entity;
 
 import com.ay.exchange.comment.entity.Comment;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,6 +23,7 @@ public class BoardContent {
     private String content;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id")
     private Board board;
 

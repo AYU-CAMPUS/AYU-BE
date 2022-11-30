@@ -3,6 +3,8 @@ package com.ay.exchange.report.entity;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -26,6 +28,7 @@ public class ReportBoard {
     private Long id;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id", insertable = false, updatable = false, nullable = false)
     private Board board;
 
@@ -33,6 +36,7 @@ public class ReportBoard {
     private Long boardId; //신고 대상 글
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", insertable = false, updatable = false, nullable = false)
     private User user;
 
