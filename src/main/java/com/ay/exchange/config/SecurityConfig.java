@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .cors().configurationSource(corsConfig.corsConfigurationSource())
+                .cors()
                 //.and()
                 //.authorizeHttpRequests().anyRequest().permitAll()
                 //.antMatchers(getPathInSwagger()).permitAll()
