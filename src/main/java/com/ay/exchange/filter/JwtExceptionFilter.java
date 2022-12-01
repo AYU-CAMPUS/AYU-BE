@@ -17,7 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@AllArgsConstructor
+
+@NoArgsConstructor
 public class JwtExceptionFilter extends OncePerRequestFilter{
 
     @Override
@@ -30,6 +31,14 @@ public class JwtExceptionFilter extends OncePerRequestFilter{
         }catch(JwtException e){
             setErrorResponse(HttpStatus.UNAUTHORIZED,response,e);
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        if(request.getMethod().equals("OPTIONS")){
+            return true;
+        }
+        return false;
     }
 
     private void setErrorResponse(HttpStatus status, HttpServletResponse response, JwtException e) {
