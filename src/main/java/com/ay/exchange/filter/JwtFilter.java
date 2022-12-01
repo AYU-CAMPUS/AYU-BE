@@ -10,21 +10,23 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final Set<String> passUris = Set.of("/user/sign-up", "/user/sign-in", "/user/sign-up/confirm/verification-code",
+            "/user/find-password/confirm/verification-code");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JwtFIlter");
         jwtTokenProvider.validateToken(request.getHeader("token"));
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        if(request.getMethod().equals("OPTIONS")){
+        if (passUris.contains(request.getRequestURI())) {
             return true;
         }
         return false;

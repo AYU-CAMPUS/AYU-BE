@@ -23,22 +23,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter{
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-//        System.out.println(request.toString());
-//        System.out.println(request.getContextPath());
-//        System.out.println(request.getRequestURI());
         try{
             chain.doFilter(request,response);
         }catch(JwtException e){
             setErrorResponse(HttpStatus.UNAUTHORIZED,response,e);
         }
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        if(request.getMethod().equals("OPTIONS")){
-            return true;
-        }
-        return false;
     }
 
     private void setErrorResponse(HttpStatus status, HttpServletResponse response, JwtException e) {

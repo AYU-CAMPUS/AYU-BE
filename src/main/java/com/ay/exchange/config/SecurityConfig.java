@@ -22,10 +22,8 @@ import org.springframework.web.cors.CorsUtils;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CorsConfig corsConfig;
-    private final JwtFilterEntryPoint jwtFilterEntryPoint;
+    //private final JwtFilterEntryPoint jwtFilterEntryPoint;
     private final JwtTokenProvider jwtTokenProvider;
-//    private final JwtFilter jwtFilter;
-//    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,9 +35,8 @@ public class SecurityConfig {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeHttpRequests()
-                        //.antMatchers("/user/sign-up", "/user/sign-in").permitAll()
-                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                //.antMatchers(getPathInSwagger()).permitAll()
+                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                .anyRequest().authenticated()
                 .and()
                     .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
@@ -69,8 +66,16 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
-                .ignoring()//"/get/authorize"
-                .antMatchers("/user/**","/board/**", "/comment/**", "/exchange/**", "/mypage/**")
+                .ignoring()
+                .antMatchers("/user/sign-up/verification-code",
+                        "/user/find-password/verification-code",
+                        "/user/temporary-password",
+                        "/user/existence-id",
+                        "/user/existence-nickname",
+                        "/user/find-id",
+                        "/board/{category:\\d+}/**",
+                        "/board/content/{category:\\d+}",
+                        "/comment/{boardId:\\d+}/**")
                 .antMatchers(getPathInSwagger());
     }
 
