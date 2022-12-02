@@ -9,10 +9,7 @@ import com.ay.exchange.user.dto.response.SignUpResponse;
 import com.ay.exchange.user.dto.response.VerificationCodeResponse;
 import com.ay.exchange.user.entity.vo.Authority;
 import com.ay.exchange.user.entity.User;
-import com.ay.exchange.user.exception.ExistsEmailException;
-import com.ay.exchange.user.exception.ExistsUserException;
-import com.ay.exchange.user.exception.NotExistsUserException;
-import com.ay.exchange.user.exception.NotExistsUserIdException;
+import com.ay.exchange.user.exception.*;
 import com.ay.exchange.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -81,10 +78,13 @@ public class UserService {
     }
 
     public VerificationCodeResponse getVerificationCodeForPW(String email) {
-        String verificationCode = createVerificationCode();
+        if(checkExistsEmail(email)){
+            String verificationCode = createVerificationCode();
+            return new VerificationCodeResponse( //selection 0 1 하드코딩 수정
+                    jwtTokenProvider.createVerificationCodeToken(1, verificationCode, email), verificationCode);
+        }
+        throw new NotExistsUserIdException();
 
-        return new VerificationCodeResponse( //selection 0 1 하드코딩 수정
-                jwtTokenProvider.createVerificationCodeToken(1, verificationCode, email), verificationCode);
     }
 
     public Boolean checkExistsUserId(String userId) {
@@ -112,8 +112,7 @@ public class UserService {
 
             if (updateUserPassword(email, passwordEncoder.encode(temporaryPassword))) return temporaryPassword;
         }
-
-        return null;
+        throw new FailVerificationException();
     }
 
     public Boolean confirmVerificationCode(int selection, String number, String verificationCode) {
@@ -138,7 +137,11 @@ public class UserService {
     private Boolean updateUserPassword(
             String email, String password
     ) {
-        userRepository.updatePassword(email, passwordEncoder.encode(password));
+        try{
+            userRepository.updatePassword(email, passwordEncoder.encode(password));
+        } catch (Exception e){
+            throw new NotExistsUserIdException();
+        }
         return true;
     }
 

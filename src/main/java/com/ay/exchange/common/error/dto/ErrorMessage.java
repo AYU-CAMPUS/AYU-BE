@@ -9,9 +9,10 @@ import org.springframework.http.HttpStatus;
 public enum ErrorMessage {
     EXISTS_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일 입니다."),
     EXISTS_USER(HttpStatus.CONFLICT, "이미 존재하는 아이디 입니다."),
-    NOT_EXIST_USER(HttpStatus.NOT_FOUND, "아이디 또는 비밀번호가 존재하지 않습니다"),
+    NOT_EXIST_USER(HttpStatus.NOT_FOUND, "아이디 또는 비밀번호가 존재하지 않습니다."),
     NOT_EXISTS_USERID(HttpStatus.NOT_FOUND, "이메일이 존재하지 않습니다."),
     NOT_VALID_ROLE_ERROR(HttpStatus.FORBIDDEN, "유효하지 않은 권한입니다."),
+    FAIL_VERIFICATION(HttpStatus.PRECONDITION_FAILED, "인증에 실패하였습니다"),
 
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
     FILE_INVALID(HttpStatus.PRECONDITION_FAILED, "파일 형식이 잘못되었습니다."),

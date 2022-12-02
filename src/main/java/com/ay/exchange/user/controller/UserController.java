@@ -31,11 +31,10 @@ import javax.validation.constraints.Pattern;
 public class UserController {
     private final UserService userService;
 
-    @Operation(summary = "로그인", description = "로그인 요청",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "signInRequest"),
-            responses = {@ApiResponse(description = "SuccessFul", responseCode = "200",
-                    content = @Content(schema = @Schema(implementation = SignInResponse.class)))}
-    ) //추후 requestBody는 제거하고 responses는 예외처리 사항에 대해서 추가한다
+    @Operation(summary = "로그인", description = "로그인 요청")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "아이디 또는 비밀번호가 존재하지 않습니다.", content =  @Content(schema = @Schema(implementation = ErrorDto.class)))
+    })
     @PostMapping("/sign-in")
     public ResponseEntity<SignInResponse> signIn(
             @RequestBody @Valid SignInRequest signInRequest
@@ -44,6 +43,9 @@ public class UserController {
     }
 
     @Operation(summary = "회원가입", description = "회원가입 요청")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일입니다.", content =  @Content(schema = @Schema(implementation = ErrorDto.class))),
+    })
     @PostMapping("/sign-up")
     public ResponseEntity<SignUpResponse> signUp(
             @RequestBody @Valid SignUpRequest signUpRequest
@@ -55,6 +57,9 @@ public class UserController {
             description = "회원가입을 위한 학교 웹메일 인증 ",
             parameters = {@Parameter(name = "email", description = "학교 웹메일")}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일입니다.", content =  @Content(schema = @Schema(implementation = ErrorDto.class))),
+    })
     @GetMapping("/sign-up/verification-code")
     public ResponseEntity<VerificationCodeResponse> getVerificationCodeForSignUp(
             @RequestParam("email") @Valid @Pattern(regexp = "^[a-zA-Z\\d-_.]{3,30}$") String email
@@ -82,6 +87,9 @@ public class UserController {
             description = "비밀번호 찾기 시 인증번호 제공",
             parameters = {@Parameter(name = "email", description = "학교 웹메일")}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "이메일이 존재하지 않습니다.", content =  @Content(schema = @Schema(implementation = ErrorDto.class)))
+    })
     @GetMapping("/find-password/verification-code")
     public ResponseEntity<VerificationCodeResponse> getVerificationCodeForPW(
             @RequestParam("email") @Valid @Pattern(regexp = "^[a-zA-Z\\d-_.]{3,30}$") String email
@@ -111,12 +119,15 @@ public class UserController {
                     @Parameter(name = "verificationCode", description = "서버에서 제공된 인증번호 토큰")
             }
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "이메일이 존재하지 않습니다.", content =  @Content(schema = @Schema(implementation = ErrorDto.class))),
+            @ApiResponse(responseCode = "412", description = "인증에 실패하였습니다", content =  @Content(schema = @Schema(implementation = ErrorDto.class)))
+    })
     @GetMapping("/temporary-password")
     public ResponseEntity<String> getTemporaryPassword(
             @RequestParam("number") @Valid @NotBlank String number,
             @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode
     ) {
-        //잘못된 요청이면 null이 리턴되는데 예외처리를 해야될지 프론트와 상의해봐야함.
         return ResponseEntity.ok(userService.getTemporaryPassword(number, verificationCode));
     }
 
@@ -146,8 +157,7 @@ public class UserController {
             parameters = {@Parameter(name = "email", description = "학교 웹메일")}
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
-            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "404", description = "이메일이 존재하지 않습니다.", content =  @Content(schema = @Schema(implementation = ErrorDto.class)))
     })
     @GetMapping("/find-id")
     public ResponseEntity<String> findUserIdByEmail(
@@ -155,16 +165,5 @@ public class UserController {
     ) {
         return ResponseEntity.ok(userService.findUserIdByEmail(email));
     }
-
-
-//    @PatchMapping("/update-password")
-//    public ResponseEntity<Boolean> updatePassword(
-//            @RequestBody UpdatePasswordRequest updatePasswordRequest
-//    ) {
-//        return ResponseEntity.ok(
-//                userService.updateUserPassword(updatePasswordRequest)
-//        );
-//    }
-
 }
 
