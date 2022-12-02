@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SignInResponse {
     @Schema(description = "액세스 토큰")
-    private String accessToken;
+    private String token;
 
     @Schema(description = "닉네임")
     private String nickName;
