@@ -2,6 +2,7 @@ package com.ay.exchange.user.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.query.UserInfoDto;
+import com.ay.exchange.user.dto.request.ResetPasswordRequest;
 import com.ay.exchange.user.dto.request.SignInRequest;
 import com.ay.exchange.user.dto.request.SignUpRequest;
 import com.ay.exchange.user.dto.response.SignInResponse;
@@ -118,6 +119,10 @@ public class UserService {
         return isVerificationCode(selection, number, verificationCode);
     }
 
+    public Boolean resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        return updateUserPassword(resetPasswordRequest.getEmail(), passwordEncoder.encode(resetPasswordRequest.getPassword()));
+    }
+
     private Boolean isVerificationCode(int selection, String number, String verificationCode) {
         return jwtTokenProvider
                 .getVerificationCode(selection, verificationCode)
@@ -169,4 +174,5 @@ public class UserService {
     private Boolean checkExistsEmail(String email) {
         return userRepository.existsByEmail(email);
     }
+
 }

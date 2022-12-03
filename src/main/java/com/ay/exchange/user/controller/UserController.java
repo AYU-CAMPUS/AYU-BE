@@ -1,6 +1,7 @@
 package com.ay.exchange.user.controller;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
+import com.ay.exchange.user.dto.request.ResetPasswordRequest;
 import com.ay.exchange.user.dto.request.SignInRequest;
 import com.ay.exchange.user.dto.request.SignUpRequest;
 import com.ay.exchange.user.dto.response.SignInResponse;
@@ -93,8 +94,8 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "이메일이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
-    @GetMapping("/find-password/verification-code")
-    public ResponseEntity<VerificationCodeResponse> getVerificationCodeForPW(
+    @GetMapping("/find-id/verification-code")
+    public ResponseEntity<VerificationCodeResponse> getVerificationCodeForID(
             @RequestParam("email") @Valid @Pattern(regexp = "^[a-zA-Z\\d-_.]{3,30}$") String email
     ) {
         return ResponseEntity.ok(userService.getVerificationCodeForPW(email));
@@ -115,25 +116,19 @@ public class UserController {
         return ResponseEntity.ok(userService.confirmVerificationCode(1, number, verificationCode)); //selection 하드코딩 추후 리팩토링 필요
     }
 
-//    @Operation(summary = "임시 비밀번호 요청",
-//            description = "인증번호 인증 성공 시 임시 비밀번호 제공",
-//            parameters = {
-//                    @Parameter(name = "number", description = "사용자가 입력한 인증번호"),
-//                    @Parameter(name = "verificationCode", description = "서버에서 제공된 인증번호 토큰")
-//            },
-//            responses = {
-//                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = String.class))),
-//                    @ApiResponse(responseCode = "404", description = "이메일이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
-//                    @ApiResponse(responseCode = "412", description = "인증에 실패하였습니다", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
-//            }
-//    )
-//    @GetMapping("/temporary-password")
-//    public ResponseEntity<String> getTemporaryPassword(
-//            @RequestParam("number") @Valid @NotBlank String number,
-//            @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode
-//    ) {
-//        return ResponseEntity.ok(userService.getTemporaryPassword(number, verificationCode));
-//    }
+    @Operation(summary = "비밀번호 재설정",
+            description = "비밀번호 재설정",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
+                    @ApiResponse(responseCode = "404", description = "이메일이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+            }
+    )
+    @PatchMapping("/reset-password")
+    public ResponseEntity<Boolean> resetPassword(
+            @RequestBody ResetPasswordRequest resetPasswordRequest
+    ) {
+        return ResponseEntity.ok(userService.resetPassword(resetPasswordRequest));
+    }
 
     @Operation(summary = "중복 아이디 확인",
             description = "회원가입 시 중복 아이디인지 확인",
