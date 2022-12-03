@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final String passRegex="/user/sign-up|/user/sign-in|(/user/sign-up/confirm/verification-code)(\\?)?(email=[a-zA-z\\d-_.]*)|(/user/find-password/confirm/verification-code)(\\?)?(number=[\\d]*)";
+    private static final String passRegex="/user/sign-up|/user/sign-in|/user/sign-up/verification-code|/user/find-password/confirm/verification-code" +
+            "|/user/sign-up/confirm/verification-code";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

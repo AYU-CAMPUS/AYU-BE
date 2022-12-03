@@ -9,11 +9,8 @@ import lombok.Getter;
 @Getter
 public class SignUpResponse {
     @Schema(description = "액세스 토큰")
-    private String accessToken;
+    private String token;
 
     @Schema(description = "유저 닉네임")
     private String nickName;
-
-    @Schema(description = "유저 권한")
-    private Authority authority;
 }

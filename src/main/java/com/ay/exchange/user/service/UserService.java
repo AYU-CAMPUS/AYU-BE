@@ -50,7 +50,7 @@ public class UserService {
                     User.builder()
                             .userId(signUpRequest.getUserId())
                             .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                            .email(signUpRequest.getEmail() + "@gs.anyang.ac.kr")
+                            .email(signUpRequest.getEmail())
                             .nickName(signUpRequest.getNickName())
                             .authority(Authority.User)
                             .exchangeSuccessCount(0)
@@ -63,7 +63,6 @@ public class UserService {
         return new SignUpResponse(
                 jwtTokenProvider.createToken(signUpRequest.getUserId(), signUpRequest.getNickName(), Authority.User)
                 , signUpRequest.getNickName()
-                , Authority.User
         );
     }
 
