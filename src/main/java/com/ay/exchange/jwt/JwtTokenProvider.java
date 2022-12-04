@@ -157,10 +157,23 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getEmailByVerificationCode(String verificationCodeToken) {
+    public String getEmailBySignUpVerificationCode(String verificationCodeToken) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(signUpMasterKey)
+                    .build()
+                    .parseClaimsJws(verificationCodeToken)
+                    .getBody()
+                    .getSubject();
+        } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
+            throw new JwtException("유효하지 않은 토큰");
+        }
+    }
+
+    public String getEmailByFindUserVerificationCode(String verificationCodeToken) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(findUserMasterKey)
                     .build()
                     .parseClaimsJws(verificationCodeToken)
                     .getBody()

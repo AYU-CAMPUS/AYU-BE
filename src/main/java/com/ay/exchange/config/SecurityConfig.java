@@ -67,6 +67,7 @@ public class SecurityConfig {
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
                 .antMatchers("/user/sign-up/verification-code",
+                        "/user//find-id/verification-code",
                         "/user/find-password/verification-code",
                         "/user/temporary-password",
                         "/user/existence-id",

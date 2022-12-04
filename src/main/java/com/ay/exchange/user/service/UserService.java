@@ -1,10 +1,12 @@
 package com.ay.exchange.user.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
+import com.ay.exchange.user.dto.query.UserIdDto;
 import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.dto.request.ResetPasswordRequest;
 import com.ay.exchange.user.dto.request.SignInRequest;
 import com.ay.exchange.user.dto.request.SignUpRequest;
+import com.ay.exchange.user.dto.response.FindIdResponse;
 import com.ay.exchange.user.dto.response.SignInResponse;
 import com.ay.exchange.user.dto.response.SignUpResponse;
 import com.ay.exchange.user.dto.response.VerificationCodeResponse;
@@ -78,7 +80,7 @@ public class UserService {
     }
 
     public VerificationCodeResponse getVerificationCodeForPW(String email) {
-        if(checkExistsEmail(email)){
+        if (checkExistsEmail(email)) {
             String verificationCode = createVerificationCode();
             return new VerificationCodeResponse( //selection 0 1 하드코딩 수정
                     jwtTokenProvider.createVerificationCodeToken(1, verificationCode, email), verificationCode);
@@ -107,7 +109,7 @@ public class UserService {
             String number, String verificationCode
     ) {
         if (isVerificationCode(1, number, verificationCode)) {
-            String email = jwtTokenProvider.getEmailByVerificationCode(verificationCode);
+            String email = jwtTokenProvider.getEmailBySignUpVerificationCode(verificationCode);
             String temporaryPassword = createTemporaryPassword();
 
             if (updateUserPassword(email, passwordEncoder.encode(temporaryPassword))) return temporaryPassword;
@@ -121,6 +123,18 @@ public class UserService {
 
     public Boolean resetPassword(ResetPasswordRequest resetPasswordRequest) {
         return updateUserPassword(resetPasswordRequest.getEmail(), passwordEncoder.encode(resetPasswordRequest.getPassword()));
+    }
+
+    public FindIdResponse findUserId(String number, String verificationCode) {
+        if (isVerificationCode(1, number, verificationCode)) {
+            String email = jwtTokenProvider.getEmailByFindUserVerificationCode(verificationCode);
+            UserIdDto userIdDto = userRepository.findUserIdByEmail(email)
+                    .orElseThrow(() -> {
+                        throw new NotExistsUserIdException();
+                    });
+            return new FindIdResponse(userIdDto.getUserId(), userIdDto.getProfileImage() == null ? "default.svg" : userIdDto.getProfileImage());
+        }
+        throw new FailVerificationException();
     }
 
     private Boolean isVerificationCode(int selection, String number, String verificationCode) {
@@ -141,9 +155,9 @@ public class UserService {
     private Boolean updateUserPassword(
             String email, String password
     ) {
-        try{
+        try {
             userRepository.updatePassword(email, passwordEncoder.encode(password));
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new NotExistsUserIdException();
         }
         return true;
