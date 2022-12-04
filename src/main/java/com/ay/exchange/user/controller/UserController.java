@@ -4,6 +4,7 @@ import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.user.dto.request.ResetPasswordRequest;
 import com.ay.exchange.user.dto.request.SignInRequest;
 import com.ay.exchange.user.dto.request.SignUpRequest;
+import com.ay.exchange.user.dto.request.VerificationCodeRequest;
 import com.ay.exchange.user.dto.response.FindIdResponse;
 import com.ay.exchange.user.dto.response.SignInResponse;
 import com.ay.exchange.user.dto.response.SignUpResponse;
@@ -74,17 +75,19 @@ public class UserController {
     @Operation(summary = "회원가입을 위한 인증번호 확인",
             description = "회원가입을 위한 인증번호 확인",
             parameters = {
-                    @Parameter(name = "number", description = "사용자가 입력한 인증번호"),
                     @Parameter(name = "verificationCode", description = "서버에서 제공된 인증번호 토큰")
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
+                    @ApiResponse(responseCode = "412", description = "인증에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
     @PostMapping("/sign-up/confirm/verification-code")
     public ResponseEntity<Boolean> confirmVerificationForSignUp(
-            @RequestParam("number") @Valid @NotBlank String number,
-            @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode //validate 걸어야 된다.
+            @RequestBody @Valid VerificationCodeRequest verificationCodeRequest,
+            @RequestHeader("verificationCode") @Valid @NotBlank String verificationCode
     ) {
-        System.out.println(number);
-        return ResponseEntity.ok(userService.confirmVerificationCode(0, number, verificationCode)); //selection 하드코딩 추후 리팩토링 필요
+        return ResponseEntity.ok(userService.confirmVerificationCode(0, verificationCodeRequest, verificationCode)); //selection 하드코딩 추후 리팩토링 필요
     }
 
 //    @Operation(summary = "비밀번호 찾기를 위한 이메일 인증번호 요청",

@@ -6,6 +6,7 @@ import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.dto.request.ResetPasswordRequest;
 import com.ay.exchange.user.dto.request.SignInRequest;
 import com.ay.exchange.user.dto.request.SignUpRequest;
+import com.ay.exchange.user.dto.request.VerificationCodeRequest;
 import com.ay.exchange.user.dto.response.FindIdResponse;
 import com.ay.exchange.user.dto.response.SignInResponse;
 import com.ay.exchange.user.dto.response.SignUpResponse;
@@ -19,6 +20,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.validation.Valid;
 
 @Service
 @RequiredArgsConstructor
@@ -117,8 +120,15 @@ public class UserService {
         throw new FailVerificationException();
     }
 
-    public Boolean confirmVerificationCode(int selection, String number, String verificationCode) {
-        return isVerificationCode(selection, number, verificationCode);
+    public Boolean confirmVerificationCode(int selection, VerificationCodeRequest verificationCodeRequest, String verificationCode) {
+        String email = jwtTokenProvider.getEmailBySignUpVerificationCode(verificationCode);
+        if(!email.equals(verificationCodeRequest.getEmail())) {
+            throw new FailVerificationException();
+        }
+        if(isVerificationCode(selection, verificationCodeRequest.getNumber(), verificationCode)){
+            return true;
+        }
+        throw new FailVerificationException();
     }
 
     public Boolean resetPassword(ResetPasswordRequest resetPasswordRequest) {
