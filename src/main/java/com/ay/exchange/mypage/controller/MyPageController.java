@@ -1,6 +1,7 @@
 package com.ay.exchange.mypage.controller;
 
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.common.util.FileValidator;
 import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
 import com.ay.exchange.mypage.dto.request.ExchangeAccept;
@@ -13,6 +14,9 @@ import com.ay.exchange.mypage.dto.response.MyPageResponse;
 import com.ay.exchange.mypage.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -91,8 +95,11 @@ public class MyPageController {
             description = "자료 다운로드",
             parameters = {
                     @Parameter(name = "boardId", description = "게시물 번호"),
-                    @Parameter(name = "token", description = "액세스 토큰")
-            }
+                    @Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "409", description = "파일이 존재하지 않거나 올바른 사용자가 아닙니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    @ApiResponse(responseCode = "404", description = "파일이 없습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @GetMapping(value = "/download/{requesterBoardId}")
     public ResponseEntity<ByteArrayResource> downloadFile(
@@ -121,8 +128,7 @@ public class MyPageController {
             description = "교환신청 조회",
             parameters = {
                     @Parameter(name = "page", description = "페이지 번호"),
-                    @Parameter(name = "token", description = "액세스 토큰")
-            }
+                    @Parameter(name = "token", description = "액세스 토큰")}
     )
     @GetMapping("/exchange")
     public ExchangeResponse getExchanges(
@@ -134,7 +140,10 @@ public class MyPageController {
 
     @Operation(summary = "교환신청 수락",
             description = "교환신청 수락",
-            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "412", description = "교환 수락에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @PostMapping("/exchange/accept")
     public Boolean acceptExchange(
@@ -146,7 +155,10 @@ public class MyPageController {
 
     @Operation(summary = "교환신청 거절",
             description = "교환신청 거절",
-            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "412", description = "교환 거절에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @DeleteMapping("/exchange/refusal")
     public Boolean refuseExchange(
@@ -160,8 +172,11 @@ public class MyPageController {
             description = "프로필 이미지 변경",
             parameters = {
                     @Parameter(name = "file", description = "이미지"),
-                    @Parameter(name = "token", description = "액세스 토큰")
-            }
+                    @Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "412", description = "프로필 변경에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    @ApiResponse(responseCode = "404", description = "파일 업로드에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @PatchMapping("/profile")
     public Boolean updateProfile(
@@ -176,14 +191,16 @@ public class MyPageController {
 
     @Operation(summary = "회원 탈퇴",
             description = "회원 탈퇴",
-            parameters = {
-                    @Parameter(name = "token", description = "액세스 토큰")
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "412", description = "회원 탈퇴에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
     @DeleteMapping("/withdrawal")
     public Boolean withdrawalUser(
             @RequestHeader("token") String token
-    ){
+    ) {
         return myPageService.withdrawalUser(token);
     }
 }
