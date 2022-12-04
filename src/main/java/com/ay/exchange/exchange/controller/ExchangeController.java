@@ -1,11 +1,16 @@
 package com.ay.exchange.exchange.controller;
 
+import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.dto.response.ExchangeResponse;
 import com.ay.exchange.exchange.service.ExchangeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +20,10 @@ public class ExchangeController {
     private final ExchangeService exchangeService;
 
     @Operation(summary = "자료요청", description = "자료요청",
-            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "412", description = "교환신청에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @PostMapping("/request")
     public Boolean requestExchange(
