@@ -68,13 +68,8 @@ public class SecurityConfig {
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
-                .antMatchers("/user/sign-up/verification-code",
-                        "/user/find-id/verification-code",
-                        "/user/find-password/verification-code",
+                .antMatchers(
                         "/user/temporary-password",
-                        "/user/existence-id",
-                        "/user/existence-nickname",
-                        "/user/find-id",
                         "/board/{category:\\d+}/**",
                         "/board/content/{category:\\d+}",
                         "/comment/{boardId:\\d+}/**")
