@@ -4,6 +4,7 @@ import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
 import com.ay.exchange.comment.entity.Comment;
+import com.ay.exchange.comment.exception.FailWriteCommentException;
 import com.ay.exchange.comment.repository.CommentRepository;
 import com.ay.exchange.comment.repository.querydsl.CommentQueryRepository;
 import com.ay.exchange.jwt.JwtTokenProvider;
@@ -34,7 +35,7 @@ public class CommentService {
         try {
             commentRepository.save(comment);
         } catch (Exception e) {
-            throw new FailWithdrawalException();
+            throw new FailWriteCommentException();
         }
 
     }
