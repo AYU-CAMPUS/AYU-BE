@@ -5,12 +5,14 @@ import com.ay.exchange.report.dto.request.ReportCommentRequest;
 import com.ay.exchange.report.service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/report")
 @RequiredArgsConstructor
+@Tag(name = "신고", description = "신고 관련 api")
 public class ReportController {
     private final ReportService reportService;
 

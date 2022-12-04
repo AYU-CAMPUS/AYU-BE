@@ -57,6 +57,8 @@ public class SecurityConfig {
                 "/v3/api-docs/user-api",
                 "/v3/api-docs/board-api",
                 "/v3/api-docs/comment-api",
+                "/v3/api-docs/mypage-api",
+                "/v3/api-docs/report-api",
                 "/favicon.ico"
         };
     }
@@ -67,7 +69,7 @@ public class SecurityConfig {
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
                 .antMatchers("/user/sign-up/verification-code",
-                        "/user//find-id/verification-code",
+                        "/user/find-id/verification-code",
                         "/user/find-password/verification-code",
                         "/user/temporary-password",
                         "/user/existence-id",
