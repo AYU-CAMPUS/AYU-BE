@@ -91,14 +91,10 @@ public class BoardService {
         return new BoardResponse(pages.getTotalPages(), pages.getContent());
     }
 
-    @Transactional(rollbackFor = Exception.class)
     //추후 accessToken 권한 검증
     public void deleteBoard(String token, DeleteRequest deleteRequest) {
-        try {
-            boardRepository.deleteById(deleteRequest.getBoardId());
-        } catch (Exception e) {
-            throw new FailDeleteBoardException();
-        }
+        boardRepository.deleteBoard(jwtTokenProvider.getUserId(token), deleteRequest.getBoardId());
+
 //        if(isAuthorized(token)){
 //            boardContentRepository.deleteByBoardId(deleteRequest.getBoardId());
 //        }else{

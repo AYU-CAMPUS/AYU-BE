@@ -22,7 +22,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/user/sign-up/confirm/verification-code", "/user/find-id/confirm/verification-code", "/user/sign-up/verification-code",
             "/user/find-id/verification-code", "/user/find-password/verification-code", "/user/existence-id",
             "/user/existence-nickname", "/user/find-id"));
-    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/[\\d]+";
+    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
