@@ -68,12 +68,12 @@ public class SecurityConfig {
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
-                .antMatchers(
-                        "/user/temporary-password",
-                        "/board/{category:\\d+}/**",
-                        "/board/content/{category:\\d+}",
-                        "/comment/{boardId:\\d+}/**")
                 .antMatchers(getPathInSwagger());
+//                .antMatchers(
+//                        "/user/temporary-password",
+//                        "/board/{category:\\d+}/**",
+//                        "/board/content/{category:\\d+}",
+//                        "/comment/{boardId:\\d+}/**")
     }
 
     @Bean

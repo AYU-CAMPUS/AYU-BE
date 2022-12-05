@@ -2,7 +2,7 @@ package com.ay.exchange.filter;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -10,16 +10,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private static final String passRegex="/user/sign-up|/user/sign-in|/user/sign-up/verification-code|/user/find-password/confirm/verification-code" +
-            "|/user/sign-up/confirm/verification-code|/user/find-id/confirm/verification-code|/user/sign-up/verification-code|" +
-            "/user/find-id/verification-code|/user/find-password/verification-code|/user/existence-id|" +
-            "/user/existence-nickname|/user/find-id";
+    private static final Set<String> passUri = new HashSet<>(List.of("/user/sign-up", "/user/sign-in", "/user/sign-up/verification-code", "/user/find-password/confirm/verification-code",
+            "/user/sign-up/confirm/verification-code", "/user/find-id/confirm/verification-code", "/user/sign-up/verification-code",
+            "/user/find-id/verification-code", "/user/find-password/verification-code", "/user/existence-id",
+            "/user/existence-nickname", "/user/find-id"));
+    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/[\\d]+";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,7 +32,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        if (Pattern.matches(passRegex,request.getRequestURI())) {
+        System.out.print(request.getRequestURI() + " ");
+        if (passUri.contains(request.getRequestURI())) {
+            return true;
+        }
+        if (Pattern.matches(regexUri, request.getRequestURI())) {
             return true;
         }
         return false;
