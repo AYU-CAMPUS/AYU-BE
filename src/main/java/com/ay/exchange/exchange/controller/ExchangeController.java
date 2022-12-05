@@ -23,7 +23,7 @@ public class ExchangeController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
-                    @ApiResponse(responseCode = "412", description = "교환신청에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+                    @ApiResponse(responseCode = "422", description = "교환신청에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @PostMapping("/request")
     public Boolean requestExchange(

@@ -30,7 +30,7 @@ public class CommentController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
-                    @ApiResponse(responseCode = "412", description = "댓글 작성에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+                    @ApiResponse(responseCode = "422", description = "댓글 작성에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     public ResponseEntity<Boolean> writeComment(
             @RequestBody WriteRequest writeRequest,

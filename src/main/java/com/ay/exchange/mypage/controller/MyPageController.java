@@ -143,7 +143,7 @@ public class MyPageController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
-                    @ApiResponse(responseCode = "412", description = "교환 수락에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+                    @ApiResponse(responseCode = "422", description = "교환 수락에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @PostMapping("/exchange/accept")
     public Boolean acceptExchange(
@@ -158,7 +158,7 @@ public class MyPageController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
-                    @ApiResponse(responseCode = "412", description = "교환 거절에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+                    @ApiResponse(responseCode = "422", description = "교환 거절에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @DeleteMapping("/exchange/refusal")
     public Boolean refuseExchange(
@@ -175,7 +175,7 @@ public class MyPageController {
                     @Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
-                    @ApiResponse(responseCode = "412", description = "프로필 변경에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    @ApiResponse(responseCode = "422", description = "프로필 변경에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
                     @ApiResponse(responseCode = "404", description = "파일 업로드에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @PatchMapping("/profile")
@@ -194,7 +194,7 @@ public class MyPageController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
-                    @ApiResponse(responseCode = "412", description = "회원 탈퇴에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+                    @ApiResponse(responseCode = "422", description = "회원 탈퇴에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
     @DeleteMapping("/withdrawal")

@@ -25,7 +25,7 @@ public class ReportController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
-                    @ApiResponse(responseCode = "412", description = "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+                    @ApiResponse(responseCode = "422", description = "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
     @PostMapping("/board")
@@ -41,7 +41,7 @@ public class ReportController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
-                    @ApiResponse(responseCode = "412", description = "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+                    @ApiResponse(responseCode = "422", description = "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
     @PostMapping("/comment")

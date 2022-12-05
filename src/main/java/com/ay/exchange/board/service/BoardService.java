@@ -7,6 +7,8 @@ import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.entity.vo.*;
+import com.ay.exchange.board.exception.FailDeleteBoardException;
+import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.aws.service.AwsS3Service;
@@ -32,7 +34,6 @@ public class BoardService {
     private final JwtTokenProvider jwtTokenProvider;
     private final String REGEX = "[0-9]+";
 
-    //트랜잭션 걸어야 되는데 알아보고 걸자.
     @Transactional(rollbackFor = Exception.class)
     public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String token) {
         String userId = jwtTokenProvider.getUserId(token);
@@ -46,23 +47,27 @@ public class BoardService {
                 .professorName(writeRequest.getCategoryDto().getProfessorName())
                 .build();
 
-        Board board = Board.builder()
-                .title(writeRequest.getTitle())
-                .numberOfFilePages(writeRequest.getNumberOfFilePages())
-                .exchangeSuccessCount(0)
-                .approval(false)
-                .views(1)
-                .boardCategory(boardCategory)
-                .userId(userId)
-                .filePath(awsS3Service.uploadFile(multipartFile, userId, 0))
-                .build();
-        boardRepository.save(board);
+        try {
+            Board board = Board.builder()
+                    .title(writeRequest.getTitle())
+                    .numberOfFilePages(writeRequest.getNumberOfFilePages())
+                    .exchangeSuccessCount(0)
+                    .approval(false)
+                    .views(1)
+                    .boardCategory(boardCategory)
+                    .userId(userId)
+                    .filePath(awsS3Service.uploadFile(multipartFile, userId, 0))
+                    .build();
+            boardRepository.save(board);
 
-        BoardContent boardContent = BoardContent.builder()
-                .content(writeRequest.getContent())
-                .board(board)
-                .build();
-        boardContentRepository.save(boardContent);
+            BoardContent boardContent = BoardContent.builder()
+                    .content(writeRequest.getContent())
+                    .board(board)
+                    .build();
+            boardContentRepository.save(boardContent);
+        } catch (Exception e) {
+            throw new FailWriteBoardException();
+        }
     }
 
     public BoardResponse getBoardList(Integer page, Integer category,
@@ -86,9 +91,14 @@ public class BoardService {
         return new BoardResponse(pages.getTotalPages(), pages.getContent());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     //추후 accessToken 권한 검증
     public void deleteBoard(String token, DeleteRequest deleteRequest) {
-        boardRepository.deleteById(deleteRequest.getBoardId());
+        try {
+            boardRepository.deleteById(deleteRequest.getBoardId());
+        } catch (Exception e) {
+            throw new FailDeleteBoardException();
+        }
 //        if(isAuthorized(token)){
 //            boardContentRepository.deleteByBoardId(deleteRequest.getBoardId());
 //        }else{

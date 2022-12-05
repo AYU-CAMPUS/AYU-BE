@@ -1,7 +1,6 @@
 package com.ay.exchange.user.controller;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
-import com.ay.exchange.user.dto.request.ResetPasswordRequest;
 import com.ay.exchange.user.dto.request.SignInRequest;
 import com.ay.exchange.user.dto.request.SignUpRequest;
 import com.ay.exchange.user.dto.request.VerificationCodeRequest;
@@ -9,7 +8,7 @@ import com.ay.exchange.user.dto.response.FindIdResponse;
 import com.ay.exchange.user.dto.response.SignInResponse;
 import com.ay.exchange.user.dto.response.SignUpResponse;
 import com.ay.exchange.user.dto.response.VerificationCodeResponse;
-import com.ay.exchange.user.exception.NotExistsUserIdException;
+
 import com.ay.exchange.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -79,7 +78,7 @@ public class UserController {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
-                    @ApiResponse(responseCode = "412", description = "인증에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+                    @ApiResponse(responseCode = "422", description = "인증에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
     @PostMapping("/sign-up/confirm/verification-code")
@@ -144,7 +143,7 @@ public class UserController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = FindIdResponse.class))),
                     @ApiResponse(responseCode = "404", description = "이메일이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
-                    @ApiResponse(responseCode = "412", description = "인증에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+                    @ApiResponse(responseCode = "422", description = "인증에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
     @PostMapping("/find-id/confirm/verification-code")

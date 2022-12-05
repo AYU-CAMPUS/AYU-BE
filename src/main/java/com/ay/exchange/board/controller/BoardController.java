@@ -8,10 +8,15 @@ import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.exception.FileInvalidException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
+import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.common.util.FileValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +49,12 @@ public class BoardController {
                     @Parameter(name = "numberOfFilePages", description = "파일 페이지 수"),
                     @Parameter(name = "content", description = "글 내용"),
                     @Parameter(name = "file", description = "파일"),
-                    @Parameter(name = "token", description = "액세스 토큰"),
-            })
+                    @Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "400", description = "파일 형식이 잘못되었습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    @ApiResponse(responseCode = "422", description = "게시글 작성에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+    )
     @PostMapping(value = "/write")
     public ResponseEntity<Boolean> writeBoard(
             @RequestPart("title") String title,
@@ -103,7 +112,10 @@ public class BoardController {
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글 삭제(대댓글과 파일이 삭제됨)",
-            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "422", description = "게시글 삭제에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteBoard(
