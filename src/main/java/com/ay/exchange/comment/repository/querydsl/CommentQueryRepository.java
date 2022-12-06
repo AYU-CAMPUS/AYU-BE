@@ -1,11 +1,13 @@
 package com.ay.exchange.comment.repository.querydsl;
 
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
+import com.ay.exchange.comment.exception.FailDeleteCommentException;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,5 +37,15 @@ public class CommentQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteComment(String userId, Long commentId) {
+        if (queryFactory.delete(comment)
+                .where(comment.userId.eq(userId)
+                        .and(comment.id.eq(commentId)))
+                .execute() != 1L) {
+            throw new FailDeleteCommentException();
+        }
     }
 }

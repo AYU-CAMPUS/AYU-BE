@@ -44,7 +44,7 @@ public class CommentController {
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
-                    @ApiResponse(responseCode = "403", description = "유효하지 않은 권한입니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+                    @ApiResponse(responseCode = "422", description = "댓글 삭제에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteComment(

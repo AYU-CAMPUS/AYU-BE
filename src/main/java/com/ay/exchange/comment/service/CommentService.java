@@ -40,16 +40,8 @@ public class CommentService {
 
     }
 
-    public void deleteComment(DeleteRequest deleteRequest, String accessToken) {
-
-        if (isAuthorized(accessToken, deleteRequest.getUserId())) { //추후 @PreAuthorize로 해결하자
-            if (deleteRequest.getDepth()) //자식 댓글
-                commentRepository.deleteById(deleteRequest.getCommentId());
-            else //부모 댓글
-                commentRepository.deleteAllByGroupId(deleteRequest.getGroupId());
-        } else {
-            throw new InvalidUserRoleException();
-        }
+    public void deleteComment(DeleteRequest deleteRequest, String token) {
+        commentQueryRepository.deleteComment(jwtTokenProvider.getUserId(token), deleteRequest.getCommentId());
     }
 
     private boolean isAuthorized(String accessToken, String userId) {

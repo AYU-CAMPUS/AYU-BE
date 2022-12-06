@@ -44,7 +44,6 @@ public class Comment {
     @Column(nullable = false)
     private Boolean depth;
 
-    @Column(nullable = false)
     private Long groupId;
 
     @CreatedBy
