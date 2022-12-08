@@ -189,11 +189,11 @@ public class MyPageRepository {
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, exchangeAccept.getRequesterBoardId())
                 .setParameter(2, date)
-                .setParameter(3, userId)
+                .setParameter(3, exchangeAccept.getRequesterId())
                 .setParameter(4, exchangeAccept.getBoardId())
                 .setParameter(5, exchangeAccept.getBoardId())
                 .setParameter(6, date)
-                .setParameter(7, exchangeAccept.getRequesterId())
+                .setParameter(7, userId)
                 .setParameter(8, exchangeAccept.getRequesterBoardId());
         if (query.executeUpdate() != 2) throw new FailAcceptFileException();
 
