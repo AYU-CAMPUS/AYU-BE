@@ -126,9 +126,17 @@ public class BoardController {
         return ResponseEntity.ok(true);
     }
 
-//    @GetMapping("/edit")
-//    public ResponseEntity<Boolean> editBoard(){
-//        return ResponseEntity.ok(boardContentService.editBoard());
-//    }
+    @Operation(summary = "게시글 수정", description = "게시글 수정",
+            parameters = {
+                    @Parameter(name = "boardId", description = "게시글 번호"),
+                    @Parameter(name = "token", description = "액세스 토큰")}
+    )
+    @GetMapping("/modifiable/{boardId}")
+    public ResponseEntity<Boolean> checkModifiableBoard(
+            @PathVariable("boardId") Long boardId,
+            @RequestHeader("token") String token
+    ) {
+        return ResponseEntity.ok(boardContentService.checkModifiableBoard(token, boardId));
+    }
 
 }

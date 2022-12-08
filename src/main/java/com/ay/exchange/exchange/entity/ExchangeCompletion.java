@@ -43,6 +43,9 @@ public class ExchangeCompletion {
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board; //다운 가능한 게시물
 
+    @Column(name = "board_id", nullable = false)
+    private Long boardId;
+
     @Column(name = "requester_board_id", nullable = false)
     private Long requesterBoardId; //요청자 게시물 번호
 

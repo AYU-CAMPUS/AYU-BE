@@ -21,12 +21,9 @@ public class BoardContentService {
         return boardContentRepository.findBoardContent(boardId, pageRequest, jwtTokenProvider.getUserId(token));
     }
 
-    public Boolean editBoard() {
-        boardContentRepository.isModifiable();
+    public Boolean checkModifiableBoard(String token, Long boardId) {
+        boardContentRepository.checkModifiableBoard(jwtTokenProvider.getUserId(token), boardId);
         return true;
     }
 
-//    private boolean isAuthorized(String token) { //삭제기능에서 이 메소드가 무조건 사용됨 중복코드 나중에 리팩토링
-//        return jwtTokenProvider.getEmail(token).equals(token);
-//    }
 }

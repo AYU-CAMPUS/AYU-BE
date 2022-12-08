@@ -31,6 +31,8 @@ import static com.ay.exchange.user.entity.QUser.user;
 public class BoardContentQueryRepositoryImpl implements BoardContentQueryRepository {
     private final JPAQueryFactory queryFactory;
     private static final String SEPARATOR = ";";
+    private final int BOARD_OWNER = -1;
+    private final Long INTERCHANGEABLE = 0L;
 
     @Override
     public BoardContentResponse findBoardContent(Long boardId, Pageable pageable, String userId) {
@@ -54,7 +56,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             board.numberOfFilePages,
                             board.exchangeSuccessCount.as("numberOfSuccessfulExchanges"),
                             board.createdDate,
-                            exchange.type.coalesce(exchangeCompletion.Id.coalesce(0L)).as("exchangeType"), //null
+                            exchange.type.coalesce(exchangeCompletion.Id.coalesce(INTERCHANGEABLE)).as("exchangeType"), //null
                             board.userId,
                             user.desiredData
                     ))
@@ -85,7 +87,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     boardContentInfo2Dto.getNumberOfFilePages(),
                     boardContentInfo2Dto.getNumberOfSuccessfulExchanges(),
                     boardContentInfo2Dto.getCreatedDate(),
-                    boardContentInfo2Dto.getUserId().equals(userId) ? -1 : boardContentInfo2Dto.getExchangeType(), //-1이면 내가 쓴 글임,
+                    boardContentInfo2Dto.getUserId().equals(userId) ? BOARD_OWNER : boardContentInfo2Dto.getExchangeType(), //-1이면 내가 쓴 글임,
                     splitDesiredData(boardContentInfo2Dto.getDesiredData())
             );
         }
@@ -109,7 +111,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 resultBoard.getNumberOfFilePages(),
                 resultBoard.getExchangeSuccessCount(),
                 resultBoard.getCreatedDate(),
-                resultBoard.getUserId().equals(userId) ? -1 : result.get(0).getExchangeType(),
+                resultBoard.getUserId().equals(userId) ? BOARD_OWNER : result.get(0).getExchangeType(),
                 splitDesiredData(result.get(0).getDesiredData())
         );
 
@@ -146,7 +148,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         comment.createdDate,
                         boardContent,
                         board,
-                        exchange.type.coalesce(exchangeCompletion.Id.coalesce(0L)).as("exchangeType"),
+                        exchange.type.coalesce(exchangeCompletion.Id.coalesce(INTERCHANGEABLE)).as("exchangeType"),
                         user.profileImage.coalesce("default.svg"),
                         board.user.nickName,
                         user.desiredData
@@ -174,20 +176,47 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .fetch();
     }
 
-    public Boolean isModifiable() {//추후 boardId추가
+    public Boolean checkModifiableBoard(String userId, Long boardId) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
         Date date = new Date(calendar.getTimeInMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        Long count = queryFactory.select(exchange.count())
-                .from(exchange)
-                .where(getExchangeDate().gt(simpleDateFormat.format(date))
-                        .or(exchange.type.eq(-2))
-                        .and(exchange.board.id.eq(2L)))
+        return isBoardOwner(userId, boardId)
+                && checkExchangeDate(simpleDateFormat.format(date), boardId)
+                && checkExchangeCompletionDate(simpleDateFormat.format(date), userId, boardId);
+    }
+
+    public Boolean isBoardOwner(String userId, Long boardId) {
+        Long count = queryFactory.select(board.count())
+                .from(board)
+                .where(board.userId.eq(userId)
+                        .and(board.id.eq(boardId)))
                 .limit(1L)
                 .fetchOne();
-        return count == 0;
+        return count == 1L;
+    }
+
+    private Boolean checkExchangeDate(String date, Long boardId) {
+        Long count = queryFactory.select(exchange.count())
+                .from(exchange)
+                .where(getExchangeDate().gt(date)
+                        .and(exchange.board.id.eq(boardId)
+                                .or(exchange.requesterBoardId.eq(boardId))))
+                .limit(1L)
+                .fetchOne();
+        return count == 0L;
+    }
+
+    private Boolean checkExchangeCompletionDate(String date, String userId, Long boardId) {
+        Long count = queryFactory.select(exchangeCompletion.count())
+                .from(exchangeCompletion)
+                .where(getExchangeDate().gt(date)
+                        .and(exchangeCompletion.boardId.eq(boardId))
+                        .and(exchangeCompletion.userId.eq(userId)))
+                .limit(1L)
+                .fetchOne();
+        return count == 0L;
     }
 
     private DateTemplate getExchangeDate() {
