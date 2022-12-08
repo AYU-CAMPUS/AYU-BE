@@ -5,13 +5,12 @@ import com.ay.exchange.common.util.DateGenerator;
 import com.ay.exchange.mypage.dto.*;
 import com.ay.exchange.mypage.dto.request.ExchangeAccept;
 import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
+import com.ay.exchange.mypage.dto.request.UserInfoRequest;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
-import com.ay.exchange.mypage.exception.FailAcceptFileException;
-import com.ay.exchange.mypage.exception.FailRefusalFileException;
-import com.ay.exchange.mypage.exception.FailUpdateProfileException;
-import com.ay.exchange.mypage.exception.FailWithdrawalException;
+import com.ay.exchange.mypage.exception.*;
+import com.ay.exchange.user.repository.UserRepository;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;
@@ -19,6 +18,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +28,6 @@ import javax.persistence.Query;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.ay.exchange.board.entity.QBoardContent.boardContent;
-import static com.ay.exchange.comment.entity.QComment.comment;
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
 import static com.ay.exchange.board.entity.QBoard.board;
@@ -255,6 +253,37 @@ public class MyPageRepository {
         throw new FailWithdrawalException();
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserInfo(String userId, UserInfoRequest userInfoRequest) {
+        if (checkExistsByNickName(userId, userInfoRequest.getNickName())) {
+            throw new DuplicateNickNameException();
+        }
+
+        if (queryFactory.update(user)
+                .set(user.nickName, userInfoRequest.getNickName())
+                .set(user.desiredData, mergeStrings(userInfoRequest.getDesiredData()))
+                .where(user.userId.eq(userId))
+                .execute() != 1L) {
+            throw new FailUpdateUserInfoException();
+        }
+
+    }
+
+    private boolean checkExistsByNickName(String userId, String nickName) {
+        if (queryFactory.select(user.count())
+                .from(user)
+                .where(user.userId.ne(userId)
+                        .and(user.nickName.eq(nickName)))
+                .fetchOne() == 1L) {
+            return true;
+        }
+        return false;
+    }
+
+    private String mergeStrings(List<String> desiredData) {
+        return StringUtils.join(desiredData, ";");
+    }
+
     private Boolean canWithdrawal(String userId) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
@@ -278,4 +307,5 @@ public class MyPageRepository {
                 ConstantImpl.create("%Y-%m-%d")
         );
     }
+
 }

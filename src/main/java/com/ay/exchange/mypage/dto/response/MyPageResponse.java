@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public class MyPageResponse {
@@ -24,5 +26,8 @@ public class MyPageResponse {
 
     @Schema(description = "교환 요청 수")
     private Long exchangeRequestCount;
+
+    @Schema(description = "원하는 자료")
+    private List<String> desiredData;
 
 }

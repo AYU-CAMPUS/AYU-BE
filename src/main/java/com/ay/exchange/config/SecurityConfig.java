@@ -35,10 +35,10 @@ public class SecurityConfig {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeHttpRequests()
-                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                .and()
-                    .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
+                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll();
+//                .and()
+//                    .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+//                    .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
         //.exceptionHandling().authenticationEntryPoint(jwtFilterEntryPoint);
         return http.build();
     }

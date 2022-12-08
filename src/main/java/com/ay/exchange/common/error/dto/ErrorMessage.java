@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorMessage {
-    EXISTS_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일 입니다."),
-    EXISTS_USER(HttpStatus.CONFLICT, "이미 존재하는 아이디 입니다."),
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일 입니다."),
+    DUPLICATE_USER_ID(HttpStatus.CONFLICT, "이미 존재하는 아이디 입니다."),
+
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 닉네임 입니다."),
     NOT_EXIST_USER(HttpStatus.NOT_FOUND, "아이디 또는 비밀번호가 존재하지 않습니다."),
     NOT_EXISTS_USERID(HttpStatus.NOT_FOUND, "이메일이 존재하지 않습니다."),
     NOT_VALID_ROLE_ERROR(HttpStatus.FORBIDDEN, "유효하지 않은 권한입니다."),
@@ -29,6 +31,7 @@ public enum ErrorMessage {
     FAIL_REFUSAL_FILE(HttpStatus.UNPROCESSABLE_ENTITY, "교환 거절에 실패하였습니다."),
     FAIL_UPDATE_PROFILE(HttpStatus.UNPROCESSABLE_ENTITY, "프로필 변경에 실패하였습니다."),
     FAIL_WITHDRAWAL(HttpStatus.UNPROCESSABLE_ENTITY, "회원 탈퇴에 실패하였습니다."),
+    FAIL_UPDATE_USER_INFO(HttpStatus.UNPROCESSABLE_ENTITY, "정보 변경에 실패하였습니다."),
 
     FAIL_REPORT(HttpStatus.UNPROCESSABLE_ENTITY, "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다."),
 

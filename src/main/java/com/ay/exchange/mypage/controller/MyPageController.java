@@ -5,6 +5,7 @@ import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.common.util.FileValidator;
 import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
 import com.ay.exchange.mypage.dto.request.ExchangeAccept;
+import com.ay.exchange.mypage.dto.request.UserInfoRequest;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.exception.FailUpdateProfileException;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
@@ -48,6 +49,25 @@ public class MyPageController {
     ) {
         return myPageService.getMypage(token);
     }
+
+    @Operation(summary = "마이페이지 조회",
+            description = "마이페이지 첫 화면",
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 형식의 입력입니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    @ApiResponse(responseCode = "409", description = "이미 존재하는 닉네임 입니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    @ApiResponse(responseCode = "422", description = "정보 변경에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+    )
+    @PatchMapping("/info")
+    public Boolean updateUserInfo(
+            @RequestBody @Valid UserInfoRequest userInfoRequest,
+            @RequestHeader("token") String token
+    ) {
+        myPageService.updateUserInfo(userInfoRequest, token);
+        return true;
+    }
+
 
     @Operation(summary = "비밀번호 변경",
             description = "비밀번호 변경",

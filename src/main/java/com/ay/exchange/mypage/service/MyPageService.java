@@ -5,6 +5,7 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.mypage.dto.*;
 import com.ay.exchange.mypage.dto.request.ExchangeAccept;
 import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
+import com.ay.exchange.mypage.dto.request.UserInfoRequest;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
@@ -13,12 +14,15 @@ import com.ay.exchange.mypage.exception.NotExistsFileException;
 import com.ay.exchange.user.dto.request.PasswordChangeRequest;
 import com.ay.exchange.mypage.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +41,8 @@ public class MyPageService {
                 myPageInfo.getExchangeSuccessCount(),
                 myPageInfo.getMyDataCounts().size(),
                 myPageInfo.getDownloadCount(),
-                myPageRepository.getExchangeRequestCount(myPageInfo.getMyDataCount())
+                myPageRepository.getExchangeRequestCount(myPageInfo.getMyDataCount()),
+                null
         );
     }
 
@@ -99,11 +104,17 @@ public class MyPageService {
 
     @Transactional(rollbackFor = Exception.class)
     public Boolean withdrawalUser(String token) {
-        String userId= jwtTokenProvider.getUserId(token);
+        String userId = jwtTokenProvider.getUserId(token);
         String profilePath = myPageRepository.findProfilePath(userId);
         myPageRepository.withdrawalUser(userId);
-        awsS3Service.deleteProfile("profile/"+profilePath);
+        awsS3Service.deleteProfile("profile/" + profilePath);
         awsS3Service.deleteUserFiles(userId);
         return true;
     }
+
+    public void updateUserInfo(UserInfoRequest userInfoRequest, String token) {
+        String userId = jwtTokenProvider.getUserId(token);
+        myPageRepository.updateUserInfo(userId, userInfoRequest);
+    }
+
 }
