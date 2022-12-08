@@ -46,6 +46,9 @@ public class User extends BaseEntity implements Persistable<String> {
     @Column(nullable = false)
     private Integer exchangeSuccessCount;
 
+    @Column(length = 70, nullable = false)
+    private String desiredData;
+
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<Comment> comments;
 

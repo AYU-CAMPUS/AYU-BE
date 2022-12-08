@@ -58,6 +58,7 @@ public class UserService {
                             .nickName(signUpRequest.getNickName())
                             .authority(Authority.User)
                             .exchangeSuccessCount(0)
+                            .desiredData("")
                             .build()
             );
         } catch (Exception e) {
