@@ -25,9 +25,12 @@ public class BoardContentInfoDto {
     private Integer exchangeType;
     private String profileImage;
     private String nickName;
+    private String desiredData;
 
     @QueryProjection
-    public BoardContentInfoDto(Long commentId, String writer, String content, Boolean depth, Long groupId, String createdDate, BoardContent boardContent, Board board, Integer exchangeType, String profileImage, String nickName) {
+    public BoardContentInfoDto(Long commentId, String writer, String content, Boolean depth,
+                               Long groupId, String createdDate, BoardContent boardContent, Board board,
+                               Integer exchangeType, String profileImage, String nickName, String desiredData) {
         this.commentId = commentId;
         this.writer = writer;
         this.content = content;
@@ -39,6 +42,7 @@ public class BoardContentInfoDto {
         this.exchangeType = exchangeType;
         this.profileImage = profileImage;
         this.nickName = nickName;
+        this.desiredData = desiredData;
     }
 
 }

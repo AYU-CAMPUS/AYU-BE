@@ -43,4 +43,7 @@ public class BoardContentResponse {
 
     @Schema(description = "교환 정보 => 내가 쓴 자료(-1) / 교환완료(1이상) / 교환중(-2) / 교환신청가능(0)")
     private Integer exchangeType;
+
+    @Schema(description = "글쓴이 원하는 자료")
+    private List<String> desiredData;
 }

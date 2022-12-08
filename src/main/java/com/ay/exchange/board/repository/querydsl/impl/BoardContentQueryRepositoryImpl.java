@@ -17,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.board.entity.QBoardContent.boardContent;
@@ -32,6 +30,7 @@ import static com.ay.exchange.user.entity.QUser.user;
 @RequiredArgsConstructor
 public class BoardContentQueryRepositoryImpl implements BoardContentQueryRepository {
     private final JPAQueryFactory queryFactory;
+    private static final String SEPARATOR = ";";
 
     @Override
     public BoardContentResponse findBoardContent(Long boardId, Pageable pageable, String userId) {
@@ -56,7 +55,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             board.exchangeSuccessCount.as("numberOfSuccessfulExchanges"),
                             board.createdDate,
                             exchange.type.coalesce(exchangeCompletion.Id.coalesce(0L)).as("exchangeType"), //null
-                            board.userId
+                            board.userId,
+                            user.desiredData
                     ))
                     .from(boardContent)
                     .leftJoin(exchange)
@@ -85,7 +85,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     boardContentInfo2Dto.getNumberOfFilePages(),
                     boardContentInfo2Dto.getNumberOfSuccessfulExchanges(),
                     boardContentInfo2Dto.getCreatedDate(),
-                    boardContentInfo2Dto.getUserId().equals(userId) ? -1 : boardContentInfo2Dto.getExchangeType() //-1이면 내가 쓴 글임
+                    boardContentInfo2Dto.getUserId().equals(userId) ? -1 : boardContentInfo2Dto.getExchangeType(), //-1이면 내가 쓴 글임,
+                    splitDesiredData(boardContentInfo2Dto.getDesiredData())
             );
         }
 
@@ -108,9 +109,15 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 resultBoard.getNumberOfFilePages(),
                 resultBoard.getExchangeSuccessCount(),
                 resultBoard.getCreatedDate(),
-                resultBoard.getUserId().equals(userId) ? -1 : result.get(0).getExchangeType()
+                resultBoard.getUserId().equals(userId) ? -1 : result.get(0).getExchangeType(),
+                splitDesiredData(result.get(0).getDesiredData())
         );
 
+    }
+
+    private List<String> splitDesiredData(String desiredData) {
+        return Arrays.stream(desiredData.split(SEPARATOR))
+                .collect(Collectors.toList());
     }
 
     private void addCommentList(List<BoardContentInfoDto> result, List<CommentInfoDto> commentList) {
@@ -141,7 +148,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         board,
                         exchange.type.coalesce(exchangeCompletion.Id.coalesce(0L)).as("exchangeType"),
                         user.profileImage.coalesce("default.svg"),
-                        board.user.nickName
+                        board.user.nickName,
+                        user.desiredData
                 ))
                 .from(comment)
                 .innerJoin(user)

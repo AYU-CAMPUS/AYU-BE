@@ -19,4 +19,5 @@ public class BoardContentInfo2Dto {
     private String createdDate;
     private Integer exchangeType;
     private String userId;
+    private String desiredData;
 }
