@@ -21,8 +21,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -63,7 +61,7 @@ public class UserService {
                             .build()
             );
         } catch (Exception e) {
-            throw new ExistsUserException();
+            throw new DuplicateUserIdException();
         }
 
         return new SignUpResponse(
@@ -74,7 +72,7 @@ public class UserService {
 
     public VerificationCodeResponse getVerificationCodeForSignUp(String email) {
         if (checkExistsEmail(email)) {
-            throw new ExistsEmailException();
+            throw new DuplicateEmailException();
         }
 
         String verificationCode = createVerificationCode();
