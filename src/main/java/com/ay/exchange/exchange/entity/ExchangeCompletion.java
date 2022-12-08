@@ -46,6 +46,11 @@ public class ExchangeCompletion {
     @Column(name = "board_id", nullable = false)
     private Long boardId;
 
+    @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "requester_board_id", nullable = false, insertable = false, updatable = false)
+    private Board requesterBoard; //다운 가능한 게시물
+
     @Column(name = "requester_board_id", nullable = false)
     private Long requesterBoardId; //요청자 게시물 번호
 

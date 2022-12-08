@@ -77,4 +77,7 @@ public class Board extends BaseEntity {
 
     @OneToMany(mappedBy = "board", orphanRemoval = true)
     private List<ExchangeCompletion> exchangeCompletions;
+
+    @OneToMany(mappedBy = "requesterBoard", orphanRemoval = true)
+    private List<ExchangeCompletion> requesterExchangeCompletions;
 }
