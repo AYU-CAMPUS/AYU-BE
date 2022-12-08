@@ -87,6 +87,9 @@ public class AwsS3Service {
         amazonS3Client.deleteObjects(deleteObjectsRequest);
     }
 
+    public void deleteUserFile(String filePath) {
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, filePath));
+    }
 
     private void validateFileExistsAtUrl(String filePath) {
         if (!amazonS3Client.doesObjectExist(bucketName, filePath)) {

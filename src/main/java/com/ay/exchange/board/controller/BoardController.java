@@ -111,13 +111,13 @@ public class BoardController {
         return ResponseEntity.ok(boardContentService.getBoardContent(boardId, token));
     }
 
-    @Operation(summary = "게시글 삭제", description = "게시글 삭제(대댓글과 파일이 삭제됨)",
+    @Operation(summary = "게시글 삭제", description = "게시글 삭제",
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
                     @ApiResponse(responseCode = "422", description = "게시글 삭제에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deletion")
     public ResponseEntity<Boolean> deleteBoard(
             @RequestBody DeleteRequest deleteRequest,
             @RequestHeader("token") String token

@@ -22,8 +22,7 @@ public class BoardContentService {
     }
 
     public Boolean checkModifiableBoard(String token, Long boardId) {
-        boardContentRepository.checkModifiableBoard(jwtTokenProvider.getUserId(token), boardId);
-        return true;
+        return boardContentRepository.checkModifiableBoard(jwtTokenProvider.getUserId(token), boardId);
     }
 
 }

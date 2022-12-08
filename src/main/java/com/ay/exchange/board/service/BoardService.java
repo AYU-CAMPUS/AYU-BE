@@ -91,15 +91,16 @@ public class BoardService {
         return new BoardResponse(pages.getTotalPages(), pages.getContent());
     }
 
-    //추후 accessToken 권한 검증
+    @Transactional(rollbackFor = Exception.class)
     public void deleteBoard(String token, DeleteRequest deleteRequest) {
-        boardRepository.deleteBoard(jwtTokenProvider.getUserId(token), deleteRequest.getBoardId());
-
-//        if(isAuthorized(token)){
-//            boardContentRepository.deleteByBoardId(deleteRequest.getBoardId());
-//        }else{
-//            throw new InvalidUserRoleException();
-//        }
+        String userId = jwtTokenProvider.getUserId(token);
+        if (boardContentRepository.canDeleted(userId, deleteRequest.getBoardId())) {
+            String filePath = boardRepository.findFilePathByBoardId(deleteRequest.getBoardId());
+            boardRepository.deleteBoard(userId, deleteRequest.getBoardId());
+            awsS3Service.deleteUserFile(filePath);
+            return;
+        }
+        throw new FailDeleteBoardException();
     }
 
     private GradeType getGradeType(Integer gradeType) {

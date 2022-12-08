@@ -64,7 +64,6 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
         return new PageImpl<>(pages, pageable, count);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteBoard(String userId, Long boardId) {
         if (queryFactory.delete(board)
@@ -73,6 +72,14 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 .execute() != 1L) {
             throw new FailDeleteBoardException();
         }
+    }
+
+    @Override
+    public String findFilePathByBoardId(Long boardId) {
+        return queryFactory.select(board.filePath)
+                .from(board)
+                .where(board.id.eq(boardId))
+                .fetchOne();
     }
 
     private BooleanBuilder typeEq(List<String> types) {

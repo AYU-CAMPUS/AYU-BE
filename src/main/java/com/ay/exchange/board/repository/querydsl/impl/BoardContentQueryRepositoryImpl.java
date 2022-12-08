@@ -177,17 +177,29 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
     }
 
     public Boolean checkModifiableBoard(String userId, Long boardId) {
+        String date = getAvailableDate();
+
+        return isBoardOwner(userId, boardId)
+                && checkExchangeDate(date, boardId)
+                && checkExchangeCompletionDate(date, userId, boardId);
+    }
+
+    @Override
+    public Boolean canDeleted(String userId, Long boardId) {
+        return isBoardOwner(userId, boardId)
+                && checkExchangeCompletionDate(getAvailableDate(), userId, boardId);
+    }
+
+    private String getAvailableDate(){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
         Date date = new Date(calendar.getTimeInMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        return isBoardOwner(userId, boardId)
-                && checkExchangeDate(simpleDateFormat.format(date), boardId)
-                && checkExchangeCompletionDate(simpleDateFormat.format(date), userId, boardId);
+        return simpleDateFormat.format(date);
     }
 
-    public Boolean isBoardOwner(String userId, Long boardId) {
+    private Boolean isBoardOwner(String userId, Long boardId) {
         Long count = queryFactory.select(board.count())
                 .from(board)
                 .where(board.userId.eq(userId)
@@ -211,7 +223,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
     private Boolean checkExchangeCompletionDate(String date, String userId, Long boardId) {
         Long count = queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
-                .where(getExchangeDate().gt(date)
+                .where(getExchangeCompletionDate().gt(date)
                         .and(exchangeCompletion.boardId.eq(boardId))
                         .and(exchangeCompletion.userId.eq(userId)))
                 .limit(1L)
@@ -224,6 +236,15 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 String.class,
                 "DATE_FORMAT({0}, {1})",
                 exchange.createdDate,
+                ConstantImpl.create("%Y-%m-%d")
+        );
+    }
+
+    private DateTemplate getExchangeCompletionDate() {
+        return Expressions.dateTemplate(
+                String.class,
+                "DATE_FORMAT({0}, {1})",
+                exchangeCompletion.date,
                 ConstantImpl.create("%Y-%m-%d")
         );
     }
