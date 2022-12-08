@@ -39,6 +39,7 @@ import static com.querydsl.core.group.GroupBy.*;
 public class MyPageRepository {
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
+    private final String SEPARATOR = ";";
 
     public MyPageInfo getMyPage(String userId) {
         return queryFactory.from(user)
@@ -281,7 +282,7 @@ public class MyPageRepository {
     }
 
     private String mergeStrings(List<String> desiredData) {
-        return StringUtils.join(desiredData, ";");
+        return StringUtils.join(desiredData, SEPARATOR);
     }
 
     private Boolean canWithdrawal(String userId) {
