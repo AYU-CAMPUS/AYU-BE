@@ -126,7 +126,7 @@ public class BoardController {
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "게시글 수정", description = "게시글 수정",
+    @Operation(summary = "게시글 수정 가능 여부", description = "게시글 수정 가능 여부",
             parameters = {
                     @Parameter(name = "boardId", description = "게시글 번호"),
                     @Parameter(name = "token", description = "액세스 토큰")}
