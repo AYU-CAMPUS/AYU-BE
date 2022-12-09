@@ -20,6 +20,7 @@ public enum ErrorMessage {
     FILE_INVALID(HttpStatus.BAD_REQUEST, "파일 형식이 잘못되었습니다."),
     FAIL_WRITE_BOARD(HttpStatus.UNPROCESSABLE_ENTITY,"게시글 작성에 실패하였습니다."),
     FAIL_DELETE_BOARD(HttpStatus.UNPROCESSABLE_ENTITY,"게시글 삭제에 실패하였습니다."),
+    FAIL_MODIFY_BOARD(HttpStatus.UNPROCESSABLE_ENTITY,"최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요."),
 
     FILE_UPLOAD_ERROR(HttpStatus.NOT_FOUND, "파일 업로드에 실패하였습니다."),
     FILE_NOT_EXISTS(HttpStatus.NOT_FOUND, "파일이 없습니다."),

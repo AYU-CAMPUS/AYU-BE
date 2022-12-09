@@ -1,6 +1,7 @@
 package com.ay.exchange.board.service;
 
 import com.ay.exchange.board.dto.response.BoardContentResponse;
+import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class BoardContentService {
         return boardContentRepository.findBoardContent(boardId, pageRequest, jwtTokenProvider.getUserId(token));
     }
 
-    public Boolean checkModifiableBoard(String token, Long boardId) {
-        return boardContentRepository.checkModifiableBoard(jwtTokenProvider.getUserId(token), boardId);
+    public ModifiableBoardResponse findModifiableBoard(String token, Long boardId) {
+        return boardContentRepository.findModifiableBoard(jwtTokenProvider.getUserId(token), boardId);
     }
 
 }

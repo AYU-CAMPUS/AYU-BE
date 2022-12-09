@@ -5,6 +5,7 @@ import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.BoardResponse;
+import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.exception.FileInvalidException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
@@ -126,17 +127,20 @@ public class BoardController {
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "게시글 수정 가능 여부", description = "게시글 수정 가능 여부",
+    @Operation(summary = "게시글 수정 요청", description = "게시글 수정 요청",
             parameters = {
                     @Parameter(name = "boardId", description = "게시글 번호"),
-                    @Parameter(name = "token", description = "액세스 토큰")}
+                    @Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
+                    @ApiResponse(responseCode = "422", description = "최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @GetMapping("/modifiable/{boardId}")
-    public ResponseEntity<Boolean> checkModifiableBoard(
+    public ResponseEntity<ModifiableBoardResponse> checkModifiableBoard(
             @PathVariable("boardId") Long boardId,
             @RequestHeader("token") String token
     ) {
-        return ResponseEntity.ok(boardContentService.checkModifiableBoard(token, boardId));
+        return ResponseEntity.ok(boardContentService.findModifiableBoard(token, boardId));
     }
 
 }

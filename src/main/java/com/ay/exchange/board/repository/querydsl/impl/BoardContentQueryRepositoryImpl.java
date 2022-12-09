@@ -3,8 +3,10 @@ package com.ay.exchange.board.repository.querydsl.impl;
 import com.ay.exchange.board.dto.query.BoardContentInfo2Dto;
 import com.ay.exchange.board.dto.query.BoardContentInfoDto;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
+import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
+import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.querydsl.core.types.ConstantImpl;
@@ -176,12 +178,29 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .fetch();
     }
 
-    public Boolean checkModifiableBoard(String userId, Long boardId) {
+    public ModifiableBoardResponse findModifiableBoard(String userId, Long boardId) {
         String date = getAvailableDate();
 
-        return isBoardOwner(userId, boardId)
-                && checkExchangeDate(date, boardId)
-                && checkExchangeCompletionDate(date, userId, boardId);
+        ModifiableBoardResponse modifiableBoardResponse = queryFactory.select(Projections.fields(
+                        ModifiableBoardResponse.class,
+                        board.title,
+                        board.boardCategory,
+                        board.numberOfFilePages,
+                        board.originalFileName,
+                        boardContent.content
+                ))
+                .from(board)
+                .innerJoin(boardContent)
+                .on(board.eq(boardContent.board))
+                .where(board.id.eq(boardId)
+                        .and(board.userId.eq(userId)))
+                .fetchOne();
+
+        if (modifiableBoardResponse != null && checkExchangeDate(date, boardId)
+                && checkExchangeCompletionDate(date, userId, boardId)) {
+            return modifiableBoardResponse;
+        }
+        throw new FailModifyBoardException();
     }
 
     @Override
@@ -190,7 +209,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 && checkExchangeCompletionDate(getAvailableDate(), userId, boardId);
     }
 
-    private String getAvailableDate(){
+    private String getAvailableDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
         Date date = new Date(calendar.getTimeInMillis());
