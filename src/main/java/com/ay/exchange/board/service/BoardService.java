@@ -50,6 +50,8 @@ public class BoardService {
                 .build();
 
         try {
+            String filePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), userId, 0);
+
             Board board = Board.builder()
                     .title(writeRequest.getTitle())
                     .numberOfFilePages(writeRequest.getNumberOfFilePages())
@@ -59,7 +61,7 @@ public class BoardService {
                     .boardCategory(boardCategory)
                     .originalFileName(multipartFile.getOriginalFilename())
                     .userId(userId)
-                    .filePath(awsS3Service.uploadFile(multipartFile, userId, 0))
+                    .filePath(filePath)
                     .build();
             boardRepository.save(board);
 
@@ -68,7 +70,10 @@ public class BoardService {
                     .board(board)
                     .build();
             boardContentRepository.save(boardContent);
+
+            awsS3Service.uploadFile(multipartFile, filePath);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new FailWriteBoardException();
         }
     }

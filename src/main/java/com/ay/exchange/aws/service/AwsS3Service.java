@@ -31,22 +31,20 @@ public class AwsS3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String uploadFile(MultipartFile multipartFile, String userId, int type) {
+    public void uploadFile(MultipartFile multipartFile, String filePath) {
         validateFileExists(multipartFile);
 
-        String fileName = buildFileName(multipartFile.getOriginalFilename(), userId, type);
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, type == UPDATE_PROFILE ? "profile/" + fileName : fileName, inputStream, objectMetadata)
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, filePath, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             throw new FileUploadFailedException();
         }
         //System.out.println("amazon Url: " + amazonS3Client.getUrl(bucketName, fileName).toString());
         // https://exchange-data-s3-bucket.s3.ap-northeast-2.amazonaws.com/profile
-        return fileName;
     }
 
     public byte[] downloadFile(String filePath) {
@@ -102,7 +100,7 @@ public class AwsS3Service {
             throw new EmptyFileException();
     }
 
-    private String buildFileName(String originalFileName, String userId, int type) {
+    public String buildFileName(String originalFileName, String userId, int type) {
         int fileExtensionIndex = originalFileName.lastIndexOf(FILE_EXTENSION_SEPARATOR);
         String fileExtension = originalFileName.substring(fileExtensionIndex);
         String fileName = originalFileName.substring(0, fileExtensionIndex);

@@ -94,11 +94,13 @@ public class MyPageService {
     public Boolean updateProfile(MultipartFile multipartFile, String token) {
         String userId = jwtTokenProvider.getUserId(token);
         String beforeProfilePath = myPageRepository.findProfilePath(userId);
-        myPageRepository.updateProfile(userId, awsS3Service.uploadFile(multipartFile, userId, UPDATE_PROFILE));
+        String profilePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), userId, UPDATE_PROFILE);
+        myPageRepository.updateProfile(userId, profilePath);
 
-        if (beforeProfilePath != null)
+        if (beforeProfilePath != null) {
             awsS3Service.deleteProfile("profile/" + beforeProfilePath); //기본 프로필이 아니라면 이전 프로필 삭제
-
+        }
+        awsS3Service.uploadFile(multipartFile, profilePath);
         return true;
     }
 
