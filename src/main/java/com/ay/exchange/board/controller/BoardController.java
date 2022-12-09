@@ -56,7 +56,7 @@ public class BoardController {
                     @ApiResponse(responseCode = "400", description = "파일 형식이 잘못되었습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
                     @ApiResponse(responseCode = "422", description = "게시글 작성에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @PostMapping(value = "/write")
+    @PostMapping("")
     public ResponseEntity<Boolean> writeBoard(
             @RequestPart("title") String title,
             @RequestPart("category") Integer category,
@@ -118,7 +118,7 @@ public class BoardController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
                     @ApiResponse(responseCode = "422", description = "게시글 삭제에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @DeleteMapping("/deletion")
+    @DeleteMapping("")
     public ResponseEntity<Boolean> deleteBoard(
             @RequestBody DeleteRequest deleteRequest,
             @RequestHeader("token") String token
@@ -127,7 +127,7 @@ public class BoardController {
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "게시글 수정 요청", description = "게시글 수정 요청",
+    @Operation(summary = "게시글 수정 조회", description = "게시글을 수정하기 위한 글 조회",
             parameters = {
                     @Parameter(name = "boardId", description = "게시글 번호"),
                     @Parameter(name = "token", description = "액세스 토큰")},
@@ -136,7 +136,7 @@ public class BoardController {
                     @ApiResponse(responseCode = "422", description = "최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @GetMapping("/modifiable/{boardId}")
-    public ResponseEntity<ModifiableBoardResponse> checkModifiableBoard(
+    public ResponseEntity<ModifiableBoardResponse> findModifiableBoard(
             @PathVariable("boardId") Long boardId,
             @RequestHeader("token") String token
     ) {
