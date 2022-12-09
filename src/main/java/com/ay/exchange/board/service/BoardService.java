@@ -86,7 +86,7 @@ public class BoardService {
                 Sort.by(Sort.Direction.DESC, "id"));
 
         Page<BoardInfoDto> pages = boardRepository.findBoards(
-                false, //추후 approval true로 변경해야함
+                true, //추후 approval true로 변경해야함
                 getCategory(category),
                 pageRequest,
                 getSeparateDepartmentConditions(department),

@@ -82,7 +82,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     .on(exchangeCompletion.board.eq(boardContent.board)
                             .and(exchangeCompletion.userId.eq(userId)))
                     .where(board.id.eq(boardId)
-                            .and(boardContent.board.id.eq(boardId)))
+                            .and(boardContent.board.id.eq(boardId))
+                            .and(board.approval.eq(true)))
                     .fetchOne();
 
             return new BoardContentResponse(
@@ -179,7 +180,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         .and(exchangeCompletion.userId.eq(userId)))
                 .where(comment.board.id.eq(boardId)
                         .and(board.id.eq(boardId))
-                        .and(boardContent.board.id.eq(boardId)))
+                        .and(boardContent.board.id.eq(boardId))
+                        .and(board.approval.eq(true)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
