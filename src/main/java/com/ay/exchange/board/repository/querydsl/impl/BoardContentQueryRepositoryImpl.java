@@ -2,13 +2,16 @@ package com.ay.exchange.board.repository.querydsl.impl;
 
 import com.ay.exchange.board.dto.query.BoardContentInfo2Dto;
 import com.ay.exchange.board.dto.query.BoardContentInfoDto;
+import com.ay.exchange.board.dto.request.ModificationRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
+import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
+import com.ay.exchange.common.util.DateGenerator;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;
@@ -18,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,11 +32,13 @@ import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.comment.entity.QComment.comment;
 import static com.ay.exchange.exchange.entity.QExchange.*;
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
+import static com.ay.exchange.management.entity.QModificationBoard.modificationBoard;
 import static com.ay.exchange.user.entity.QUser.user;
 
 @RequiredArgsConstructor
 public class BoardContentQueryRepositoryImpl implements BoardContentQueryRepository {
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
     private static final String SEPARATOR = ";";
     private final int BOARD_OWNER = -1;
     private final Long INTERCHANGEABLE = 0L;
@@ -193,7 +200,9 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .innerJoin(boardContent)
                 .on(board.eq(boardContent.board))
                 .where(board.id.eq(boardId)
-                        .and(board.userId.eq(userId)))
+                        .and(board.userId.eq(userId))
+                        .and(board.approval.eq(true))
+                )
                 .fetchOne();
 
         if (modifiableBoardResponse != null && checkExchangeDate(date, boardId)
@@ -209,6 +218,46 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 && checkExchangeCompletionDate(getAvailableDate(), userId, boardId);
     }
 
+    @Override
+    public void requestModificationBoard(ModificationRequest modificationRequest, String userId, String originalFilename, String filePath, BoardCategory boardCategory) {
+        String date = getAvailableDate();
+        if (!updateApproval(userId, modificationRequest.getBoardId())
+                && !checkExchangeCompletionDate(date, userId, modificationRequest.getBoardId())
+                && !checkExchangeDate(date, modificationRequest.getBoardId())) {
+            throw new FailModifyBoardException();
+        }
+
+        String sql = "INSERT INTO modification_board(title, category, department_type, file_type, grade_type, professor_name, subject_name, number_of_file_pages, original_file_name, file_path, board_id, content, date) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        Query query = em.createNativeQuery(sql)
+                .setParameter(1, modificationRequest.getTitle())
+                .setParameter(2, String.valueOf(boardCategory.getCategory()))
+                .setParameter(3, boardCategory.getDepartmentType())
+                .setParameter(4, boardCategory.getFileType())
+                .setParameter(5, boardCategory.getGradeType())
+                .setParameter(6, boardCategory.getProfessorName())
+                .setParameter(7, boardCategory.getSubjectName())
+                .setParameter(8, modificationRequest.getNumberOfFilePages())
+                .setParameter(9, originalFilename)
+                .setParameter(10, filePath)
+                .setParameter(11, modificationRequest.getBoardId())
+                .setParameter(12, modificationRequest.getContent())
+                .setParameter(13, DateGenerator.getCurrentDate());
+        if (query.executeUpdate() == 1) {
+            return;
+        }
+
+        throw new FailModifyBoardException();
+    }
+
+    private boolean updateApproval(String userId, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
+        return queryFactory.update(board)
+                .set(board.approval, false)
+                .where(board.id.eq(boardId)
+                        .and(board.userId.eq(userId))
+                        .and(board.approval.eq(true)))
+                .execute() == 1L;
+    }
+
     private String getAvailableDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
@@ -222,7 +271,9 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         Long count = queryFactory.select(board.count())
                 .from(board)
                 .where(board.userId.eq(userId)
-                        .and(board.id.eq(boardId)))
+                        .and(board.id.eq(boardId))
+                        .and(board.approval.eq(true))
+                )
                 .limit(1L)
                 .fetchOne();
         return count == 1L;

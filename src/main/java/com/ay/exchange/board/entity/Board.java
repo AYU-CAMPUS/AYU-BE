@@ -5,6 +5,7 @@ import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.common.entity.BaseEntity;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.entity.ExchangeCompletion;
+import com.ay.exchange.management.entity.ModificationBoard;
 import com.ay.exchange.report.entity.ReportBoard;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
@@ -83,4 +84,7 @@ public class Board extends BaseEntity {
 
     @OneToMany(mappedBy = "requesterBoard", orphanRemoval = true)
     private List<ExchangeCompletion> requesterExchangeCompletions;
+
+    @OneToOne(mappedBy = "board", fetch = FetchType.LAZY)
+    private ModificationBoard modificationBoard;
 }

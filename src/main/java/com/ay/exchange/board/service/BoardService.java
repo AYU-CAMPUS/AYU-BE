@@ -35,6 +35,7 @@ public class BoardService {
     private final AwsS3Service awsS3Service;
     private final JwtTokenProvider jwtTokenProvider;
     private final String REGEX = "[0-9]+";
+    private final int PAGE_LIMIT_LENGTH = 2;
 
     @Transactional(rollbackFor = Exception.class)
     public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String token) {
@@ -81,7 +82,7 @@ public class BoardService {
     public BoardResponse getBoardList(Integer page, Integer category,
                                       String department, String grade, String type
     ) {
-        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
+        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
                 Sort.by(Sort.Direction.DESC, "id"));
 
         Page<BoardInfoDto> pages = boardRepository.findBoards(
