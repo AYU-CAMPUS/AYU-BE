@@ -55,6 +55,7 @@ public class BoardService {
                     .approval(false)
                     .views(1)
                     .boardCategory(boardCategory)
+                    .originalFileName(multipartFile.getOriginalFilename())
                     .userId(userId)
                     .filePath(awsS3Service.uploadFile(multipartFile, userId, 0))
                     .build();

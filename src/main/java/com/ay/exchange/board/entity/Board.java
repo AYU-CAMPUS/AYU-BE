@@ -46,6 +46,9 @@ public class Board extends BaseEntity {
     private String filePath;
 
     @Column(nullable = false)
+    private String originalFileName;
+
+    @Column(nullable = false)
     private Boolean approval;
 
     @OneToOne(mappedBy = "board", fetch = FetchType.LAZY,
