@@ -1,6 +1,7 @@
 package com.ay.exchange.jwt;
 
 import com.ay.exchange.user.entity.vo.Authority;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -49,7 +50,7 @@ public class JwtTokenProvider {
     public String createToken(String userId, String nickName, Authority authority) {
         Claims claims = Jwts.claims();
         claims.setSubject(userId);
-        claims.put("authority", authority);
+        claims.put("authority", authority.name());
         claims.put("nickName",nickName);
 
         return Jwts.builder()
@@ -73,15 +74,16 @@ public class JwtTokenProvider {
         }
     }
 
-    public Authority getAuthority(String token) {
+    public String getAuthority(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretMasterKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
-                    .get("authority", Authority.class);
+                    .get("authority", String.class);
         } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
+            e.printStackTrace();
             throw new JwtException("유효하지 않은 토큰");
         }
     }

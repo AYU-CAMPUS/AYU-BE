@@ -8,6 +8,7 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 
+
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -20,7 +21,7 @@ import org.springframework.web.cors.CorsUtils;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig{
     private final CorsConfig corsConfig;
     //private final JwtFilterEntryPoint jwtFilterEntryPoint;
     private final JwtTokenProvider jwtTokenProvider;
@@ -35,13 +36,19 @@ public class SecurityConfig {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeHttpRequests()
-                    .requestMatchers(CorsUtils::isPreFlightRequest).permitAll();
-//                .and()
-//                    .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-//                    .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
+                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                //.antMatchers("/management/**").authenticated()
+                .and()
+                    .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
         //.exceptionHandling().authenticationEntryPoint(jwtFilterEntryPoint);
         return http.build();
     }
+
+//    @Override
+//    protected MethodSecurityExpressionHandler createExpressionHandler() {
+//        return new AuthServerMethodSecurityExpressionHandler();
+//    }
 
     private String[] getPathInSwagger() {
         return new String[]{
@@ -68,6 +75,7 @@ public class SecurityConfig {
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
+                //.antMatchers("/management/**")
                 .antMatchers(getPathInSwagger());
 //                .antMatchers(
 //                        "/user/temporary-password",
