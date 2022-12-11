@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface BoardQueryRepository {
-    Page<BoardInfoDto> findBoards(boolean apporval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types);
+    Page<BoardInfoDto> findBoards(Integer apporval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types);
     void deleteBoard(String userId, Long boardID);
 
     String findFilePathByBoardId(Long boardId);

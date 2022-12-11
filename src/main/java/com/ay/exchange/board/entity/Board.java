@@ -50,7 +50,7 @@ public class Board extends BaseEntity {
     private String originalFileName;
 
     @Column(nullable = false)
-    private Boolean approval;
+    private Integer approval;
 
     @OneToOne(mappedBy = "board", fetch = FetchType.LAZY,
             orphanRemoval = true)

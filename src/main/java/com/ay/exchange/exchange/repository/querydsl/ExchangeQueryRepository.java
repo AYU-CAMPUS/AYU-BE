@@ -1,5 +1,6 @@
 package com.ay.exchange.exchange.repository.querydsl;
 
+import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.common.util.DateGenerator;
 import com.ay.exchange.exchange.dto.ExchangeInfo;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
@@ -28,7 +29,8 @@ public class ExchangeQueryRepository {
     public ExchangeResponse getMyData(PageRequest pageRequest, String userId) {
         Long count = queryFactory.select(board.count())
                 .from(board)
-                .where(board.userId.eq(userId))
+                .where(board.userId.eq(userId)
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .fetchOne();
 
         List<ExchangeInfo> exchangaInfos = queryFactory
@@ -38,7 +40,8 @@ public class ExchangeQueryRepository {
                         board.id.as("boardId")
                 ))
                 .from(board)
-                .where(board.userId.eq(userId))
+                .where(board.userId.eq(userId)
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .fetch();
@@ -50,14 +53,16 @@ public class ExchangeQueryRepository {
     public void requestExchange(ExchangeRequest exchangeRequest, String userId) {
         String boardUserId = queryFactory.select(board.userId)
                 .from(board)
-                .where(board.id.eq(exchangeRequest.getBoardId()))
+                .where(board.id.eq(exchangeRequest.getBoardId())
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .fetchOne();
         if (boardUserId == null) throw new UnableExchangeException();
 
         Integer canExchange = queryFactory.selectOne()
                 .from(board)
                 .where(board.id.eq(exchangeRequest.getRequesterBoardId())
-                        .and(board.userId.eq(userId)))
+                        .and(board.userId.eq(userId))
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .fetchFirst();
         if (canExchange == null) throw new UnableExchangeException();
 

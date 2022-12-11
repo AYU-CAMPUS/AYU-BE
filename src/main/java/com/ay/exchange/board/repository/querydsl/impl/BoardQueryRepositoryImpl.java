@@ -7,6 +7,7 @@ import com.ay.exchange.board.entity.vo.GradeType;
 import com.ay.exchange.board.entity.vo.DepartmentType;
 import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardQueryRepository;
+import com.ay.exchange.common.util.Approval;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,7 +26,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<BoardInfoDto> findBoards(boolean apporval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types) {
+    public Page<BoardInfoDto> findBoards(Integer apporval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types) {
         List<BoardInfoDto> pages = queryFactory
                 .select(Projections.constructor(BoardInfoDto.class,
                         board.id,
@@ -67,7 +68,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     public void deleteBoard(String userId, Long boardId) {
         if (queryFactory.delete(board)
                 .where(board.userId.eq(userId)
-                        .and(board.id.eq(boardId)))
+                        .and(board.id.eq(boardId))
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .execute() != 1L) {
             throw new FailDeleteBoardException();
         }

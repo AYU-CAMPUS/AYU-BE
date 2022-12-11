@@ -11,6 +11,7 @@ import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
+import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.common.util.DateGenerator;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
@@ -83,7 +84,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             .and(exchangeCompletion.userId.eq(userId)))
                     .where(board.id.eq(boardId)
                             .and(boardContent.board.id.eq(boardId))
-                            .and(board.approval.eq(true)))
+                            .and(board.approval.eq(Approval.AGREE.getApproval())))
                     .fetchOne();
 
             return new BoardContentResponse(
@@ -181,7 +182,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .where(comment.board.id.eq(boardId)
                         .and(board.id.eq(boardId))
                         .and(boardContent.board.id.eq(boardId))
-                        .and(board.approval.eq(true)))
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -203,7 +204,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .on(board.eq(boardContent.board))
                 .where(board.id.eq(boardId)
                         .and(board.userId.eq(userId))
-                        .and(board.approval.eq(true))
+                        .and(board.approval.eq(Approval.AGREE.getApproval()))
                 )
                 .fetchOne();
 
@@ -253,10 +254,10 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
 
     private boolean updateApproval(String userId, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
         return queryFactory.update(board)
-                .set(board.approval, false)
+                .set(board.approval, Approval.MODIFICATION.getApproval())
                 .where(board.id.eq(boardId)
                         .and(board.userId.eq(userId))
-                        .and(board.approval.eq(true)))
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .execute() == 1L;
     }
 
@@ -274,7 +275,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .from(board)
                 .where(board.userId.eq(userId)
                         .and(board.id.eq(boardId))
-                        .and(board.approval.eq(true))
+                        .and(board.approval.eq(Approval.AGREE.getApproval()))
                 )
                 .limit(1L)
                 .fetchOne();

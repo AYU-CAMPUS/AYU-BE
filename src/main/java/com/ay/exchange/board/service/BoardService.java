@@ -12,6 +12,7 @@ import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,7 @@ public class BoardService {
     private final String REGEX = "[0-9]+";
     private final int PAGE_LIMIT_LENGTH = 2;
 
+
     @Transactional(rollbackFor = Exception.class)
     public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String token) {
         String userId = jwtTokenProvider.getUserId(token);
@@ -57,7 +59,7 @@ public class BoardService {
                     .title(writeRequest.getTitle())
                     .numberOfFilePages(writeRequest.getNumberOfFilePages())
                     .exchangeSuccessCount(0)
-                    .approval(false)
+                    .approval(Approval.WAITING.getApproval())
                     .views(1)
                     .boardCategory(boardCategory)
                     .originalFileName(multipartFile.getOriginalFilename())
@@ -86,7 +88,7 @@ public class BoardService {
                 Sort.by(Sort.Direction.DESC, "id"));
 
         Page<BoardInfoDto> pages = boardRepository.findBoards(
-                true, //추후 approval true로 변경해야함
+                Approval.AGREE.getApproval(),
                 getCategory(category),
                 pageRequest,
                 getSeparateDepartmentConditions(department),

@@ -1,6 +1,7 @@
 package com.ay.exchange.mypage.repository;
 
 
+import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.common.util.DateGenerator;
 import com.ay.exchange.mypage.dto.*;
 import com.ay.exchange.mypage.dto.request.ExchangeAccept;
@@ -90,7 +91,8 @@ public class MyPageRepository {
                         board.id.as("boardId")
                 ))
                 .from(board)
-                .where(board.userId.eq(userId))
+                .where(board.userId.eq(userId)
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .fetch();
