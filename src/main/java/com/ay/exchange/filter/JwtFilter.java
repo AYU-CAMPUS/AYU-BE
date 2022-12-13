@@ -18,20 +18,19 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private static final Set<String> passUri = new HashSet<>(List.of("/user/sign-up", "/user/sign-in", "/user/sign-up/verification-code", "/user/find-password/confirm/verification-code",
-            "/user/sign-up/confirm/verification-code", "/user/find-id/confirm/verification-code", "/user/sign-up/verification-code",
-            "/user/find-id/verification-code", "/user/find-password/verification-code", "/user/existence-id",
-            "/user/existence-nickname", "/user/find-id", "/management/request-board"));
+    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        //System.out.println("JWTFILTER");
         jwtTokenProvider.validateToken(request.getHeader("token"));
         filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        //System.out.println(request.getRequestURI());
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }

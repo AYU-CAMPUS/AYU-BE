@@ -8,7 +8,6 @@ import com.ay.exchange.mypage.dto.request.ExchangeAccept;
 import com.ay.exchange.mypage.dto.request.UserInfoRequest;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.exception.FailUpdateProfileException;
-import com.ay.exchange.user.dto.request.PasswordChangeRequest;
 import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.dto.response.MyPageResponse;
