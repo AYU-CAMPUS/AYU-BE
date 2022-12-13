@@ -1,4 +1,4 @@
-package com.ay.exchange.mypage.dto.request;
+package com.ay.exchange.user.dto.request;
 
 import com.ay.exchange.common.util.CharacterConstraint;
 import io.swagger.v3.oas.annotations.media.Schema;

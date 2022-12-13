@@ -1,17 +1,17 @@
-package com.ay.exchange.mypage.repository;
+package com.ay.exchange.user.repository;
 
 
 import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.common.util.DateGenerator;
-import com.ay.exchange.mypage.dto.*;
-import com.ay.exchange.mypage.dto.request.ExchangeAccept;
-import com.ay.exchange.mypage.dto.request.ExchangeRefusal;
-import com.ay.exchange.mypage.dto.request.UserInfoRequest;
-import com.ay.exchange.mypage.dto.response.DownloadableResponse;
-import com.ay.exchange.mypage.dto.response.ExchangeResponse;
-import com.ay.exchange.mypage.dto.response.MyDataResponse;
-import com.ay.exchange.mypage.exception.*;
+import com.ay.exchange.user.dto.*;
+import com.ay.exchange.user.dto.request.ExchangeAccept;
+import com.ay.exchange.user.dto.request.ExchangeRefusal;
+import com.ay.exchange.user.dto.request.UserInfoRequest;
+import com.ay.exchange.user.dto.response.DownloadableResponse;
+import com.ay.exchange.user.dto.response.ExchangeResponse;
+import com.ay.exchange.user.dto.response.MyDataResponse;
 
+import com.ay.exchange.user.exception.*;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;

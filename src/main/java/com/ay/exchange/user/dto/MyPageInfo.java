@@ -1,4 +1,4 @@
-package com.ay.exchange.mypage.dto;
+package com.ay.exchange.user.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

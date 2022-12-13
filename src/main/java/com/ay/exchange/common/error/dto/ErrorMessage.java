@@ -21,6 +21,7 @@ public enum ErrorMessage {
     UNABLE_EXCHANGE(HttpStatus.UNPROCESSABLE_ENTITY, "교환신청에 실패하였습니다."),
 
     NOT_EXISTS_FILE(HttpStatus.CONFLICT, "파일이 존재하지 않거나 올바른 사용자가 아닙니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임 입니다."),
     FAIL_ACCEPT_FILE(HttpStatus.UNPROCESSABLE_ENTITY, "교환 수락에 실패하였습니다."),
     FAIL_REFUSAL_FILE(HttpStatus.UNPROCESSABLE_ENTITY, "교환 거절에 실패하였습니다."),
     FAIL_UPDATE_PROFILE(HttpStatus.UNPROCESSABLE_ENTITY, "프로필 변경에 실패하였습니다."),
