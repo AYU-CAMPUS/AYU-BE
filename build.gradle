@@ -67,6 +67,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.apache.tika/tika-core
 	implementation 'org.apache.tika:tika-core:2.4.0'
 
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
 }
 
 //tasks.withType<Test> {

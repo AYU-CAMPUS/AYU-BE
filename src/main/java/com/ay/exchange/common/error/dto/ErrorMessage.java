@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorMessage {
+    NOT_USER(HttpStatus.NOT_FOUND,"안양대학교 웹메일만 로그인이 가능합니다."),
+
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일 입니다."),
     DUPLICATE_USER_ID(HttpStatus.CONFLICT, "이미 존재하는 아이디 입니다."),
 

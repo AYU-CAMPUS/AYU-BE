@@ -50,6 +50,14 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi oauth2Api(){
+        return GroupedOpenApi.builder()
+                .group("oauth2-api")
+                .pathsToMatch("/oauth2/**")
+                .build();
+    }
+
+    @Bean
     public OpenAPI openApi(){
         return new OpenAPI()
                 .info(new Info()

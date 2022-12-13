@@ -5,6 +5,8 @@ import com.ay.exchange.filter.JwtFilter;
 import com.ay.exchange.jwt.JwtFilterEntryPoint;
 import com.ay.exchange.jwt.JwtTokenProvider;
 
+import com.ay.exchange.oauth.handler.OAuth2SuccessHandler;
+import com.ay.exchange.oauth.service.Oauth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 
@@ -25,6 +27,8 @@ public class SecurityConfig{
     private final CorsConfig corsConfig;
     //private final JwtFilterEntryPoint jwtFilterEntryPoint;
     private final JwtTokenProvider jwtTokenProvider;
+    private final Oauth2Service oauth2Service;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,18 +41,19 @@ public class SecurityConfig{
                 .and()
                     .authorizeHttpRequests()
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                //.antMatchers("/management/**").authenticated()
                 .and()
-                    .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
+                .formLogin().disable()
+                .oauth2Login()
+                .userInfoEndpoint().userService(oauth2Service)
+                .and()
+                .successHandler(oAuth2SuccessHandler);
         //.exceptionHandling().authenticationEntryPoint(jwtFilterEntryPoint);
+        http
+                .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
+
         return http.build();
     }
-
-//    @Override
-//    protected MethodSecurityExpressionHandler createExpressionHandler() {
-//        return new AuthServerMethodSecurityExpressionHandler();
-//    }
 
     private String[] getPathInSwagger() {
         return new String[]{
@@ -66,6 +71,7 @@ public class SecurityConfig{
                 "/v3/api-docs/comment-api",
                 "/v3/api-docs/mypage-api",
                 "/v3/api-docs/report-api",
+                "/v3/api-docs/oauth2-api",
                 "/favicon.ico"
         };
     }
@@ -75,7 +81,6 @@ public class SecurityConfig{
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
-                //.antMatchers("/management/**")
                 .antMatchers(getPathInSwagger());
 //                .antMatchers(
 //                        "/user/temporary-password",

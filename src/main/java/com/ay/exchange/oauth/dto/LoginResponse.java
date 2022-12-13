@@ -1,2 +1,18 @@
-package com.ay.exchange.oauth.dto;public class LoginResponse {
+package com.ay.exchange.oauth.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class LoginResponse {
+    @Schema(description = "액세스 토큰")
+    private String token;
+
+    @Schema(description = "닉네임")
+    private String nickName;
+
+    @Schema(description = "교환요청수")
+    private Integer numberOfRequestExchange;
 }
