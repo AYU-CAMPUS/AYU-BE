@@ -26,10 +26,10 @@ public class ExchangeQueryRepository {
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 
-    public ExchangeResponse getMyData(PageRequest pageRequest, String userId) {
+    public ExchangeResponse getMyData(PageRequest pageRequest, String email) {
         Long count = queryFactory.select(board.count())
                 .from(board)
-                .where(board.userId.eq(userId)
+                .where(board.email.eq(email)
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .fetchOne();
 
@@ -40,7 +40,7 @@ public class ExchangeQueryRepository {
                         board.id.as("boardId")
                 ))
                 .from(board)
-                .where(board.userId.eq(userId)
+                .where(board.email.eq(email)
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
@@ -50,23 +50,23 @@ public class ExchangeQueryRepository {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void requestExchange(ExchangeRequest exchangeRequest, String userId) {
-        String boardUserId = queryFactory.select(board.userId)
+    public void requestExchange(ExchangeRequest exchangeRequest, String email) {
+        String boardUserEmail = queryFactory.select(board.email)
                 .from(board)
                 .where(board.id.eq(exchangeRequest.getBoardId())
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .fetchOne();
-        if (boardUserId == null) throw new UnableExchangeException();
+        if (boardUserEmail == null) throw new UnableExchangeException();
 
         Integer canExchange = queryFactory.selectOne()
                 .from(board)
                 .where(board.id.eq(exchangeRequest.getRequesterBoardId())
-                        .and(board.userId.eq(userId))
+                        .and(board.email.eq(email))
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .fetchFirst();
         if (canExchange == null) throw new UnableExchangeException();
 
-        String sql = "INSERT INTO exchange(created_date, last_modified_date, board_id, requester_board_id, requester_user_id, type, user_id)" +
+        String sql = "INSERT INTO exchange(created_date, last_modified_date, board_id, requester_board_id, requester_email, type, email)" +
                 " VALUES(?,?,?,?,?,?,?), (?,?,?,?,?,?,?)";
         String currentDate = DateGenerator.getCurrentDate();
         Query query = em.createNativeQuery(sql)
@@ -74,16 +74,16 @@ public class ExchangeQueryRepository {
                 .setParameter(2, currentDate)
                 .setParameter(3, exchangeRequest.getBoardId())
                 .setParameter(4, exchangeRequest.getRequesterBoardId())
-                .setParameter(5, userId)
+                .setParameter(5, email)
                 .setParameter(6, -2)
-                .setParameter(7, boardUserId)
+                .setParameter(7, boardUserEmail)
                 .setParameter(8, currentDate)
                 .setParameter(9, currentDate)
                 .setParameter(10, exchangeRequest.getRequesterBoardId())
                 .setParameter(11, exchangeRequest.getBoardId())
-                .setParameter(12, boardUserId)
+                .setParameter(12, boardUserEmail)
                 .setParameter(13, -2)
-                .setParameter(14, userId);
+                .setParameter(14, email);
         if (query.executeUpdate() != 2) throw new UnableExchangeException();
     }
 }

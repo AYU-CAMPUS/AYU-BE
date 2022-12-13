@@ -17,7 +17,7 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintReportBoard",
-                        columnNames = {"board_id", "user_id"}
+                        columnNames = {"board_id", "email"}
                 )
         }
 )
@@ -37,11 +37,11 @@ public class ReportBoard {
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false, nullable = false)
+    @JoinColumn(name = "email", insertable = false, updatable = false, nullable = false)
     private User user;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId; //신고자 아이디
+    @Column(name = "email", nullable = false)
+    private String email; //신고자 아이디
 
     @Column(length = 100, nullable = false)
     private String reason; //사유

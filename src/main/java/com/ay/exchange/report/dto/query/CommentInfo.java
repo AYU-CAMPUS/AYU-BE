@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CommentInfo {
-    private String targetUserId;
+    private String targetUserEmail;
     private String content;
 }

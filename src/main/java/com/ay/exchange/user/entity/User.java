@@ -22,13 +22,7 @@ import java.util.List;
 @Getter
 public class User extends BaseEntity implements Persistable<String> {
     @Id
-    @Column(name = "user_id", nullable = false)
-    private String userId;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -75,7 +69,7 @@ public class User extends BaseEntity implements Persistable<String> {
 
     @Override
     public String getId() {
-        return userId;
+        return email;
     }
 
     @Override

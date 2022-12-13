@@ -41,7 +41,7 @@ public class BoardService {
 
     @Transactional(rollbackFor = Exception.class)
     public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String token) {
-        String userId = jwtTokenProvider.getUserId(token);
+        String email = jwtTokenProvider.getUserEmail(token);
 
         BoardCategory boardCategory = BoardCategory.builder()
                 .category(getCategory(writeRequest.getCategoryDto().getCategory()))
@@ -53,7 +53,7 @@ public class BoardService {
                 .build();
 
         try {
-            String filePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), userId, 0);
+            String filePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), email, 0);
 
             Board board = Board.builder()
                     .title(writeRequest.getTitle())
@@ -63,7 +63,7 @@ public class BoardService {
                     .views(1)
                     .boardCategory(boardCategory)
                     .originalFileName(multipartFile.getOriginalFilename())
-                    .userId(userId)
+                    .email(email)
                     .filePath(filePath)
                     .build();
             boardRepository.save(board);
@@ -104,10 +104,10 @@ public class BoardService {
 
     @Transactional(rollbackFor = Exception.class)
     public void deleteBoard(String token, DeleteRequest deleteRequest) {
-        String userId = jwtTokenProvider.getUserId(token);
-        if (boardContentRepository.canDeleted(userId, deleteRequest.getBoardId())) {
+        String email = jwtTokenProvider.getUserEmail(token);
+        if (boardContentRepository.canDeleted(email, deleteRequest.getBoardId())) {
             String filePath = boardRepository.findFilePathByBoardId(deleteRequest.getBoardId());
-            boardRepository.deleteBoard(userId, deleteRequest.getBoardId());
+            boardRepository.deleteBoard(email, deleteRequest.getBoardId());
             awsS3Service.deleteUserFile(filePath);
             return;
         }

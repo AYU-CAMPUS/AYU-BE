@@ -69,17 +69,17 @@ public class MyPageController {
     }
 
 
-    @Operation(summary = "비밀번호 변경",
-            description = "비밀번호 변경",
-            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
-    )
-    @PatchMapping("/password")
-    public Boolean updatePassword(
-            @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
-            @RequestHeader("token") String token
-    ) {
-        return myPageService.updatePassword(passwordChangeRequest, token);
-    }
+//    @Operation(summary = "비밀번호 변경",
+//            description = "비밀번호 변경",
+//            parameters = {@Parameter(name = "token", description = "액세스 토큰")}
+//    )
+//    @PatchMapping("/password")
+//    public Boolean updatePassword(
+//            @RequestBody @Valid PasswordChangeRequest passwordChangeRequest,
+//            @RequestHeader("token") String token
+//    ) {
+//        return myPageService.updatePassword(passwordChangeRequest, token);
+//    }
 
     @Operation(summary = "내가 올린 자료 조회",
             description = "내가 올린 자료 조회",

@@ -11,7 +11,7 @@ import com.ay.exchange.mypage.dto.response.DownloadableResponse;
 import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.exception.*;
-import com.ay.exchange.user.repository.UserRepository;
+
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;
@@ -42,15 +42,15 @@ public class MyPageRepository {
     private final EntityManager em;
     private final String SEPARATOR = ";";
 
-    public MyPageInfo getMyPage(String userId) {
+    public MyPageInfo getMyPage(String email) {
         return queryFactory.from(user)
                 .leftJoin(board)
-                .on(board.userId.eq(userId))
+                .on(board.email.eq(email))
                 .leftJoin(exchange)
-                .on(exchange.userId.eq(userId).and(exchange.type.eq(-2)))
-                .where(user.userId.eq(userId))
+                .on(exchange.email.eq(email).and(exchange.type.eq(-2)))
+                .where(user.email.eq(email))
                 .transform(
-                        groupBy(user.userId)
+                        groupBy(user.email)
                                 .as(Projections.fields(
                                         MyPageInfo.class,
                                         user.nickName,
@@ -59,7 +59,7 @@ public class MyPageRepository {
                                         set(board.id).as("myDataCount"),
                                         set(exchange.boardId).as("downloadCount")
                                 ))
-                ).get(userId);
+                ).get(email);
     }
 
     public Long getExchangeRequestCount(Set<Long> boards) {
@@ -69,18 +69,18 @@ public class MyPageRepository {
                 .fetchOne();
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public Boolean updatePassword(String userId, String password) {
-        return queryFactory.update(user)
-                .where(user.userId.eq(userId))
-                .set(user.password, password)
-                .execute() == 1L;
-    }
+//    @Transactional(rollbackFor = Exception.class)
+//    public Boolean updatePassword(String userId, String password) {
+//        return queryFactory.update(user)
+//                .where(user.userId.eq(userId))
+//                .set(user.password, password)
+//                .execute() == 1L;
+//    }
 
-    public MyDataResponse getMyData(PageRequest pageRequest, String userId) {
+    public MyDataResponse getMyData(PageRequest pageRequest, String email) {
         Long count = queryFactory.select(board.count())
                 .from(board)
-                .where(board.userId.eq(userId))
+                .where(board.email.eq(email))
                 .fetchOne();
 
         List<MyDataInfo> myDataInfos = queryFactory
@@ -91,7 +91,7 @@ public class MyPageRepository {
                         board.id.as("boardId")
                 ))
                 .from(board)
-                .where(board.userId.eq(userId)
+                .where(board.email.eq(email)
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
@@ -100,10 +100,10 @@ public class MyPageRepository {
         return new MyDataResponse(count, myDataInfos);
     }
 
-    public DownloadableResponse getDownloadable(PageRequest pageRequest, String userId) {
+    public DownloadableResponse getDownloadable(PageRequest pageRequest, String email) {
         Long count = queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
-                .where(exchangeCompletion.userId.eq(userId))
+                .where(exchangeCompletion.email.eq(email))
                 .fetchOne();
 
         List<DownloadableInfo> downloadableInfos = queryFactory
@@ -118,8 +118,8 @@ public class MyPageRepository {
                 .innerJoin(board)
                 .on(exchangeCompletion.requesterBoardId.eq(board.id))
                 .innerJoin(user)
-                .on(board.userId.eq(user.userId))
-                .where(exchangeCompletion.userId.eq(userId))
+                .on(board.email.eq(user.email))
+                .where(exchangeCompletion.email.eq(email))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .fetch();
@@ -127,25 +127,25 @@ public class MyPageRepository {
         return new DownloadableResponse(count, downloadableInfos);
     }
 
-    public FilePathInfo getFilePath(Long requesterBoardId, String userId) {
+    public FilePathInfo getFilePath(Long requesterBoardId, String email) {
         FilePathInfo filePathInfo = queryFactory.select(Projections.fields(
                         FilePathInfo.class,
-                        board.userId,
+                        board.email,
                         board.filePath
                 ))
                 .from(exchangeCompletion)
                 .innerJoin(board)
                 .on(board.id.eq(exchangeCompletion.requesterBoardId))
                 .where(exchangeCompletion.requesterBoardId.eq(requesterBoardId)
-                        .and(exchangeCompletion.userId.eq(userId)))
+                        .and(exchangeCompletion.email.eq(email)))
                 .fetchOne();
         return filePathInfo;
     }
 
-    public ExchangeResponse getExchanges(PageRequest pageRequest, String userId) {
+    public ExchangeResponse getExchanges(PageRequest pageRequest, String email) {
         Long count = queryFactory.select(exchange.count())
                 .from(exchange)
-                .where(exchange.userId.eq(userId))
+                .where(exchange.email.eq(email))
                 .fetchOne();
         if (count == 0L) {
             return new ExchangeResponse(0L, new ArrayList<>());
@@ -157,17 +157,17 @@ public class MyPageRepository {
                         exchange.Id.as("exchangeId"),
                         exchange.createdDate.as("applicationDate"),
                         user.nickName.as("requesterNickName"),
-                        exchange.requesterUserId.as("requesterId"),
+                        exchange.requesterEmail.as("requesterId"),
                         board.title,
                         exchange.boardId,
                         board.id.as("requesterBoardId")
                 ))
                 .from(exchange)
                 .innerJoin(user)
-                .on(exchange.requesterUserId.eq(user.userId))
+                .on(exchange.requesterEmail.eq(user.email))
                 .innerJoin(board)
                 .on(exchange.requesterBoardId.eq(board.id))
-                .where(exchange.userId.eq(userId))
+                .where(exchange.email.eq(email))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .fetch();
@@ -176,18 +176,18 @@ public class MyPageRepository {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void acceptExchange(ExchangeAccept exchangeAccept, String userId) {
+    public void acceptExchange(ExchangeAccept exchangeAccept, String email) {
         //교환신청삭제
         Long count = queryFactory.delete(exchange)
                 .where(exchange.Id.eq(exchangeAccept.getExchangeId())
                         .or(exchange.boardId.eq(exchangeAccept.getRequesterBoardId())
-                                .and(exchange.userId.eq(exchangeAccept.getRequesterId()))))
+                                .and(exchange.email.eq(exchangeAccept.getRequesterId()))))
                 .execute();
         if (count != 2L) throw new FailAcceptFileException();
 
         //교환완료
         String date = DateGenerator.getCurrentDate();
-        String sql = "INSERT INTO exchange_completion(board_id,date,user_id,requester_board_id) VALUES(?,?,?,?),(?,?,?,?)";
+        String sql = "INSERT INTO exchange_completion(board_id,date,email,requester_board_id) VALUES(?,?,?,?),(?,?,?,?)";
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, exchangeAccept.getRequesterBoardId())
                 .setParameter(2, date)
@@ -195,16 +195,16 @@ public class MyPageRepository {
                 .setParameter(4, exchangeAccept.getBoardId())
                 .setParameter(5, exchangeAccept.getBoardId())
                 .setParameter(6, date)
-                .setParameter(7, userId)
+                .setParameter(7, email)
                 .setParameter(8, exchangeAccept.getRequesterBoardId());
         if (query.executeUpdate() != 2) throw new FailAcceptFileException();
 
         //게시글과 사용자 교환 완료 증가
         sql = "UPDATE board b, user u SET b.exchange_success_count=b.exchange_success_count+1" +
-                ", u.exchange_success_count=u.exchange_success_count+1 WHERE b.user_id=u.user_id AND b.board_id=? AND u.user_id = ? OR b.board_id=? AND u.user_id=?";
+                ", u.exchange_success_count=u.exchange_success_count+1 WHERE b.email=u.email AND b.board_id=? AND u.email = ? OR b.board_id=? AND u.email=?";
         query = em.createNativeQuery(sql)
                 .setParameter(1, exchangeAccept.getBoardId())
-                .setParameter(2, userId)
+                .setParameter(2, email)
                 .setParameter(3, exchangeAccept.getRequesterBoardId())
                 .setParameter(4, exchangeAccept.getRequesterId());
         if (query.executeUpdate() != 4) {
@@ -216,11 +216,11 @@ public class MyPageRepository {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void refuseExchange(ExchangeRefusal exchangeRefusal, String userId) {
+    public void refuseExchange(ExchangeRefusal exchangeRefusal, String email) {
         if (queryFactory.delete(exchange)
                 .where(exchange.Id.eq(exchangeRefusal.getExchangeId())
-                        .or(exchange.requesterUserId.eq(userId)
-                                .and(exchange.userId.eq(exchangeRefusal.getRequesterId()))
+                        .or(exchange.requesterEmail.eq(email)
+                                .and(exchange.email.eq(exchangeRefusal.getRequesterId()))
                                 .and(exchange.boardId.eq(exchangeRefusal.getRequesterBoardId()))
                                 .and(exchange.requesterBoardId.eq(exchangeRefusal.getBoardId()))))
                 .execute() != 2L) {
@@ -228,28 +228,28 @@ public class MyPageRepository {
         }
     }
 
-    public void updateProfile(String userId, String filePath) {
+    public void updateProfile(String email, String filePath) {
         System.out.println(filePath);
         if (queryFactory.update(user)
                 .set(user.profileImage, filePath)
-                .where(user.userId.eq(userId))
+                .where(user.email.eq(email))
                 .execute() != 1L) {
             throw new FailUpdateProfileException();
         }
     }
 
-    public String findProfilePath(String userId) {
+    public String findProfilePath(String email) {
         String profileImage = queryFactory.select(user.profileImage)
                 .from(user)
-                .where(user.userId.eq(userId))
+                .where(user.email.eq(email))
                 .fetchOne();
         return profileImage;
     }
 
-    public void withdrawalUser(String userId) {
-        if (canWithdrawal(userId)) {
+    public void withdrawalUser(String email) {
+        if (canWithdrawal(email)) {
             queryFactory.delete(user)
-                    .where(user.userId.eq(userId))
+                    .where(user.email.eq(email))
                     .execute();
             return;
         }
@@ -257,25 +257,25 @@ public class MyPageRepository {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateUserInfo(String userId, UserInfoRequest userInfoRequest) {
-        if (checkExistsByNickName(userId, userInfoRequest.getNickName())) {
+    public void updateUserInfo(String email, UserInfoRequest userInfoRequest) {
+        if (checkExistsByNickName(email, userInfoRequest.getNickName())) {
             throw new DuplicateNickNameException();
         }
 
         if (queryFactory.update(user)
                 .set(user.nickName, userInfoRequest.getNickName())
                 .set(user.desiredData, mergeStrings(userInfoRequest.getDesiredData()))
-                .where(user.userId.eq(userId))
+                .where(user.email.eq(email))
                 .execute() != 1L) {
             throw new FailUpdateUserInfoException();
         }
 
     }
 
-    private boolean checkExistsByNickName(String userId, String nickName) {
+    private boolean checkExistsByNickName(String email, String nickName) {
         if (queryFactory.select(user.count())
                 .from(user)
-                .where(user.userId.ne(userId)
+                .where(user.email.ne(email)
                         .and(user.nickName.eq(nickName)))
                 .fetchOne() == 1L) {
             return true;
@@ -287,7 +287,7 @@ public class MyPageRepository {
         return StringUtils.join(desiredData, SEPARATOR);
     }
 
-    private Boolean canWithdrawal(String userId) {
+    private Boolean canWithdrawal(String email) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
         Date date = new Date(calendar.getTimeInMillis());
@@ -296,7 +296,7 @@ public class MyPageRepository {
         Long count = queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
                 .where(getExchangeDate().gt(simpleDateFormat.format(date))
-                        .and(exchangeCompletion.userId.eq(userId)))
+                        .and(exchangeCompletion.email.eq(email)))
                 .limit(1L)
                 .fetchOne();
         return count == 0L;

@@ -8,8 +8,6 @@ import com.ay.exchange.comment.exception.FailWriteCommentException;
 import com.ay.exchange.comment.repository.CommentRepository;
 import com.ay.exchange.comment.repository.querydsl.CommentQueryRepository;
 import com.ay.exchange.jwt.JwtTokenProvider;
-import com.ay.exchange.mypage.exception.FailWithdrawalException;
-import com.ay.exchange.user.exception.InvalidUserRoleException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,7 +27,7 @@ public class CommentService {
                 .content(writeRequest.getContent())
                 .depth(writeRequest.getDepth())
                 .groupId(writeRequest.getGroupId())
-                .userId(jwtTokenProvider.getUserId(token))
+                .email(jwtTokenProvider.getUserEmail(token))
                 .boardId(writeRequest.getBoardId())
                 .build();
         try {
@@ -41,11 +39,11 @@ public class CommentService {
     }
 
     public void deleteComment(DeleteRequest deleteRequest, String token) {
-        commentQueryRepository.deleteComment(jwtTokenProvider.getUserId(token), deleteRequest.getCommentId());
+        commentQueryRepository.deleteComment(jwtTokenProvider.getUserEmail(token), deleteRequest.getCommentId());
     }
 
     private boolean isAuthorized(String accessToken, String userId) {
-        return jwtTokenProvider.getUserId(accessToken).equals(userId);
+        return jwtTokenProvider.getUserEmail(accessToken).equals(userId);
     }
 
     public List<CommentInfoDto> getComments(Long boardId, Integer page) {

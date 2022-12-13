@@ -18,6 +18,6 @@ public class BoardContentInfo2Dto {
     private Integer numberOfSuccessfulExchanges;
     private String createdDate;
     private Integer exchangeType;
-    private String userId;
+    private String email;
     private String desiredData;
 }

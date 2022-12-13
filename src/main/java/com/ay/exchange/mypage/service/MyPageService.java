@@ -11,18 +11,14 @@ import com.ay.exchange.mypage.dto.response.ExchangeResponse;
 import com.ay.exchange.mypage.dto.response.MyDataResponse;
 import com.ay.exchange.mypage.dto.response.MyPageResponse;
 import com.ay.exchange.mypage.exception.NotExistsFileException;
-import com.ay.exchange.user.dto.request.PasswordChangeRequest;
 import com.ay.exchange.mypage.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +30,7 @@ public class MyPageService {
     private final int UPDATE_PROFILE = 1;
 
     public MyPageResponse getMypage(String token) {
-        MyPageInfo myPageInfo = myPageRepository.getMyPage(jwtTokenProvider.getUserId(token));
+        MyPageInfo myPageInfo = myPageRepository.getMyPage(jwtTokenProvider.getUserEmail(token));
 
         return new MyPageResponse(myPageInfo.getNickName(),
                 myPageInfo.getProfileImage(),
@@ -46,24 +42,24 @@ public class MyPageService {
         );
     }
 
-    public Boolean updatePassword(PasswordChangeRequest passwordChangeRequest, String token) {
-        return myPageRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
-    }
+//    public Boolean updatePassword(PasswordChangeRequest passwordChangeRequest, String token) {
+//        return myPageRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
+//    }
 
     public MyDataResponse getMyData(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return myPageRepository.getMyData(pageRequest, jwtTokenProvider.getUserId(token));
+        return myPageRepository.getMyData(pageRequest, jwtTokenProvider.getUserEmail(token));
     }
 
     public DownloadableResponse getDownloadable(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return myPageRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserId(token));
+        return myPageRepository.getDownloadable(pageRequest, jwtTokenProvider.getUserEmail(token));
     }
 
     public String getFilePath(Long boardId, String token) {
-        FilePathInfo filePathInfo = myPageRepository.getFilePath(boardId, jwtTokenProvider.getUserId(token));
+        FilePathInfo filePathInfo = myPageRepository.getFilePath(boardId, jwtTokenProvider.getUserEmail(token));
         if (filePathInfo == null) {
             throw new NotExistsFileException();
         }
@@ -73,17 +69,17 @@ public class MyPageService {
     public ExchangeResponse getExchanges(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-        return myPageRepository.getExchanges(pageRequest, jwtTokenProvider.getUserId(token));
+        return myPageRepository.getExchanges(pageRequest, jwtTokenProvider.getUserEmail(token));
     }
 
     public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
-        myPageRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserId(token));
+        myPageRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserEmail(token));
         //알림도 생성
         return true;
     }
 
     public Boolean refuseExchange(ExchangeRefusal exchangeRefusal, String token) {
-        myPageRepository.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserId(token));
+        myPageRepository.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserEmail(token));
 
         //알림도 생성
         return true;
@@ -92,10 +88,10 @@ public class MyPageService {
 
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateProfile(MultipartFile multipartFile, String token) {
-        String userId = jwtTokenProvider.getUserId(token);
-        String beforeProfilePath = myPageRepository.findProfilePath(userId);
-        String profilePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), userId, UPDATE_PROFILE);
-        myPageRepository.updateProfile(userId, profilePath);
+        String email = jwtTokenProvider.getUserEmail(token);
+        String beforeProfilePath = myPageRepository.findProfilePath(email);
+        String profilePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), email, UPDATE_PROFILE);
+        myPageRepository.updateProfile(email, profilePath);
 
         if (beforeProfilePath != null) {
             awsS3Service.deleteProfile("profile/" + beforeProfilePath); //기본 프로필이 아니라면 이전 프로필 삭제
@@ -106,17 +102,17 @@ public class MyPageService {
 
     @Transactional(rollbackFor = Exception.class)
     public Boolean withdrawalUser(String token) {
-        String userId = jwtTokenProvider.getUserId(token);
-        String profilePath = myPageRepository.findProfilePath(userId);
-        myPageRepository.withdrawalUser(userId);
+        String email = jwtTokenProvider.getUserEmail(token);
+        String profilePath = myPageRepository.findProfilePath(email);
+        myPageRepository.withdrawalUser(email);
         awsS3Service.deleteProfile("profile/" + profilePath);
-        awsS3Service.deleteUserFiles(userId);
+        awsS3Service.deleteUserFiles(email);
         return true;
     }
 
     public void updateUserInfo(UserInfoRequest userInfoRequest, String token) {
-        String userId = jwtTokenProvider.getUserId(token);
-        myPageRepository.updateUserInfo(userId, userInfoRequest);
+        String email = jwtTokenProvider.getUserEmail(token);
+        myPageRepository.updateUserInfo(email, userInfoRequest);
     }
 
 }

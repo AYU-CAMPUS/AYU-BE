@@ -15,12 +15,12 @@ public class ReportService {
 
 
     public Boolean reportBoard(ReportBoardRequest reportBoardRequest, String token) {
-        reportQueryRepository.reportBoard(reportBoardRequest, jwtTokenProvider.getUserId(token));
+        reportQueryRepository.reportBoard(reportBoardRequest, jwtTokenProvider.getUserEmail(token));
         return true;
     }
 
     public Boolean reportComment(ReportCommentRequest reportCommentRequest, String token) {
-        reportQueryRepository.reportComment(reportCommentRequest,jwtTokenProvider.getUserId(token));
+        reportQueryRepository.reportComment(reportCommentRequest,jwtTokenProvider.getUserEmail(token));
         return true;
     }
 }

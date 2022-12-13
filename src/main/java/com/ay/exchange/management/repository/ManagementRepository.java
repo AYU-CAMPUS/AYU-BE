@@ -36,7 +36,7 @@ public class ManagementRepository {
                 ))
                 .from(board)
                 .innerJoin(user)
-                .on(board.userId.eq(user.userId))
+                .on(board.email.eq(user.email))
                 .where(board.approval.eq(Approval.WAITING.getApproval()))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())

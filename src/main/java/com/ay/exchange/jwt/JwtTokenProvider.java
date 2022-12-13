@@ -1,7 +1,6 @@
 package com.ay.exchange.jwt;
 
 import com.ay.exchange.user.entity.vo.Authority;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -133,12 +132,12 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUserId(String accessToken){
+    public String getUserEmail(String token){
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretMasterKey)
                     .build()
-                    .parseClaimsJws(accessToken)
+                    .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
         } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰

@@ -33,7 +33,6 @@ import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.comment.entity.QComment.comment;
 import static com.ay.exchange.exchange.entity.QExchange.*;
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
-import static com.ay.exchange.management.entity.QModificationBoard.modificationBoard;
 import static com.ay.exchange.user.entity.QUser.user;
 
 @RequiredArgsConstructor
@@ -45,7 +44,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
     private final Long INTERCHANGEABLE = 0L;
 
     @Override
-    public BoardContentResponse findBoardContent(Long boardId, Pageable pageable, String userId) {
+    public BoardContentResponse findBoardContent(Long boardId, Pageable pageable, String email) {
         Long count = queryFactory
                 .select(comment.count())
                 .from(comment)
@@ -67,21 +66,21 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             board.exchangeSuccessCount.as("numberOfSuccessfulExchanges"),
                             board.createdDate,
                             exchange.type.coalesce(exchangeCompletion.Id.coalesce(INTERCHANGEABLE)).as("exchangeType"), //null
-                            board.userId,
+                            board.email,
                             user.desiredData
                     ))
                     .from(boardContent)
                     .leftJoin(exchange)
                     .on(boardContent.board.id.eq(exchange.boardId)
-                            .and(exchange.userId.eq(userId))
+                            .and(exchange.email.eq(email))
                             .or(boardContent.board.id.eq(exchange.requesterBoardId)
-                                    .and(exchange.requesterUserId.eq(userId))))
+                                    .and(exchange.requesterEmail.eq(email))))
                     .innerJoin(boardContent.board, board)
                     .innerJoin(user)
-                    .on(board.userId.eq(user.userId))
+                    .on(board.email.eq(user.email))
                     .leftJoin(exchangeCompletion)
                     .on(exchangeCompletion.board.eq(boardContent.board)
-                            .and(exchangeCompletion.userId.eq(userId)))
+                            .and(exchangeCompletion.email.eq(email)))
                     .where(board.id.eq(boardId)
                             .and(boardContent.board.id.eq(boardId))
                             .and(board.approval.eq(Approval.AGREE.getApproval())))
@@ -98,12 +97,12 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     boardContentInfo2Dto.getNumberOfFilePages(),
                     boardContentInfo2Dto.getNumberOfSuccessfulExchanges(),
                     boardContentInfo2Dto.getCreatedDate(),
-                    boardContentInfo2Dto.getUserId().equals(userId) ? BOARD_OWNER : boardContentInfo2Dto.getExchangeType(), //-1이면 내가 쓴 글임,
+                    boardContentInfo2Dto.getEmail().equals(email) ? BOARD_OWNER : boardContentInfo2Dto.getExchangeType(), //-1이면 내가 쓴 글임,
                     splitDesiredData(boardContentInfo2Dto.getDesiredData())
             );
         }
 
-        List<BoardContentInfoDto> result = getBoardContentInfoDto(boardId, pageable, userId);
+        List<BoardContentInfoDto> result = getBoardContentInfoDto(boardId, pageable, email);
 
         addCommentList(result, commentList);
 
@@ -122,7 +121,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 resultBoard.getNumberOfFilePages(),
                 resultBoard.getExchangeSuccessCount(),
                 resultBoard.getCreatedDate(),
-                resultBoard.getUserId().equals(userId) ? BOARD_OWNER : result.get(0).getExchangeType(),
+                resultBoard.getEmail().equals(email) ? BOARD_OWNER : result.get(0).getExchangeType(),
                 splitDesiredData(result.get(0).getDesiredData())
         );
 
@@ -147,7 +146,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         }
     }
 
-    private List<BoardContentInfoDto> getBoardContentInfoDto(Long boardId, Pageable pageable, String userId) {
+    private List<BoardContentInfoDto> getBoardContentInfoDto(Long boardId, Pageable pageable, String email) {
         return queryFactory
                 .select(Projections.constructor(
                         BoardContentInfoDto.class,
@@ -166,19 +165,19 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 ))
                 .from(comment)
                 .innerJoin(user)
-                .on(comment.userId.eq(user.userId))
+                .on(comment.email.eq(user.email))
                 .innerJoin(board)
                 .on(comment.boardId.eq(board.id))
                 .innerJoin(boardContent)
                 .on(comment.board.eq(boardContent.board))
                 .leftJoin(exchange)
                 .on(board.id.eq(exchange.boardId)
-                        .and(exchange.userId.eq(userId))
+                        .and(exchange.email.eq(email))
                         .or(board.id.eq(exchange.requesterBoardId)
-                                .and(exchange.requesterUserId.eq(userId))))
+                                .and(exchange.requesterEmail.eq(email))))
                 .leftJoin(exchangeCompletion)
                 .on(exchangeCompletion.requesterBoardId.eq(board.id)
-                        .and(exchangeCompletion.userId.eq(userId)))
+                        .and(exchangeCompletion.email.eq(email)))
                 .where(comment.board.id.eq(boardId)
                         .and(board.id.eq(boardId))
                         .and(boardContent.board.id.eq(boardId))
@@ -188,7 +187,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .fetch();
     }
 
-    public ModifiableBoardResponse findModifiableBoard(String userId, Long boardId) {
+    public ModifiableBoardResponse findModifiableBoard(String email, Long boardId) {
         String date = getAvailableDate();
 
         ModifiableBoardResponse modifiableBoardResponse = queryFactory.select(Projections.fields(
@@ -203,29 +202,29 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .innerJoin(boardContent)
                 .on(board.eq(boardContent.board))
                 .where(board.id.eq(boardId)
-                        .and(board.userId.eq(userId))
+                        .and(board.email.eq(email))
                         .and(board.approval.eq(Approval.AGREE.getApproval()))
                 )
                 .fetchOne();
 
         if (modifiableBoardResponse != null && checkExchangeDate(date, boardId)
-                && checkExchangeCompletionDate(date, userId, boardId)) {
+                && checkExchangeCompletionDate(date, email, boardId)) {
             return modifiableBoardResponse;
         }
         throw new FailModifyBoardException();
     }
 
     @Override
-    public Boolean canDeleted(String userId, Long boardId) {
-        return isBoardOwner(userId, boardId)
-                && checkExchangeCompletionDate(getAvailableDate(), userId, boardId);
+    public Boolean canDeleted(String email, Long boardId) {
+        return isBoardOwner(email, boardId)
+                && checkExchangeCompletionDate(getAvailableDate(), email, boardId);
     }
 
     @Override
-    public void requestModificationBoard(ModificationRequest modificationRequest, String userId, String originalFilename, String filePath, BoardCategory boardCategory) {
+    public void requestModificationBoard(ModificationRequest modificationRequest, String email, String originalFilename, String filePath, BoardCategory boardCategory) {
         String date = getAvailableDate();
-        if (!updateApproval(userId, modificationRequest.getBoardId())
-                && !checkExchangeCompletionDate(date, userId, modificationRequest.getBoardId())
+        if (!updateApproval(email, modificationRequest.getBoardId())
+                && !checkExchangeCompletionDate(date, email, modificationRequest.getBoardId())
                 && !checkExchangeDate(date, modificationRequest.getBoardId())) {
             throw new FailModifyBoardException();
         }
@@ -252,11 +251,11 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         throw new FailModifyBoardException();
     }
 
-    private boolean updateApproval(String userId, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
+    private boolean updateApproval(String email, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
         return queryFactory.update(board)
                 .set(board.approval, Approval.MODIFICATION.getApproval())
                 .where(board.id.eq(boardId)
-                        .and(board.userId.eq(userId))
+                        .and(board.email.eq(email))
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .execute() == 1L;
     }
@@ -270,10 +269,10 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         return simpleDateFormat.format(date);
     }
 
-    private Boolean isBoardOwner(String userId, Long boardId) {
+    private Boolean isBoardOwner(String email, Long boardId) {
         Long count = queryFactory.select(board.count())
                 .from(board)
-                .where(board.userId.eq(userId)
+                .where(board.email.eq(email)
                         .and(board.id.eq(boardId))
                         .and(board.approval.eq(Approval.AGREE.getApproval()))
                 )
@@ -293,12 +292,12 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         return count == 0L;
     }
 
-    private Boolean checkExchangeCompletionDate(String date, String userId, Long boardId) {
+    private Boolean checkExchangeCompletionDate(String date, String email, Long boardId) {
         Long count = queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
                 .where(getExchangeCompletionDate().gt(date)
                         .and(exchangeCompletion.boardId.eq(boardId))
-                        .and(exchangeCompletion.userId.eq(userId)))
+                        .and(exchangeCompletion.email.eq(email)))
                 .limit(1L)
                 .fetchOne();
         return count == 0L;

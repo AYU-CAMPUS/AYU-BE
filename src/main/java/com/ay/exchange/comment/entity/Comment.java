@@ -32,11 +32,11 @@ public class Comment {
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", updatable = false, insertable = false, nullable = false)
+    @JoinColumn(name = "email", updatable = false, insertable = false, nullable = false)
     private User user;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Column(nullable = false)
     private String content;

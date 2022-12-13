@@ -25,7 +25,7 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintExchange",
-                        columnNames = {"board_id", "requester_board_id", "user_id", "requester_user_id"}
+                        columnNames = {"board_id", "requester_board_id", "email", "requester_email"}
                 )
         }
 )
@@ -45,11 +45,11 @@ public class Exchange extends BaseEntity {
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user; //게시물 작성자
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -61,11 +61,11 @@ public class Exchange extends BaseEntity {
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "requester_user_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "requester_email", nullable = false, insertable = false, updatable = false)
     private User requesterUser; //요청자 아이디
 
-    @Column(name = "requester_user_id", nullable = false)
-    private String requesterUserId;
+    @Column(name = "requester_email", nullable = false)
+    private String requesterEmail;
 
     @Column(nullable = false)
     private Integer type;

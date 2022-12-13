@@ -8,10 +8,10 @@ import com.ay.exchange.board.entity.vo.BoardCategory;
 import org.springframework.data.domain.Pageable;
 
 public interface BoardContentQueryRepository {
-    BoardContentResponse findBoardContent(Long boardId, Pageable page, String userId);
-    ModifiableBoardResponse findModifiableBoard(String userId, Long boardId);
+    BoardContentResponse findBoardContent(Long boardId, Pageable page, String email);
+    ModifiableBoardResponse findModifiableBoard(String email, Long boardId);
 
-    Boolean canDeleted(String userId, Long boardId);
+    Boolean canDeleted(String email, Long boardId);
 
-    void requestModificationBoard(ModificationRequest modificationRequest, String userId, String originalFilename, String filePath, BoardCategory boardCategory);
+    void requestModificationBoard(ModificationRequest modificationRequest, String email, String originalFilename, String filePath, BoardCategory boardCategory);
 }

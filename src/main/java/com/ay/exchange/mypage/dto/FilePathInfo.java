@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class FilePathInfo {
-    private String userId;
+    private String email;
     private String filePath;
 
     @Override
     public String toString() {
-        return userId + "/" + filePath;
+        return email + "/" + filePath;
     }
 }

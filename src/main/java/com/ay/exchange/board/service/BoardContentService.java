@@ -31,16 +31,16 @@ public class BoardContentService {
         PageRequest pageRequest = PageRequest.of(0, PAGE_LIMIT_LENGTH,
                 Sort.by(Sort.Direction.DESC, "id"));
 
-        return boardContentRepository.findBoardContent(boardId, pageRequest, jwtTokenProvider.getUserId(token));
+        return boardContentRepository.findBoardContent(boardId, pageRequest, jwtTokenProvider.getUserEmail(token));
     }
 
     public ModifiableBoardResponse findModifiableBoard(String token, Long boardId) {
-        return boardContentRepository.findModifiableBoard(jwtTokenProvider.getUserId(token), boardId);
+        return boardContentRepository.findModifiableBoard(jwtTokenProvider.getUserEmail(token), boardId);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void requestModificationBoard(ModificationRequest modificationRequest, MultipartFile multipartFile, String token) {
-        String userId = jwtTokenProvider.getUserId(token);
+        String email = jwtTokenProvider.getUserEmail(token);
 
         BoardCategory boardCategory = BoardCategory.builder()
                 .category(getCategory(modificationRequest.getCategoryDto().getCategory()))
@@ -52,8 +52,8 @@ public class BoardContentService {
                 .build();
 
         try {
-            String filePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), userId, UPLOAD_FILE);
-            boardContentRepository.requestModificationBoard(modificationRequest, userId, multipartFile.getOriginalFilename(), filePath, boardCategory);
+            String filePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), email, UPLOAD_FILE);
+            boardContentRepository.requestModificationBoard(modificationRequest, email, multipartFile.getOriginalFilename(), filePath, boardCategory);
             awsS3Service.uploadFile(multipartFile, filePath);
         } catch (Exception e) {
             e.printStackTrace();

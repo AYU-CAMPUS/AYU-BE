@@ -39,7 +39,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 ))
                 .from(board)
                 .innerJoin(user)
-                .on(board.userId.eq(user.userId))
+                .on(board.email.eq(user.email))
                 .where(departmentEq(departments),
                         gradeEq(grades),
                         typeEq(types),
@@ -65,9 +65,9 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     }
 
     @Override
-    public void deleteBoard(String userId, Long boardId) {
+    public void deleteBoard(String email, Long boardId) {
         if (queryFactory.delete(board)
-                .where(board.userId.eq(userId)
+                .where(board.email.eq(email)
                         .and(board.id.eq(boardId))
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .execute() != 1L) {

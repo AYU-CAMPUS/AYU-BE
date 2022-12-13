@@ -20,7 +20,7 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintExchangeCompletion",
-                        columnNames = {"user_id", "requester_board_id"}
+                        columnNames = {"email", "requester_board_id"}
                 )
         }
 )
@@ -32,11 +32,11 @@ public class ExchangeCompletion {
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)

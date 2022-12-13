@@ -32,7 +32,7 @@ public class CommentQueryRepository {
                 )
                 .from(comment)
                 .innerJoin(user)
-                .on(comment.userId.eq(user.userId))
+                .on(comment.email.eq(user.email))
                 .where(comment.board.id.eq(boardId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -40,9 +40,9 @@ public class CommentQueryRepository {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void deleteComment(String userId, Long commentId) {
+    public void deleteComment(String email, Long commentId) {
         if (queryFactory.delete(comment)
-                .where(comment.userId.eq(userId)
+                .where(comment.email.eq(email)
                         .and(comment.id.eq(commentId)))
                 .execute() != 1L) {
             throw new FailDeleteCommentException();

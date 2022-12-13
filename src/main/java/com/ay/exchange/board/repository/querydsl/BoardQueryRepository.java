@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BoardQueryRepository {
     Page<BoardInfoDto> findBoards(Integer apporval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types);
-    void deleteBoard(String userId, Long boardID);
+    void deleteBoard(String email, Long boardID);
 
     String findFilePathByBoardId(Long boardId);
 }
