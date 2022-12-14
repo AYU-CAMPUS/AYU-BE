@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/oauth2/temp/login"));
+    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/oauth2/temp/login", "/management/request-board/approval"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+";
 
     @Override

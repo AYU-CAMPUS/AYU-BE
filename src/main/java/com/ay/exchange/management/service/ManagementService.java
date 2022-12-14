@@ -1,13 +1,16 @@
 package com.ay.exchange.management.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
+import com.ay.exchange.management.dto.request.AcceptBoardRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
+import com.ay.exchange.management.exception.FailAcceptRequestBoard;
 import com.ay.exchange.management.repository.ManagementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,5 +32,14 @@ public class ManagementService {
     private PageRequest getPageRequest(Integer page) {
         return PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
                 Sort.by(Sort.Direction.DESC, "id"));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void acceptRequestBoard(AcceptBoardRequest acceptBoardRequest) {
+        if (!managementRepository.updateBoardApproval(acceptBoardRequest)) {
+            throw new FailAcceptRequestBoard();
+        }
+
+        //추후 알림까지 추가
     }
 }
