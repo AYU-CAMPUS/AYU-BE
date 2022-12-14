@@ -1,7 +1,7 @@
 package com.ay.exchange.management.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
-import com.ay.exchange.management.dto.request.AcceptBoardRequest;
+import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
@@ -35,8 +35,8 @@ public class ManagementService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void acceptRequestBoard(AcceptBoardRequest acceptBoardRequest) {
-        if (!managementRepository.updateBoardApproval(acceptBoardRequest)) {
+    public void acceptRequestBoard(BoardIdRequest boardIdRequest) {
+        if (!managementRepository.updateBoardApproval(boardIdRequest)) {
             throw new FailAcceptRequestBoard();
         }
 

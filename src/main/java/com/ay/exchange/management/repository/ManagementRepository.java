@@ -1,14 +1,13 @@
 package com.ay.exchange.management.repository;
 
 import com.ay.exchange.common.util.Approval;
-import com.ay.exchange.management.dto.request.AcceptBoardRequest;
+import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,10 +44,10 @@ public class ManagementRepository {
                 .fetch();
     }
 
-    public boolean updateBoardApproval(AcceptBoardRequest acceptBoardRequest) {
+    public boolean updateBoardApproval(BoardIdRequest boardIdRequest) {
         return queryFactory.update(board)
                 .set(board.approval, Approval.AGREE.getApproval())
-                .where(board.id.eq(acceptBoardRequest.getBoardId()))
+                .where(board.id.eq(boardIdRequest.getBoardId()))
                 .execute() == 1L;
     }
 }

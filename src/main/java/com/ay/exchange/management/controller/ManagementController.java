@@ -1,7 +1,7 @@
 package com.ay.exchange.management.controller;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
-import com.ay.exchange.management.dto.request.AcceptBoardRequest;
+import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
 import com.ay.exchange.management.service.ManagementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,10 +44,11 @@ public class ManagementController {
     @PostMapping("/request-board/approval")
     @PreAuthorize("@Permission.isManager(#token)")
     public Boolean acceptRequestBoard(
-            @RequestBody AcceptBoardRequest acceptBoardRequest,
+            @RequestBody BoardIdRequest boardIdRequest,
             @RequestHeader("token") String token
     ) {
-        managementService.acceptRequestBoard(acceptBoardRequest);
+        managementService.acceptRequestBoard(boardIdRequest);
         return true;
     }
+
 }
