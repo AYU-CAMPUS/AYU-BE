@@ -2,7 +2,6 @@ package com.ay.exchange.config;
 
 import com.ay.exchange.filter.JwtExceptionFilter;
 import com.ay.exchange.filter.JwtFilter;
-import com.ay.exchange.jwt.JwtFilterEntryPoint;
 import com.ay.exchange.jwt.JwtTokenProvider;
 
 import com.ay.exchange.oauth.handler.OAuth2SuccessHandler;
@@ -25,7 +24,6 @@ import org.springframework.web.cors.CorsUtils;
 @RequiredArgsConstructor
 public class SecurityConfig{
     private final CorsConfig corsConfig;
-    //private final JwtFilterEntryPoint jwtFilterEntryPoint;
     private final JwtTokenProvider jwtTokenProvider;
     private final Oauth2Service oauth2Service;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
