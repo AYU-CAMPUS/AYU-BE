@@ -1,21 +1,20 @@
 package com.ay.exchange.common.error.exception;
 
-import com.ay.exchange.aws.exception.FileUploadFailedException;
+
 import com.ay.exchange.common.error.dto.ErrorDto;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.firewall.RequestRejectedException;
+
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
-import java.io.FileNotFoundException;
+
 
 @Slf4j
 @RestControllerAdvice
