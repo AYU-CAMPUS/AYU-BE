@@ -29,7 +29,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter{
     private void setErrorResponse(HttpStatus status, HttpServletResponse response, JwtException e) {
         response.setStatus(status.value());
         response.setContentType("application/json; charset=UTF-8");
-        System.out.println(e.getMessage());
+        System.out.println("JwtExceptionFIlter: "+e.getMessage());
         //common.util에 리팩토링
         ObjectMapper objectMapper = new ObjectMapper();
 
