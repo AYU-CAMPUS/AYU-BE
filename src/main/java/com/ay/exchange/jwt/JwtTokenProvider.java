@@ -39,7 +39,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims();
         claims.setSubject(userId);
         claims.put("authority", authority.name());
-        claims.put("nickName",nickName);
+        claims.put("nickName", nickName);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -49,6 +49,7 @@ public class JwtTokenProvider {
     }
 
     public void validateToken(String accessToken) {
+        System.out.println("ACCESS TOKEN: " + accessToken);
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretMasterKey)
@@ -77,7 +78,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUserEmail(String token){
+    public String getUserEmail(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretMasterKey)
@@ -90,14 +91,14 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getNickName(String accessToken){
+    public String getNickName(String accessToken) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretMasterKey)
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody()
-                    .get("nickName",String.class);
+                    .get("nickName", String.class);
         } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
             throw new JwtException("유효하지 않은 토큰");
         }
