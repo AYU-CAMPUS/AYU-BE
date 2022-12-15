@@ -79,6 +79,7 @@ public class UserController {
             @RequestBody @Valid UserInfoRequest userInfoRequest,
             @RequestHeader("token") String token
     ) {
+        System.out.println("/USER/INFO LOGIC");
         userService.updateUserInfo(userInfoRequest, token);
         return true;
     }

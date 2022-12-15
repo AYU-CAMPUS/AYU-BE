@@ -23,14 +23,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //System.out.println("JWTFILTER");
+        System.out.println("JWTFILTER");
         jwtTokenProvider.validateToken(request.getHeader("token"));
         filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        //System.out.println(request.getRequestURI());
+        System.out.println(request.getRequestURI());
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }

@@ -58,6 +58,7 @@ public class JwtTokenProvider {
                     .getExpiration()
                     .before(new Date());
         } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
+            System.out.println("유효하지 않은 토큰입니다");
             throw new JwtException("유효하지 않은 토큰");
         }
     }
