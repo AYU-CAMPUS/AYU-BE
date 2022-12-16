@@ -7,9 +7,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("JWTFILTER");
-        jwtTokenProvider.validateToken(request.getHeader("token"));
+        jwtTokenProvider.validateToken(findToken(request.getCookies()));
         filterChain.doFilter(request, response);
     }
 
@@ -38,5 +40,13 @@ public class JwtFilter extends OncePerRequestFilter {
             return true;
         }
         return false;
+    }
+
+    private String findToken(Cookie[] cookies) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
     }
 }

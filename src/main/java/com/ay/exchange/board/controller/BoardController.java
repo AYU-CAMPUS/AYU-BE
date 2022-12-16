@@ -69,7 +69,7 @@ public class BoardController {
             @RequestPart("numberOfFilePages") Integer numberOfFilePages,
             @RequestPart("content") String content,
             @RequestPart("file") MultipartFile multipartFile,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         if (FileValidator.isAllowedFileType(multipartFile)) {
             CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);
@@ -108,7 +108,7 @@ public class BoardController {
     )
     public ResponseEntity<BoardContentResponse> getBoardContent(
             @PathVariable("boardId") Long boardId,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return ResponseEntity.ok(boardContentService.getBoardContent(boardId, token));
     }
@@ -122,7 +122,7 @@ public class BoardController {
     @DeleteMapping("")
     public ResponseEntity<Boolean> deleteBoard(
             @RequestBody DeleteRequest deleteRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         boardService.deleteBoard(token, deleteRequest);
         return ResponseEntity.ok(true);
@@ -139,7 +139,7 @@ public class BoardController {
     @GetMapping("/modifiable/{boardId}")
     public ResponseEntity<ModifiableBoardResponse> findModifiableBoard(
             @PathVariable("boardId") Long boardId,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return ResponseEntity.ok(boardContentService.findModifiableBoard(token, boardId));
     }
@@ -183,7 +183,7 @@ public class BoardController {
             @RequestPart("numberOfFilePages") Integer numberOfFilePages,
             @RequestPart("content") String content,
             @RequestPart("file") MultipartFile multipartFile,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         if (FileValidator.isAllowedFileType(multipartFile)) {
             CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);

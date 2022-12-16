@@ -31,7 +31,7 @@ public class ReportController {
     @PostMapping("/board")
     public Boolean reportBoard(
             @RequestBody ReportBoardRequest reportBoardRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return reportService.reportBoard(reportBoardRequest, token);
     }
@@ -47,7 +47,7 @@ public class ReportController {
     @PostMapping("/comment")
     public Boolean reportComment(
             @RequestBody ReportCommentRequest reportCommentRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return reportService.reportComment(reportCommentRequest, token);
     }

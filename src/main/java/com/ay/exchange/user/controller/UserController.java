@@ -60,7 +60,7 @@ public class UserController {
     )
     @GetMapping("")
     public MyPageResponse getMyPage(
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return userService.getMypage(token);
     }
@@ -77,9 +77,9 @@ public class UserController {
     @PatchMapping("/info")
     public Boolean updateUserInfo(
             @RequestBody @Valid UserInfoRequest userInfoRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
-        System.out.println("/USER/INFO LOGIC");
+        System.out.println("token: " + token);
         userService.updateUserInfo(userInfoRequest, token);
         return true;
     }
@@ -94,7 +94,7 @@ public class UserController {
     @GetMapping("/data")
     public MyDataResponse getData(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return userService.getMyData(page, token);
     }
@@ -109,7 +109,7 @@ public class UserController {
     @GetMapping("/downloadable")
     public DownloadableResponse getDownloadable(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return userService.getDownloadable(page, token);
     }
@@ -127,7 +127,7 @@ public class UserController {
     @GetMapping(value = "/download/{requesterBoardId}")
     public ResponseEntity<ByteArrayResource> downloadFile(
             @PathVariable("requesterBoardId") Long requesterBoardId,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         //tkddls8900/김상인파일_1666970104756.txt
         //bpax7m4BI/김상인파일.txt
@@ -156,7 +156,7 @@ public class UserController {
     @GetMapping("/exchange")
     public ExchangeResponse getExchanges(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return userService.getExchanges(page, token);
     }
@@ -171,7 +171,7 @@ public class UserController {
     @PostMapping("/exchange/accept")
     public Boolean acceptExchange(
             @RequestBody ExchangeAccept exchangeAccept,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return userService.acceptExchange(exchangeAccept, token);
     }
@@ -186,7 +186,7 @@ public class UserController {
     @DeleteMapping("/exchange/refusal")
     public Boolean refuseExchange(
             @RequestBody ExchangeRefusal exchangeRefusal,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return userService.refuseExchange(exchangeRefusal, token);
     }
@@ -204,7 +204,7 @@ public class UserController {
     @PatchMapping("/profile")
     public Boolean updateProfile(
             @RequestPart("file") MultipartFile multipartFile,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         if (FileValidator.isAllowedImageType(multipartFile)) {
             return userService.updateProfile(multipartFile, token);
@@ -222,7 +222,7 @@ public class UserController {
     )
     @DeleteMapping("/withdrawal")
     public Boolean withdrawalUser(
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return userService.withdrawalUser(token);
     }

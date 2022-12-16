@@ -28,7 +28,7 @@ public class ExchangeController {
     @PostMapping("/request")
     public Boolean requestExchange(
             @RequestBody ExchangeRequest exchangeRequest,
-            @RequestHeader(value = "token") String token
+            @CookieValue(value = "token") String token
     ) {
         return exchangeService.requestExchange(exchangeRequest, token);
     }
@@ -41,7 +41,7 @@ public class ExchangeController {
     @GetMapping("")
     public ExchangeResponse getMyData(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-            @RequestHeader(value = "token") String token
+            @CookieValue(value = "token") String token
     ){
         return exchangeService.getMyData(page, token);
     }

@@ -34,7 +34,7 @@ public class CommentController {
     )
     public ResponseEntity<Boolean> writeComment(
             @RequestBody WriteRequest writeRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         commentService.writeComment(writeRequest, token);
         return ResponseEntity.ok(true);
@@ -49,7 +49,7 @@ public class CommentController {
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteComment(
             @RequestBody DeleteRequest deleteRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         commentService.deleteComment(deleteRequest, token);
         return ResponseEntity.ok(true);

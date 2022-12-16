@@ -29,7 +29,7 @@ public class ManagementController {
     @PreAuthorize("@Permission.isManager(#token)")
     public RequestBoardResponse requestBoardList(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         return managementService.findRequestBoard(page);
     }
@@ -45,7 +45,7 @@ public class ManagementController {
     @PreAuthorize("@Permission.isManager(#token)")
     public Boolean acceptRequestBoard(
             @RequestBody BoardIdRequest boardIdRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         managementService.acceptRequestBoard(boardIdRequest);
         return true;
@@ -62,7 +62,7 @@ public class ManagementController {
     @PreAuthorize("@Permission.isManager(#token)")
     public Boolean rejectRequestBoard(
             @RequestBody BoardIdRequest boardIdRequest,
-            @RequestHeader("token") String token
+            @CookieValue("token") String token
     ) {
         managementService.rejectRequestBoard(boardIdRequest);
         return true;
