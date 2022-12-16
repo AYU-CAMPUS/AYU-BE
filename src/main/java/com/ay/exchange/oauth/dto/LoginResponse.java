@@ -7,9 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LoginResponse {
-    @Schema(description = "액세스 토큰")
-    private String token;
-
     @Schema(description = "닉네임")
     private String nickName;
 

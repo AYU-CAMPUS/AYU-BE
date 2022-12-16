@@ -1,6 +1,7 @@
 package com.ay.exchange.oauth.service;
 
 
+import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.entity.vo.Authority;
@@ -67,4 +68,5 @@ public class Oauth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
                 .desiredData("")
                 .exchangeSuccessCount(0).build());
     }
+
 }

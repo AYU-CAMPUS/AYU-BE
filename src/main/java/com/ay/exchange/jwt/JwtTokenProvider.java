@@ -90,12 +90,12 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getNickName(String accessToken) {
+    public String getNickName(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretMasterKey)
                     .build()
-                    .parseClaimsJws(accessToken)
+                    .parseClaimsJws(token)
                     .getBody()
                     .get("nickName", String.class);
         } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
