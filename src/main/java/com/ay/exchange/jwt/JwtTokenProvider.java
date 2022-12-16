@@ -35,9 +35,9 @@ public class JwtTokenProvider {
         secretMasterKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(String userId, String nickName, Authority authority) {
+    public String createToken(String email, String nickName, Authority authority) {
         Claims claims = Jwts.claims();
-        claims.setSubject(userId);
+        claims.setSubject(email);
         claims.put("authority", authority.name());
         claims.put("nickName", nickName);
 
@@ -58,8 +58,7 @@ public class JwtTokenProvider {
                     .getBody()
                     .getExpiration()
                     .before(new Date());
-        } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
-            e.printStackTrace();
+        } catch (JwtException | IllegalArgumentException e) {
             throw new JwtException("유효하지 않은 토큰");
         }
     }
