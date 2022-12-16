@@ -45,7 +45,6 @@ public class SecurityConfig{
                 .userInfoEndpoint().userService(oauth2Service)
                 .and()
                 .successHandler(oAuth2SuccessHandler);
-        //.exceptionHandling().authenticationEntryPoint(jwtFilterEntryPoint);
         http
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
@@ -79,11 +78,6 @@ public class SecurityConfig{
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
                 .antMatchers(getPathInSwagger());
-//                .antMatchers(
-//                        "/user/temporary-password",
-//                        "/board/{category:\\d+}/**",
-//                        "/board/content/{category:\\d+}",
-//                        "/comment/{boardId:\\d+}/**")
     }
 
     @Bean
