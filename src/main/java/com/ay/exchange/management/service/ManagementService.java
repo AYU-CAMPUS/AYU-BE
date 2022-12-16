@@ -42,4 +42,17 @@ public class ManagementService {
 
         //추후 알림까지 추가
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void rejectRequestBoard(BoardIdRequest boardIdRequest) {
+        try{
+            if (managementRepository.deleteBoard(boardIdRequest)) {
+                //추후 알림까지 추가
+                return;
+            }
+        } catch (Exception e){
+            throw new FailAcceptRequestBoard();
+        }
+        throw new FailAcceptRequestBoard();
+    }
 }

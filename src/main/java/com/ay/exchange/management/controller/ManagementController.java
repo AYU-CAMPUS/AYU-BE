@@ -51,4 +51,20 @@ public class ManagementController {
         return true;
     }
 
+    @Operation(summary = "요청 게시글 거절", description = "요청 게시글 거절",
+            parameters = {
+                    @Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
+                    @ApiResponse(responseCode = "422", description = "게시글 거절에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+    )
+    @DeleteMapping("/request-board/rejection")
+    @PreAuthorize("@Permission.isManager(#token)")
+    public Boolean rejectRequestBoard(
+            @RequestBody BoardIdRequest boardIdRequest,
+            @RequestHeader("token") String token
+    ) {
+        managementService.rejectRequestBoard(boardIdRequest);
+        return true;
+    }
 }

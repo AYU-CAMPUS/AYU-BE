@@ -50,4 +50,10 @@ public class ManagementRepository {
                 .where(board.id.eq(boardIdRequest.getBoardId()))
                 .execute() == 1L;
     }
+
+    public boolean deleteBoard(BoardIdRequest boardIdRequest) {
+        return queryFactory.delete(board)
+                .where(board.id.eq(boardIdRequest.getBoardId()))
+                .execute() == 1L;
+    }
 }
