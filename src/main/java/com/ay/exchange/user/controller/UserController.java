@@ -79,7 +79,6 @@ public class UserController {
             @RequestBody @Valid UserInfoRequest userInfoRequest,
             @CookieValue("token") String token
     ) {
-        System.out.println("token: " + token);
         userService.updateUserInfo(userInfoRequest, token);
         return true;
     }
