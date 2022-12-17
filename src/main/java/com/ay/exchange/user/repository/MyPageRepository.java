@@ -9,6 +9,7 @@ import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.ExchangeResponse;
+import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 
 import com.ay.exchange.user.exception.*;
@@ -272,6 +273,19 @@ public class MyPageRepository {
 
     }
 
+    public LoginNotificationResponse findUserNotificiatonByEmail(String userEmail) {
+        return queryFactory.select(Projections.fields(
+                        LoginNotificationResponse.class,
+                        user.nickName,
+                        exchange.count().as("numberOfExchange")))
+                .from(user)
+                .innerJoin(exchange)
+                .on(exchange.email.eq(user.email))
+                .where(user.email.eq(userEmail))
+                .limit(100L)
+                .fetchOne();
+    }
+
     private boolean checkExistsByNickName(String email, String nickName) {
         if (queryFactory.select(user.count())
                 .from(user)
@@ -310,5 +324,4 @@ public class MyPageRepository {
                 ConstantImpl.create("%Y-%m-%d")
         );
     }
-
 }

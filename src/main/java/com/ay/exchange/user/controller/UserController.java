@@ -6,11 +6,8 @@ import com.ay.exchange.common.util.FileValidator;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
-import com.ay.exchange.user.dto.response.ExchangeResponse;
+import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.exception.FailUpdateProfileException;
-import com.ay.exchange.user.dto.response.DownloadableResponse;
-import com.ay.exchange.user.dto.response.MyDataResponse;
-import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,6 +35,17 @@ import javax.validation.constraints.Pattern;
 public class UserController {
     private final UserService userService;
     private final AwsS3Service awsS3Service;
+
+    @Operation(summary = "로그인 성공 시 페이지 상단에 교환 수를 조회함",
+            description = "로그인 성공 시 페이지 상단에 교환 수를 조회함",
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = LoginNotificationResponse.class)))
+            })
+    @GetMapping("/notification")
+    public LoginNotificationResponse searchLoginInfo(@CookieValue(value = "token") String token) {
+        return userService.getUserNotification(token);
+    }
 
     @Operation(summary = "중복 닉네임 확인",
             description = "회원가입 시 중뵥 학교 닉네임인지 확인",

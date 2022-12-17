@@ -7,10 +7,7 @@ import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
-import com.ay.exchange.user.dto.response.DownloadableResponse;
-import com.ay.exchange.user.dto.response.ExchangeResponse;
-import com.ay.exchange.user.dto.response.MyDataResponse;
-import com.ay.exchange.user.dto.response.MyPageResponse;
+import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.exception.NotExistsFileException;
 import com.ay.exchange.user.repository.MyPageRepository;
 import com.ay.exchange.user.repository.UserRepository;
@@ -122,4 +119,7 @@ public class UserService {
         myPageRepository.updateUserInfo(email, userInfoRequest);
     }
 
+    public LoginNotificationResponse getUserNotification(String token) {
+        return myPageRepository.findUserNotificiatonByEmail(jwtTokenProvider.getUserEmail(token));
+    }
 }
