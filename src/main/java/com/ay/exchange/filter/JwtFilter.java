@@ -25,8 +25,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JWTFILTER");
-        jwtTokenProvider.validateToken(findToken(request.getCookies()));
+        String token = findToken(request.getCookies());
+        jwtTokenProvider.validateToken(token);
         filterChain.doFilter(request, response);
     }
 

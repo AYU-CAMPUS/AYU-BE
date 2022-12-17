@@ -98,17 +98,20 @@ public class BoardController {
                 .getBoardList(page, category, department, grade, type));
     }
 
-    @GetMapping("/content/{boardId}")
-    @Transactional
+
     @Operation(summary = "게시글 보기", description = "게시글 목록에서 글을 눌렀을 때",
             parameters = {
                     @Parameter(name = "boardId", description = "게시글 번호"),
-                    @Parameter(name = "token", description = "액세스 토큰")
+                    @Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = BoardContentResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             }
     )
+    @GetMapping("/content/{boardId}")
     public ResponseEntity<BoardContentResponse> getBoardContent(
             @PathVariable("boardId") Long boardId,
-            @CookieValue("token") String token
+            @CookieValue(value = "token", required = false) String token
     ) {
         return ResponseEntity.ok(boardContentService.getBoardContent(boardId, token));
     }

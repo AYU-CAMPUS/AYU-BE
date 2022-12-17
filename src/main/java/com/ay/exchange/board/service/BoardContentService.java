@@ -6,6 +6,7 @@ import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.board.exception.FailModifyBoardException;
+import com.ay.exchange.board.exception.NotFoundBoardException;
 import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,19 @@ public class BoardContentService {
     private final int UPLOAD_FILE = 0;
     private final int PAGE_LIMIT_LENGTH = 2;
 
+    @Transactional(readOnly = true)
     public BoardContentResponse getBoardContent(Long boardId, String token) {
         PageRequest pageRequest = PageRequest.of(0, PAGE_LIMIT_LENGTH,
                 Sort.by(Sort.Direction.DESC, "id"));
+        try {
+            if (token == null) {
+                return boardContentRepository.findBoardContent(boardId, pageRequest, "");
+            }
 
-        return boardContentRepository.findBoardContent(boardId, pageRequest, jwtTokenProvider.getUserEmail(token));
+            return boardContentRepository.findBoardContent(boardId, pageRequest, jwtTokenProvider.getUserEmail(token));
+        } catch (Exception e) {
+            throw new NotFoundBoardException();
+        }
     }
 
     public ModifiableBoardResponse findModifiableBoard(String token, Long boardId) {

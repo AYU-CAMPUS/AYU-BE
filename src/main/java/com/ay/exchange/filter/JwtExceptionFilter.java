@@ -21,12 +21,13 @@ public class JwtExceptionFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try{
             chain.doFilter(request,response);
-        }catch(JwtException e){
+        }catch(Exception e){
+            e.printStackTrace();
             setErrorResponse(HttpStatus.UNAUTHORIZED,response,e);
         }
     }
 
-    private void setErrorResponse(HttpStatus status, HttpServletResponse response, JwtException e) {
+    private void setErrorResponse(HttpStatus status, HttpServletResponse response, Exception e) {
         response.setStatus(status.value());
         response.setContentType("application/json; charset=UTF-8");
         System.out.println("JwtExceptionFIlter: "+e.getMessage());
