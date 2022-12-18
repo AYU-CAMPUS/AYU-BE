@@ -43,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private String findToken(Cookie[] cookies) {
+        if (cookies == null) return null;
         return Arrays.stream(cookies)
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .map(Cookie::getValue)
