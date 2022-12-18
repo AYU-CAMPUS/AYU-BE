@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
 
@@ -77,9 +78,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private void makeResponse(HttpServletResponse response, String email, String nickName, Authority authority) throws IOException {
         response.addCookie(makeCookie(jwtTokenProvider.createToken(email, nickName, authority)));
+        response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login")
+                .queryParam("numberOfRequestExchange", 0)
+                .queryParam("nickName", nickName)
+                .build()
+                .toUriString());
 
-        String result = objectMapper.writeValueAsString(new LoginResponse(nickName, 0));
-        response.getWriter().write(result);
+//        String result = objectMapper.writeValueAsString(new LoginResponse(nickName, 0));
+//        response.getWriter().write(result);
     }
 
     private Cookie makeCookie(String token) {
