@@ -93,8 +93,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .domain(DOMAIN)
                 .path("/")
                 .maxAge(COOKIE_EXPIRE_TIME)
+                .secure(true)
                 .sameSite("None").build();
-                //.secure(true)
         return cookie.toString();
     }
 
