@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -77,24 +79,23 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     private void makeResponse(HttpServletResponse response, String email, String nickName, Authority authority) throws IOException {
-        response.addCookie(makeCookie(jwtTokenProvider.createToken(email, nickName, authority)));
-        response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login")
+        response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(jwtTokenProvider.createToken(email, nickName, authority)));
+        response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000")
                 .queryParam("numberOfRequestExchange", 0)
                 .queryParam("nickName", nickName)
                 .build()
                 .toUriString());
-
-//        String result = objectMapper.writeValueAsString(new LoginResponse(nickName, 0));
-//        response.getWriter().write(result);
     }
 
-    private Cookie makeCookie(String token) {
-        Cookie cookie = new Cookie("token", token);
-        cookie.setMaxAge(COOKIE_EXPIRE_TIME);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setDomain(DOMAIN);
-        return cookie;
+    private String makeCookie(String token) {
+        ResponseCookie cookie = ResponseCookie.from("token",token)
+                .httpOnly(true)
+                .domain(DOMAIN)
+                .path("/")
+                .maxAge(COOKIE_EXPIRE_TIME)
+                .sameSite("None").build();
+                //.secure(true)
+        return cookie.toString();
     }
 
     private void makeError(HttpServletResponse response) throws IOException {
