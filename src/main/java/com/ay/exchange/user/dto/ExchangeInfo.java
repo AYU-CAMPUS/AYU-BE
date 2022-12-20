@@ -25,7 +25,7 @@ public class ExchangeInfo {
     private String title;
 
     @Schema(description = "내 게시글 번호")
-    private Long BoardId;
+    private Long boardId;
 
     @Schema(description = "신청자 게시글 번호")
     private Long requesterBoardId;
