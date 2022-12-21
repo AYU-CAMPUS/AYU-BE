@@ -26,7 +26,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<BoardInfoDto> findBoards(Integer apporval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types) {
+    public Page<BoardInfoDto> findBoards(Integer approval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types) {
         List<BoardInfoDto> pages = queryFactory
                 .select(Projections.constructor(BoardInfoDto.class,
                         board.id,
@@ -43,8 +43,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 .where(departmentEq(departments),
                         gradeEq(grades),
                         typeEq(types),
-                        board.approval.eq(apporval),
-                        board.boardCategory.category.eq(Category.valueOf(category.name()))
+                        board.approval.eq(approval),
+                        board.boardCategory.category.eq(category)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -56,8 +56,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 .where(departmentEq(departments),
                         gradeEq(grades),
                         typeEq(types),
-                        board.approval.eq(apporval),
-                        board.boardCategory.category.eq(Category.valueOf(category.name()))
+                        board.approval.eq(approval),
+                        board.boardCategory.category.eq(category)
                 )
                 .fetchOne();
 
