@@ -124,7 +124,7 @@ public class UserController {
     @Operation(summary = "자료 다운로드",
             description = "자료 다운로드",
             parameters = {
-                    @Parameter(name = "boardId", description = "게시물 번호"),
+                    @Parameter(name = "requesterBoardId", description = "요청자 게시물 번호"),
                     @Parameter(name = "token", description = "액세스 토큰")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
