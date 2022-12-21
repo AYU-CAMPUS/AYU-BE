@@ -89,7 +89,8 @@ public class MyPageRepository {
                         MyDataInfo.class,
                         board.createdDate,
                         board.title,
-                        board.id.as("boardId")
+                        board.id.as("boardId"),
+                        board.boardCategory.category
                 ))
                 .from(board)
                 .where(board.email.eq(email)
@@ -113,7 +114,8 @@ public class MyPageRepository {
                         exchangeCompletion.date.as("exchangeDate"),
                         board.title,
                         user.nickName.as("writer"),
-                        board.id.as("requesterBoardId")
+                        board.id.as("requesterBoardId"),
+                        board.boardCategory.category
                 ))
                 .from(exchangeCompletion)
                 .innerJoin(board)

@@ -1,5 +1,6 @@
 package com.ay.exchange.user.dto;
 
+import com.ay.exchange.board.entity.vo.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,4 +18,7 @@ public class MyDataInfo {
 
     @Schema(description = "자료명 게시글 번호")
     private Long boardId;
+
+    @Schema(description = "카테고리")
+    private Category category;
 }

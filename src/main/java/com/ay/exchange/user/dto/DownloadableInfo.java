@@ -1,5 +1,6 @@
 package com.ay.exchange.user.dto;
 
+import com.ay.exchange.board.entity.vo.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,4 +21,7 @@ public class DownloadableInfo {
 
     @Schema(description = "요청자 게시글 번호")
     private Long requesterBoardId;
+
+    @Schema(description = "카테고리")
+    private Category category;
 }
