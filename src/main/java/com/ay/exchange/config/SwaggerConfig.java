@@ -50,6 +50,14 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi exchangeApi(){
+        return GroupedOpenApi.builder()
+                .group("exchange-api")
+                .pathsToMatch("/exchange/**")
+                .build();
+    }
+
+    @Bean
     public OpenAPI openApi(){
         return new OpenAPI()
                 .info(new Info()
