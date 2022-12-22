@@ -79,7 +79,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     .innerJoin(user)
                     .on(board.email.eq(user.email))
                     .leftJoin(exchangeCompletion)
-                    .on(exchangeCompletion.board.eq(boardContent.board)
+                    .on(exchangeCompletion.requesterBoard.eq(boardContent.board)
                             .and(exchangeCompletion.email.eq(email)))
                     .where(board.id.eq(boardId)
                             .and(boardContent.board.id.eq(boardId))
