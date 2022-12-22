@@ -24,8 +24,8 @@ public class MyPageResponse {
     @Schema(description = "다운로드 가능한 자료 수")
     private Integer downloadCount;
 
-    @Schema(description = "교환 요청 수")
-    private Long exchangeRequestCount;
+    @Schema(description = "교환 중인 수")
+    private Integer exchangeRequestCount;
 
     @Schema(description = "원하는 자료")
     private List<String> desiredData;

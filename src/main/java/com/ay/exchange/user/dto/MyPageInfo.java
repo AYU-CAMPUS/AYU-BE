@@ -13,13 +13,13 @@ public class MyPageInfo {
     private String profileImage;
     private Integer exchangeSuccessCount;
     private Set<Long> myDataCount;
-    private Set<Long> downloadCount;
+    private Set<Long> exchangeRequests;
 
     public Set<Long> getMyDataCounts() {
         return myDataCount == null ? new HashSet<Long>() : myDataCount;
     }
 
-    public int getDownloadCount() {
-        return downloadCount == null ? 0 : downloadCount.size();
+    public int getExchangeRequestsCount() {
+        return exchangeRequests == null ? 0 : exchangeRequests.size();
     }
 }

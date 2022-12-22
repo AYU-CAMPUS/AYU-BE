@@ -34,14 +34,15 @@ public class UserService {
     }
 
     public MyPageResponse getMypage(String token) {
-        MyPageInfo myPageInfo = myPageRepository.getMyPage(jwtTokenProvider.getUserEmail(token));
+        String email = jwtTokenProvider.getUserEmail(token);
+        MyPageInfo myPageInfo = myPageRepository.getMyPage(email);
 
         return new MyPageResponse(myPageInfo.getNickName(),
                 myPageInfo.getProfileImage(),
                 myPageInfo.getExchangeSuccessCount(),
                 myPageInfo.getMyDataCounts().size(),
-                myPageInfo.getDownloadCount(),
-                myPageRepository.getExchangeRequestCount(myPageInfo.getMyDataCount()),
+                myPageRepository.getDonwloadableCount(email).intValue(),
+                myPageInfo.getExchangeRequestsCount(),
                 null
         );
     }

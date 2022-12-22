@@ -58,15 +58,15 @@ public class MyPageRepository {
                                         user.profileImage.coalesce("default.svg").as("profileImage"),
                                         user.exchangeSuccessCount,
                                         set(board.id).as("myDataCount"),
-                                        set(exchange.boardId).as("downloadCount")
+                                        set(exchange.boardId).as("exchangeRequests")
                                 ))
                 ).get(email);
     }
 
-    public Long getExchangeRequestCount(Set<Long> boards) {
-        return queryFactory.select(exchange.count())
-                .from(exchange)
-                .where(exchange.boardId.in(boards))
+    public Long getDonwloadableCount(String email) {
+        return queryFactory.select(exchangeCompletion.count())
+                .from(exchangeCompletion)
+                .where(exchangeCompletion.email.eq(email))
                 .fetchOne();
     }
 
