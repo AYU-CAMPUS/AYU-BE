@@ -58,7 +58,8 @@ public class MyPageRepository {
                                         user.profileImage.coalesce("default.svg").as("profileImage"),
                                         user.exchangeSuccessCount,
                                         set(board.id).as("myDataCount"),
-                                        set(exchange.boardId).as("exchangeRequests")
+                                        set(exchange.boardId).as("exchangeRequests"),
+                                        user.desiredData
                                 ))
                 ).get(email);
     }

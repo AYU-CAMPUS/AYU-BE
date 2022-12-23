@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -14,6 +15,7 @@ public class MyPageInfo {
     private Integer exchangeSuccessCount;
     private Set<Long> myDataCount;
     private Set<Long> exchangeRequests;
+    private String desiredData;
 
     public Set<Long> getMyDataCounts() {
         return myDataCount == null ? new HashSet<Long>() : myDataCount;

@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -28,6 +31,7 @@ public class UserService {
     private final AwsS3Service awsS3Service;
     private final int UPDATE_PROFILE = 1;
     private final UserRepository userRepository;
+    private final String SEPARATOR = ";";
 
     public Boolean checkExistsNickName(String nickName) {
         return userRepository.existsByNickName(nickName);
@@ -43,7 +47,8 @@ public class UserService {
                 myPageInfo.getMyDataCounts().size(),
                 myPageRepository.getDonwloadableCount(email).intValue(),
                 myPageInfo.getExchangeRequestsCount(),
-                null
+                Arrays.stream(myPageInfo.getDesiredData().split(SEPARATOR))
+                        .collect(Collectors.toList())
         );
     }
 
