@@ -2,9 +2,11 @@ package com.ay.exchange.management.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
+import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
+import com.ay.exchange.management.exception.FailUpdatedSuspension;
 import com.ay.exchange.management.repository.ManagementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -45,14 +47,22 @@ public class ManagementService {
 
     @Transactional(rollbackFor = Exception.class)
     public void rejectRequestBoard(BoardIdRequest boardIdRequest) {
-        try{
+        try {
             if (managementRepository.deleteBoard(boardIdRequest)) {
                 //추후 알림까지 추가
                 return;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new FailAcceptRequestBoard();
         }
         throw new FailAcceptRequestBoard();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateSuspension(SuspensionRequest suspensionRequest) {
+        if (managementRepository.updateUserSuspensionByEmail(suspensionRequest) == 1L) {
+            return;
+        }
+        throw new FailUpdatedSuspension();
     }
 }

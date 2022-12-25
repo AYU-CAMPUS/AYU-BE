@@ -8,7 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class BoardIdRequest {
-    @Schema(description = "허가 또는 거절할 게시물 번호")
-    private Long boardId;
+public class SuspensionRequest {
+    @Schema(description = "정지당할 사용자 이메일")
+    private String email;
+
+    @Schema(description = "정지 기간 ex)2022-12-12 형태로")
+    private String date;
 }

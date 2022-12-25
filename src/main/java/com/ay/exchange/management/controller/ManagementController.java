@@ -2,6 +2,7 @@ package com.ay.exchange.management.controller;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
+import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
 import com.ay.exchange.management.service.ManagementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,6 +66,22 @@ public class ManagementController {
             @CookieValue("token") String token
     ) {
         managementService.rejectRequestBoard(boardIdRequest);
+        return true;
+    }
+
+    @Operation(summary = "정지 주기", description = "사용자 정지 주기",
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
+                    @ApiResponse(responseCode = "422", description = "정지 요청 실패", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+    )
+    @PatchMapping("/suspension")
+    @PreAuthorize("@Permission.isManager(#token)")
+    public Boolean updateSuspension(
+            @RequestBody SuspensionRequest suspensionRequest,
+            @CookieValue("token") String token
+    ) {
+        managementService.updateSuspension(suspensionRequest);
         return true;
     }
 }

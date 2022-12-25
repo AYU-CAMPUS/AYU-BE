@@ -34,7 +34,8 @@ public enum ErrorMessage {
     FAIL_DELETE_COMMENT(HttpStatus.UNPROCESSABLE_ENTITY,"댓글 삭제에 실패하였습니다."),
 
     FAIL_ACCEPT_REQUEST_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "게시글 허가에 실패하였습니다"),
-    FAIL_REJECTION_REQUEST_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "게시글 거절에 실패하였습니다");
+    FAIL_REJECTION_REQUEST_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "게시글 거절에 실패하였습니다"),
+    FAIL_UPDATED_SUSPENSION(HttpStatus.UNPROCESSABLE_ENTITY,"유저 정지에 실패하였습니다");
 
     private final HttpStatus status;
     private final String description;

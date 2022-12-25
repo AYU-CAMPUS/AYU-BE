@@ -2,6 +2,7 @@ package com.ay.exchange.management.repository;
 
 import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
+import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -55,5 +56,12 @@ public class ManagementRepository {
         return queryFactory.delete(board)
                 .where(board.id.eq(boardIdRequest.getBoardId()))
                 .execute() == 1L;
+    }
+
+    public long updateUserSuspensionByEmail(SuspensionRequest suspensionRequest) {
+        return queryFactory.update(user)
+                .set(user.suspendedDate, suspensionRequest.getDate())
+                .where(user.email.eq(suspensionRequest.getEmail()))
+                .execute();
     }
 }
