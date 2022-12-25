@@ -41,7 +41,7 @@ public class ManagementController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
                     @ApiResponse(responseCode = "422", description = "게시글 허가에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @PostMapping("/request-board/approval")
+    @PostMapping("/request-board")
     @PreAuthorize("@Permission.isManager(#token)")
     public Boolean acceptRequestBoard(
             @RequestBody BoardIdRequest boardIdRequest,
@@ -58,7 +58,7 @@ public class ManagementController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
                     @ApiResponse(responseCode = "422", description = "게시글 거절에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @DeleteMapping("/request-board/rejection")
+    @DeleteMapping("/request-board")
     @PreAuthorize("@Permission.isManager(#token)")
     public Boolean rejectRequestBoard(
             @RequestBody BoardIdRequest boardIdRequest,
