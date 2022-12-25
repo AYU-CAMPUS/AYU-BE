@@ -59,22 +59,23 @@ public class BoardController {
     )
     @PostMapping("")
     public ResponseEntity<Boolean> writeBoard(
-            @RequestParam("title") String title,
-            @RequestParam("category") Integer category,
-            @RequestParam(value = "departmentType", required = false) Integer departmentType,
-            @RequestParam(value = "fileType", required = false) Integer fileType,
-            @RequestParam(value = "gradeType", required = false) Integer gradeType,
-            @RequestParam(value = "subjectName", required = false) String subjectName,
-            @RequestParam(value = "professorName", required = false) String professorName,
-            @RequestParam("numberOfFilePages") Integer numberOfFilePages,
-            @RequestParam("content") String content,
-            @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+            @RequestPart("writeRequest") WriteRequest writeRequest,
+//            @RequestParam("title") String title,
+//            @RequestParam("category") Integer category,
+//            @RequestParam(value = "departmentType", required = false) Integer departmentType,
+//            @RequestParam(value = "fileType", required = false) Integer fileType,
+//            @RequestParam(value = "gradeType", required = false) Integer gradeType,
+//            @RequestParam(value = "subjectName", required = false) String subjectName,
+//            @RequestParam(value = "professorName", required = false) String professorName,
+//            @RequestParam("numberOfFilePages") Integer numberOfFilePages,
+//            @RequestParam("content") String content,
+            @RequestPart(value = "file", required = false) MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
-        System.out.println(title + " " + category + " " + token);
+        System.out.println(writeRequest.getTitle()+ " "+token);
         if (FileValidator.isAllowedFileType(multipartFile)) {
-            CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);
-            boardService.writeBoard(new WriteRequest(title, categoryDto, numberOfFilePages, content), multipartFile, token);
+            CategoryDto categoryDto = new CategoryDto(writeRequest.getCategory(), writeRequest.getDepartmentType(), writeRequest.getFileType(), writeRequest.getGradeType(), writeRequest.getSubjectName(), writeRequest.getProfessorName());
+            boardService.writeBoard(writeRequest, multipartFile, token);
             return ResponseEntity.ok(true);
         }
         throw new FileInvalidException();

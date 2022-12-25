@@ -44,12 +44,12 @@ public class BoardService {
         String email = jwtTokenProvider.getUserEmail(token);
 
         BoardCategory boardCategory = BoardCategory.builder()
-                .category(getCategory(writeRequest.getCategoryDto().getCategory()))
-                .departmentType(getDepartmentType(writeRequest.getCategoryDto().getDepartmentType()))
-                .fileType(getFileType(writeRequest.getCategoryDto().getFileType()))
-                .gradeType(getGradeType(writeRequest.getCategoryDto().getGradeType()))
-                .subjectName(writeRequest.getCategoryDto().getSubjectName())
-                .professorName(writeRequest.getCategoryDto().getProfessorName())
+                .category(getCategory(writeRequest.getCategory()))
+                .departmentType(getDepartmentType(writeRequest.getDepartmentType()))
+                .fileType(getFileType(writeRequest.getFileType()))
+                .gradeType(getGradeType(writeRequest.getGradeType()))
+                .subjectName(writeRequest.getSubjectName())
+                .professorName(writeRequest.getProfessorName())
                 .build();
 
         try {
