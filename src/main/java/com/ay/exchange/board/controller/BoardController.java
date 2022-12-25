@@ -59,16 +59,16 @@ public class BoardController {
     )
     @PostMapping("")
     public ResponseEntity<Boolean> writeBoard(
-            @RequestPart("title") String title,
-            @RequestPart("category") Integer category,
-            @RequestPart(value = "departmentType", required = false) Integer departmentType,
-            @RequestPart(value = "fileType", required = false) Integer fileType,
-            @RequestPart(value = "gradeType", required = false) Integer gradeType,
-            @RequestPart(value = "subjectName", required = false) String subjectName,
-            @RequestPart(value = "professorName", required = false) String professorName,
-            @RequestPart("numberOfFilePages") Integer numberOfFilePages,
-            @RequestPart("content") String content,
-            @RequestPart("file") MultipartFile multipartFile,
+            @RequestParam("title") String title,
+            @RequestParam("category") Integer category,
+            @RequestParam(value = "departmentType", required = false) Integer departmentType,
+            @RequestParam(value = "fileType", required = false) Integer fileType,
+            @RequestParam(value = "gradeType", required = false) Integer gradeType,
+            @RequestParam(value = "subjectName", required = false) String subjectName,
+            @RequestParam(value = "professorName", required = false) String professorName,
+            @RequestParam("numberOfFilePages") Integer numberOfFilePages,
+            @RequestParam("content") String content,
+            @RequestParam("file") MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
         if (FileValidator.isAllowedFileType(multipartFile)) {
