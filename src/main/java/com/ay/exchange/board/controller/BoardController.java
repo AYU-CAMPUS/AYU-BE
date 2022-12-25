@@ -71,6 +71,7 @@ public class BoardController {
             @RequestParam("file") MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
+        System.out.println(title + " " + category + " " + token);
         if (FileValidator.isAllowedFileType(multipartFile)) {
             CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);
             boardService.writeBoard(new WriteRequest(title, categoryDto, numberOfFilePages, content), multipartFile, token);
