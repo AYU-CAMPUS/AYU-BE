@@ -90,7 +90,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private String makeCookie(String token) {
         ResponseCookie cookie = ResponseCookie.from("token",token)
                 .httpOnly(true)
-                .domain(DOMAIN)
+                //.domain(DOMAIN)
+                .domain("localhost:3000")
                 .path("/")
                 .maxAge(COOKIE_EXPIRE_TIME)
                 .secure(true)
