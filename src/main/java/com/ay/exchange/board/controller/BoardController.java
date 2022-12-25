@@ -68,7 +68,7 @@ public class BoardController {
             @RequestParam(value = "professorName", required = false) String professorName,
             @RequestParam("numberOfFilePages") Integer numberOfFilePages,
             @RequestParam("content") String content,
-            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam(value = "file", required = false) MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
         System.out.println(title + " " + category + " " + token);
