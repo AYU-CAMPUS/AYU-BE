@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class BoardIdRequest {
-    @Schema(description = "허가할 게시물 번호")
+    @Schema(description = "허가 또는 거절할 게시물 번호")
     private Long boardId;
 }
