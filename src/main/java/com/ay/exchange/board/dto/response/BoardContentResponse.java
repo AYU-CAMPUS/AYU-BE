@@ -29,9 +29,6 @@ public class BoardContentResponse {
     @Schema(description = "카테고리")
     private BoardCategory boardCategory;
 
-    @Schema(description = "조회수")
-    private Integer views;
-
     @Schema(description = "파일 페이지 수")
     private Integer numberOfFilePages;
 

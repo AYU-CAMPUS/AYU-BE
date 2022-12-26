@@ -60,7 +60,6 @@ public class BoardService {
                     .numberOfFilePages(writeRequest.getNumberOfFilePages())
                     .exchangeSuccessCount(0)
                     .approval(Approval.WAITING.getApproval())
-                    .views(1)
                     .boardCategory(boardCategory)
                     .originalFileName(multipartFile.getOriginalFilename())
                     .email(email)

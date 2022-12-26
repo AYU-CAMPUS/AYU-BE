@@ -35,9 +35,6 @@ public class Board extends BaseEntity {
     private BoardCategory boardCategory;
 
     @Column(nullable = false)
-    private Integer views;
-
-    @Column(nullable = false)
     private Integer numberOfFilePages;
 
     @Column(nullable = false)

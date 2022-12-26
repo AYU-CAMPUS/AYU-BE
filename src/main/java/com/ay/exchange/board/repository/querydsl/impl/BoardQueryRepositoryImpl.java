@@ -32,8 +32,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                         board.id,
                         board.title,
                         user.nickName.as("writer"),
-                        board.views,
-                        board.boardCategory,
+                        board.boardCategory.subjectName,
+                        board.boardCategory.gradeType,
                         board.exchangeSuccessCount,
                         board.createdDate
                 ))
