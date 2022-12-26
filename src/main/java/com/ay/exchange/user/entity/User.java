@@ -31,8 +31,7 @@ public class User extends BaseEntity implements Persistable<String> {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    //@Temporal(TemporalType.DATE)
-    private String suspendedDate;
+
 
     @Column(name = "profile_image")
     private String profileImage;
@@ -42,6 +41,11 @@ public class User extends BaseEntity implements Persistable<String> {
 
     @Column(length = 70, nullable = false)
     private String desiredData;
+
+    //@Temporal(TemporalType.DATE)
+    private String suspendedDate; //추후 suspendedDate와 suspendedReason을 suspend테이블로 1:1 매핑시켜도 될 듯함
+
+    private String suspendedReason; //정지사유
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<Comment> comments;
