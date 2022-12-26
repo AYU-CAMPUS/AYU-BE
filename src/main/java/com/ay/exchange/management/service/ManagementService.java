@@ -1,10 +1,12 @@
 package com.ay.exchange.management.service;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
+import com.ay.exchange.management.dto.query.UserInfo;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
+import com.ay.exchange.management.dto.response.UserInfoResponse;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
 import com.ay.exchange.management.exception.FailUpdatedSuspension;
 import com.ay.exchange.management.repository.ManagementRepository;
@@ -29,11 +31,6 @@ public class ManagementService {
         List<BoardInfo> boardInfos = managementRepository.findRequestBoards(getPageRequest(page));
 
         return new RequestBoardResponse(totalPages, boardInfos);
-    }
-
-    private PageRequest getPageRequest(Integer page) {
-        return PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
-                Sort.by(Sort.Direction.DESC, "id"));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -64,5 +61,17 @@ public class ManagementService {
             return;
         }
         throw new FailUpdatedSuspension();
+    }
+
+    public UserInfoResponse getUserInfos(Integer page) {
+        Long totalPages = managementRepository.findUserTotal();
+
+        List<UserInfo> userInfos = managementRepository.findUserInfos(getPageRequest(page));
+        return new UserInfoResponse(totalPages, userInfos);
+    }
+
+    private PageRequest getPageRequest(Integer page) {
+        return PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
+                Sort.by(Sort.Direction.DESC, "id"));
     }
 }

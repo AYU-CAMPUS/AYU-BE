@@ -4,6 +4,7 @@ import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
+import com.ay.exchange.management.dto.response.UserInfoResponse;
 import com.ay.exchange.management.service.ManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -83,5 +84,17 @@ public class ManagementController {
     ) {
         managementService.updateSuspension(suspensionRequest);
         return true;
+    }
+
+    @Operation(summary = "유저 정보 조회", description = "유저 정보 조회",
+            parameters = {@Parameter(name = "page", description = "페이지 번호"),
+                    @Parameter(name = "token", description = "액세스 토큰")}
+    )
+    @GetMapping("/user")
+    public UserInfoResponse getUserInfos(
+            @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+            @CookieValue("token") String token
+    ) {
+        return managementService.getUserInfos(page);
     }
 }

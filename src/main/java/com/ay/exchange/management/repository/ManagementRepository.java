@@ -1,9 +1,11 @@
 package com.ay.exchange.management.repository;
 
 import com.ay.exchange.common.util.Approval;
+import com.ay.exchange.management.dto.query.UserInfo;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
+import com.ay.exchange.management.dto.response.UserInfoResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -63,5 +65,27 @@ public class ManagementRepository {
                 .set(user.suspendedDate, suspensionRequest.getDate())
                 .where(user.email.eq(suspensionRequest.getEmail()))
                 .execute();
+    }
+
+    public List<UserInfo> findUserInfos(PageRequest pageRequest) {
+        return queryFactory.select(Projections.fields(
+                        UserInfo.class,
+                        user.email,
+                        user.nickName,
+                        user.createdDate,
+                        user.suspendedDate,
+                        user.suspendedReason))
+                .from(user)
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+
+    }
+
+    public Long findUserTotal() {
+        return queryFactory.select(user.count())
+                .from(user)
+                .fetchOne();
+
     }
 }
