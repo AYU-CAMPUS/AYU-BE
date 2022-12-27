@@ -177,6 +177,7 @@ public class MyPageRepository {
                 .where(exchange.email.eq(email))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
+                .orderBy(exchange.Id.desc())
                 .fetch();
 
         return new ExchangeResponse(count, exchangeInfos);
