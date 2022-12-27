@@ -178,7 +178,7 @@ public class UserController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
                     @ApiResponse(responseCode = "422", description = "교환 수락에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @PostMapping("/exchange/accept")
+    @PostMapping("/exchange")
     public Boolean acceptExchange(
             @RequestBody ExchangeAccept exchangeAccept,
             @CookieValue("token") String token
@@ -193,7 +193,7 @@ public class UserController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
                     @ApiResponse(responseCode = "422", description = "교환 거절에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @DeleteMapping("/exchange/refusal")
+    @DeleteMapping("/exchange")
     public Boolean refuseExchange(
             @RequestBody ExchangeRefusal exchangeRefusal,
             @CookieValue("token") String token
