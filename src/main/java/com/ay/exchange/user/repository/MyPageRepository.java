@@ -99,6 +99,7 @@ public class MyPageRepository {
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
+                .orderBy(board.id.desc())
                 .fetch();
 
         return new MyDataResponse(count, myDataInfos);
