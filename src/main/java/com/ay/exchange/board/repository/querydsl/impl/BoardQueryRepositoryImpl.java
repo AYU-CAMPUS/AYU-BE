@@ -48,6 +48,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(board.id.desc())
                 .fetch();
 
         Long count = queryFactory
