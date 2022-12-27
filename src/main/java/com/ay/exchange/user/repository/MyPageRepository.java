@@ -128,6 +128,7 @@ public class MyPageRepository {
                 .where(exchangeCompletion.email.eq(email))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
+                .orderBy(exchangeCompletion.Id.desc())
                 .fetch();
 
         return new DownloadableResponse(count, downloadableInfos);
