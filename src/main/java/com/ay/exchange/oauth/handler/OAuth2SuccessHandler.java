@@ -2,11 +2,9 @@ package com.ay.exchange.oauth.handler;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.jwt.JwtTokenProvider;
-import com.ay.exchange.oauth.dto.LoginResponse;
 import com.ay.exchange.oauth.service.Oauth2Service;
 import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.entity.vo.Authority;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
@@ -20,9 +18,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.ServletException;
-
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -38,10 +33,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${cookie.domain}")
     private String DOMAIN;
 
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        //추후 로그인에 성공하면 redis를 활용하여 유저 이메일에 대해서 jwt 삭제해줘야 함.
+        //추후 로그인에 성공하면 redis를 활용하여 유저 이메일에 대해서 jwt 삭제해줘야 함. => 이중 로그인 방지
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         settingResponse(response);
@@ -56,10 +50,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         if (checkExistingUser(userInfoDto)) { //기존 회원
             makeResponse(response, email, userInfoDto.getNickName(), userInfoDto.getAuthority());
+            //redis에 accesstoken저장
             return;
         }
 
         //최초 로그인
+        //redis에 accesstoken저장
         String nickName = settingUserNickName();
         try {
             oauth2Service.saveUser(email, nickName);
@@ -81,14 +77,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private void makeResponse(HttpServletResponse response, String email, String nickName, Authority authority) throws IOException {
         response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(jwtTokenProvider.createToken(email, nickName, authority)));
         response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000")
-                .queryParam("numberOfRequestExchange", 0)
-                .queryParam("nickName", nickName)
                 .build()
                 .toUriString());
     }
 
     private String makeCookie(String token) {
-        ResponseCookie cookie = ResponseCookie.from("token",token)
+        ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .domain(DOMAIN)
                 .path("/")
@@ -117,7 +111,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String randomNickName = null;
         while (true) {
             randomNickName = makeRandomNickName();
-            if (!oauth2Service.checkExistsUserByByEmail(randomNickName)) {
+            if (!oauth2Service.checkExistsUserByNickName(randomNickName)) {
                 break;
             }
         }

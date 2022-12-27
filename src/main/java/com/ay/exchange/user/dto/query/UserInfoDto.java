@@ -6,4 +6,5 @@ public interface UserInfoDto {
     String getNickName();
     Authority getAuthority();
     String getSuspendedDate();
+    String getSuspendedReason();
 }

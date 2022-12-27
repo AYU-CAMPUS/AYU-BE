@@ -35,6 +35,7 @@ import static com.ay.exchange.user.entity.QUser.user;
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.exchange.entity.QExchange.exchange;
 import static com.querydsl.core.group.GroupBy.*;
+import static org.hibernate.sql.InFragment.NULL;
 
 @Repository
 @RequiredArgsConstructor
@@ -280,13 +281,23 @@ public class MyPageRepository {
         return queryFactory.select(Projections.fields(
                         LoginNotificationResponse.class,
                         user.nickName,
-                        exchange.count().as("numberOfExchange")))
+                        exchange.count().as("numberOfExchange"),
+                        user.suspendedDate,
+                        user.suspendedReason))
                 .from(user)
                 .innerJoin(exchange)
                 .on(exchange.email.eq(user.email))
                 .where(user.email.eq(userEmail))
                 .limit(100L)
                 .fetchOne();
+    }
+
+    public void updateUserSuspendedDate(String email) {
+        queryFactory.update(user)
+                .setNull(user.suspendedDate)
+                .setNull(user.suspendedReason)
+                .where(user.email.eq(email))
+                .execute();
     }
 
     private boolean checkExistsByNickName(String email, String nickName) {

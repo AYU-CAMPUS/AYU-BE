@@ -1,25 +1,36 @@
 package com.ay.exchange.user.service;
 
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.common.util.DateGenerator;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
+import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.exception.NotExistsFileException;
+import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.repository.MyPageRepository;
 import com.ay.exchange.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +43,9 @@ public class UserService {
     private final int UPDATE_PROFILE = 1;
     private final UserRepository userRepository;
     private final String SEPARATOR = ";";
+
+    @Value("${cookie.domain}")
+    private String DOMAIN;
 
     public Boolean checkExistsNickName(String nickName) {
         return userRepository.existsByNickName(nickName);
@@ -125,7 +139,53 @@ public class UserService {
         myPageRepository.updateUserInfo(email, userInfoRequest);
     }
 
-    public LoginNotificationResponse getUserNotification(String token) {
-        return myPageRepository.findUserNotificiatonByEmail(jwtTokenProvider.getUserEmail(token));
+    @Transactional(rollbackFor = Exception.class)
+    public LoginNotificationResponse getUserNotification(HttpServletResponse response, String token) throws ParseException {
+        String email = jwtTokenProvider.getUserEmail(token);
+        LoginNotificationResponse loginNotificationResponse = myPageRepository.findUserNotificiatonByEmail(email);
+
+        if (loginNotificationResponse == null) { //존재하지 않는 회원
+            throw new NotExistsUserException();
+        }
+
+        System.out.println(loginNotificationResponse.getSuspendedDate());
+
+        if (loginNotificationResponse.getSuspendedDate() != null) { //정지회원이라면
+            if (isSuspensionExpired(loginNotificationResponse.getSuspendedDate())) { //정지가 만료되었다면 => update
+                System.out.println("정지 만료된 회원");
+                myPageRepository.updateUserSuspendedDate(email);
+                loginNotificationResponse.setSuspendedDate(null);
+            } else { //정지가 유지 중 => 쿠키 삭제 redis도
+                System.out.println("정지 회원입니다.");
+                response.setHeader(HttpHeaders.SET_COOKIE,removeCookie());
+                return loginNotificationResponse;
+            }
+        }
+
+        //여기서 refresh 토큰을 만들자.
+        return loginNotificationResponse;
+    }
+
+    private String removeCookie(){
+        ResponseCookie cookie = ResponseCookie.from("token", null)
+                .httpOnly(true)
+                .domain(DOMAIN)
+                .path("/")
+                .maxAge(0)
+                .secure(true)
+                .sameSite("None").build();
+        return cookie.toString();
+    }
+
+    private boolean isSuspensionExpired(String suspendedDate) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date date = dateFormat.parse(suspendedDate);
+        Date date2 = dateFormat.parse(DateGenerator.getCurrentDate());
+
+        if (date.before(date2)) {
+            return true;
+        }
+        return false;
     }
 }

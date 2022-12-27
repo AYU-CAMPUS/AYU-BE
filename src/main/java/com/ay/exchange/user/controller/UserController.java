@@ -24,8 +24,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/user")
@@ -36,15 +38,16 @@ public class UserController {
     private final UserService userService;
     private final AwsS3Service awsS3Service;
 
-    @Operation(summary = "로그인 성공 시 페이지 상단에 교환 수를 조회함",
-            description = "로그인 성공 시 페이지 상단에 교환 수를 조회함",
+    @Operation(summary = "로그인 성공 시 사용자에 대해 필요한 정보 조회",
+            description = "정상적인 사용자면 페이지 상단에 교환 수를 조회, 정지회원이면 정지기간과 정지사유가 있음",
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = LoginNotificationResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = LoginNotificationResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             })
     @GetMapping("/notification")
-    public LoginNotificationResponse searchLoginInfo(@CookieValue(value = "token") String token) {
-        return userService.getUserNotification(token);
+    public LoginNotificationResponse searchLoginInfo(HttpServletResponse response, @CookieValue(value = "token") String token) throws ParseException {
+        return userService.getUserNotification(response, token);
     }
 
     @Operation(summary = "중복 닉네임 확인",

@@ -1,7 +1,6 @@
 package com.ay.exchange.oauth.service;
 
 
-import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.entity.vo.Authority;
@@ -48,14 +47,13 @@ public class Oauth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         return domain.equals(ANYANG_DOMAIN);
     }
 
-
     public UserInfoDto findUserByEmail(String email) {
         return userRepository.findUserInfoByEmail(email).orElseGet(() -> {
             return null;
         });
     }
 
-    public boolean checkExistsUserByByEmail(String randomNickName) {
+    public boolean checkExistsUserByNickName(String randomNickName) {
         return userRepository.existsByNickName(randomNickName);
     }
 

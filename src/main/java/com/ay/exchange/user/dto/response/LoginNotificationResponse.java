@@ -15,6 +15,12 @@ public class LoginNotificationResponse {
     @Schema(description = "교환 요청 수")
     private Long numberOfExchange;
 
+    @Schema(description = "정지 기간 정지가 아니면 NULL")
+    private String suspendedDate;
+
+    @Schema(description = "정지 회원이면 정지 사유")
+    private String suspendedReason;
+
 //    @Schema(description = "알림 수")
 //    private Long numberOfNotification;
 }
