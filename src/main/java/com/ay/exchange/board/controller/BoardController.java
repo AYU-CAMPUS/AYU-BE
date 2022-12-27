@@ -20,14 +20,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 
 @RestController
 @RequestMapping("/board")
 @RequiredArgsConstructor
+@Validated
 public class BoardController {
     private final BoardService boardService;
     private final BoardContentService boardContentService;
@@ -59,22 +62,11 @@ public class BoardController {
     )
     @PostMapping("")
     public ResponseEntity<Boolean> writeBoard(
-            @RequestPart("writeRequest") WriteRequest writeRequest,
-//            @RequestParam("title") String title,
-//            @RequestParam("category") Integer category,
-//            @RequestParam(value = "departmentType", required = false) Integer departmentType,
-//            @RequestParam(value = "fileType", required = false) Integer fileType,
-//            @RequestParam(value = "gradeType", required = false) Integer gradeType,
-//            @RequestParam(value = "subjectName", required = false) String subjectName,
-//            @RequestParam(value = "professorName", required = false) String professorName,
-//            @RequestParam("numberOfFilePages") Integer numberOfFilePages,
-//            @RequestParam("content") String content,
+            @RequestPart("writeRequest") @Valid WriteRequest writeRequest,
             @RequestPart(value = "file", required = false) MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
-        System.out.println(writeRequest.getTitle()+ " "+token);
         if (FileValidator.isAllowedFileType(multipartFile)) {
-            CategoryDto categoryDto = new CategoryDto(writeRequest.getCategory(), writeRequest.getDepartmentType(), writeRequest.getFileType(), writeRequest.getGradeType(), writeRequest.getSubjectName(), writeRequest.getProfessorName());
             boardService.writeBoard(writeRequest, multipartFile, token);
             return ResponseEntity.ok(true);
         }
