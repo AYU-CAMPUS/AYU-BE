@@ -95,7 +95,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     boardContentInfo2Dto.getNumberOfFilePages(),
                     boardContentInfo2Dto.getNumberOfSuccessfulExchanges(),
                     boardContentInfo2Dto.getCreatedDate(),
-                    boardContentInfo2Dto.getEmail().equals(email) ? BOARD_OWNER : boardContentInfo2Dto.getExchangeType(), //-1이면 내가 쓴 글임,
+                    boardContentInfo2Dto.getEmail().equals(email) ? BOARD_OWNER : (boardContentInfo2Dto.getExchangeType() >= 1 ? 1 : boardContentInfo2Dto.getExchangeType()), //-1이면 내가 쓴 글임,
                     splitDesiredData(boardContentInfo2Dto.getDesiredData())
             );
         }
@@ -118,7 +118,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 resultBoard.getNumberOfFilePages(),
                 resultBoard.getExchangeSuccessCount(),
                 resultBoard.getCreatedDate(),
-                resultBoard.getEmail().equals(email) ? BOARD_OWNER : result.get(0).getExchangeType(),
+                resultBoard.getEmail().equals(email) ? BOARD_OWNER : (result.get(0).getExchangeType() >= 1 ? 1 : result.get(0).getExchangeType()),
                 splitDesiredData(result.get(0).getDesiredData())
         );
 
