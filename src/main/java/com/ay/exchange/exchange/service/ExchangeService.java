@@ -2,6 +2,7 @@ package com.ay.exchange.exchange.service;
 
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.dto.response.ExchangeResponse;
+import com.ay.exchange.exchange.exception.UnableExchangeException;
 import com.ay.exchange.exchange.repository.querydsl.ExchangeQueryRepository;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,9 @@ public class ExchangeService {
     private final ExchangeQueryRepository exchangeQueryRepository;
 
     public Boolean requestExchange(ExchangeRequest exchangeRequest, String token) {
+        if(exchangeQueryRepository.existsExchangeCompletion(exchangeRequest)){
+            throw new UnableExchangeException();
+        }
         exchangeQueryRepository.requestExchange(exchangeRequest, jwtTokenProvider.getUserEmail(token));
         return true;
     }

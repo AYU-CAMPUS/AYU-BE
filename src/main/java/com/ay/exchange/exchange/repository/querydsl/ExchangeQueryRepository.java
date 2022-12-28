@@ -19,6 +19,7 @@ import java.util.List;
 
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.exchange.entity.QExchange.exchange;
+import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 
 @Repository
 @RequiredArgsConstructor
@@ -85,5 +86,13 @@ public class ExchangeQueryRepository {
                 .setParameter(13, -2)
                 .setParameter(14, email);
         if (query.executeUpdate() != 2) throw new UnableExchangeException();
+    }
+
+    public boolean existsExchangeCompletion(ExchangeRequest exchangeRequest) {
+        return queryFactory.selectOne()
+                .from(exchangeCompletion)
+                .where(exchangeCompletion.boardId.eq(exchangeRequest.getBoardId())
+                        .and(exchangeCompletion.requesterBoardId.eq(exchangeRequest.getRequesterBoardId())))
+                .fetchFirst() != null;
     }
 }
