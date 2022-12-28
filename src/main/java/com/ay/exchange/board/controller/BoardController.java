@@ -1,6 +1,5 @@
 package com.ay.exchange.board.controller;
 
-import com.ay.exchange.board.dto.CategoryDto;
 import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.ModificationRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
@@ -170,24 +169,14 @@ public class BoardController {
                     @ApiResponse(responseCode = "400", description = "파일 형식이 잘못되었습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
                     @ApiResponse(responseCode = "422", description = "최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @PostMapping("/request-modification")
+    @PatchMapping("/request-modification")
     public Boolean requestModificationBoard(
-            @RequestPart("boardId") Long boardId,
-            @RequestPart("title") String title,
-            @RequestPart("category") Integer category,
-            @RequestPart(value = "departmentType", required = false) Integer departmentType,
-            @RequestPart(value = "fileType", required = false) Integer fileType,
-            @RequestPart(value = "gradeType", required = false) Integer gradeType,
-            @RequestPart(value = "subjectName", required = false) String subjectName,
-            @RequestPart(value = "professorName", required = false) String professorName,
-            @RequestPart("numberOfFilePages") Integer numberOfFilePages,
-            @RequestPart("content") String content,
+            @RequestPart("writeRequest") @Valid ModificationRequest modificationRequest,
             @RequestPart("file") MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
         if (FileValidator.isAllowedFileType(multipartFile)) {
-            CategoryDto categoryDto = new CategoryDto(category, departmentType, fileType, gradeType, subjectName, professorName);
-            boardContentService.requestModificationBoard(new ModificationRequest(boardId, title, categoryDto, numberOfFilePages, content), multipartFile, token);
+            boardContentService.requestModificationBoard(modificationRequest, multipartFile, token);
             return true;
         }
         throw new FileInvalidException();

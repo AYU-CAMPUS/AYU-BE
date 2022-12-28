@@ -2,6 +2,7 @@ package com.ay.exchange.board.service;
 
 import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.request.ModificationRequest;
+import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.vo.BoardCategory;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Objects;
 
 import static com.ay.exchange.common.util.BoardTypeGenerator.*;
 import static com.ay.exchange.common.util.BoardTypeGenerator.getGradeType;
@@ -52,16 +55,16 @@ public class BoardContentService {
         String email = jwtTokenProvider.getUserEmail(token);
 
         BoardCategory boardCategory = BoardCategory.builder()
-                .category(getCategory(modificationRequest.getCategoryDto().getCategory()))
-                .departmentType(getDepartmentType(modificationRequest.getCategoryDto().getDepartmentType()))
-                .fileType(getFileType(modificationRequest.getCategoryDto().getFileType()))
-                .gradeType(getGradeType(modificationRequest.getCategoryDto().getGradeType()))
-                .subjectName(modificationRequest.getCategoryDto().getSubjectName())
-                .professorName(modificationRequest.getCategoryDto().getProfessorName())
+                .category(getCategory(modificationRequest.getCategory()))
+                .departmentType(getDepartmentType(modificationRequest.getDepartmentType()))
+                .fileType(getFileType(modificationRequest.getFileType()))
+                .gradeType(getGradeType(modificationRequest.getGradeType()))
+                .subjectName(modificationRequest.getSubjectName())
+                .professorName(modificationRequest.getProfessorName())
                 .build();
 
         try {
-            String filePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), email, UPLOAD_FILE);
+            String filePath = awsS3Service.buildFileName(Objects.requireNonNull(multipartFile.getOriginalFilename()), email, UPLOAD_FILE);
             boardContentRepository.requestModificationBoard(modificationRequest, email, multipartFile.getOriginalFilename(), filePath, boardCategory);
             awsS3Service.uploadFile(multipartFile, filePath);
         } catch (Exception e) {
