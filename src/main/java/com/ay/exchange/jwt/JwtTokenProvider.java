@@ -39,7 +39,6 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims();
         claims.setSubject(email);
         claims.put("authority", authority.name());
-        claims.put("nickName", nickName);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -90,17 +89,14 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getNickName(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(secretMasterKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .get("nickName", String.class);
-        } catch (JwtException | IllegalArgumentException e) { //유효하지 않은 토큰
-            throw new JwtException("유효하지 않은 토큰");
-        }
-    }
+    public String createRefreshToken(String email) {
+        Claims claims = Jwts.claims();
+        claims.setSubject(email);
 
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(new Date(new Date().getTime() + REFRESH_EXPIRE_TIME))
+                .signWith(secretMasterKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
 }
