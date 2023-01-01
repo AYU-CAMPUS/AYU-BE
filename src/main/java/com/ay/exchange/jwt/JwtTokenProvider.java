@@ -35,7 +35,7 @@ public class JwtTokenProvider {
         secretMasterKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(String email, String nickName, Authority authority) {
+    public String createToken(String email, Authority authority) {
         Claims claims = Jwts.claims();
         claims.setSubject(email);
         claims.put("authority", authority.name());
@@ -48,7 +48,6 @@ public class JwtTokenProvider {
     }
 
     public void validateToken(String accessToken) {
-        System.out.println("ACCESS TOKEN: " + accessToken);
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretMasterKey)
@@ -89,9 +88,10 @@ public class JwtTokenProvider {
         }
     }
 
-    public String createRefreshToken(String email) {
+    public String createRefreshToken(String email, Authority authority) {
         Claims claims = Jwts.claims();
         claims.setSubject(email);
+        claims.put("authority", authority);
 
         return Jwts.builder()
                 .setClaims(claims)

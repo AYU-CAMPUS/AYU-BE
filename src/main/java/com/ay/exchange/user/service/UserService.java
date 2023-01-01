@@ -5,11 +5,11 @@ import com.ay.exchange.common.util.DateGenerator;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
-import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
+import com.ay.exchange.user.entity.vo.Authority;
 import com.ay.exchange.user.exception.NotExistsFileException;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.repository.MyPageRepository;
@@ -18,19 +18,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,8 +38,9 @@ import java.util.stream.Collectors;
 public class UserService {
     private final MyPageRepository myPageRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
+
     private final AwsS3Service awsS3Service;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final int UPDATE_PROFILE = 1;
     private final UserRepository userRepository;
     private final String SEPARATOR = ";";
@@ -148,8 +149,6 @@ public class UserService {
             throw new NotExistsUserException();
         }
 
-        System.out.println(loginNotificationResponse.getSuspendedDate());
-
         if (loginNotificationResponse.getSuspendedDate() != null) { //정지회원이라면
             if (isSuspensionExpired(loginNotificationResponse.getSuspendedDate())) { //정지가 만료되었다면 => update
                 System.out.println("정지 만료된 회원");
@@ -162,7 +161,6 @@ public class UserService {
             }
         }
 
-        //여기서 refresh 토큰을 만들자.
         return loginNotificationResponse;
     }
 

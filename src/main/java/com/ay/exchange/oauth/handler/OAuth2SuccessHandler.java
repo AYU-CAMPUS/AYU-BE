@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -21,6 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -28,15 +30,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenProvider jwtTokenProvider;
     private final Oauth2Service oauth2Service;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RedisTemplate<String, Object> redisTemplate;
     @Value("${cookie.expire-time}")
     private Integer COOKIE_EXPIRE_TIME;
     @Value("${cookie.domain}")
     private String DOMAIN;
 
+    @Value("${jwt.access-expire-time}")
+    private Long ACCESS_EXPIRE_TIME;
+
+    @Value("${jwt.refresh-expire-time}")
+    private Long REFRESH_EXPIRE_TIME;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        //추후 로그인에 성공하면 redis를 활용하여 유저 이메일에 대해서 jwt 삭제해줘야 함. => 이중 로그인 방지
-
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         settingResponse(response);
 
@@ -45,23 +52,37 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //            makeError(response);
 //            return;
 //        }
+        deleteBeforeTokenInRedis(email);  //이중로그인 방지와 반복된 로그인 요청에 쌓이는 데이터를 막기 위해 이전 토큰들은 삭제한다.
 
         UserInfoDto userInfoDto = oauth2Service.findUserByEmail(email);
 
         if (checkExistingUser(userInfoDto)) { //기존 회원
-            makeResponse(response, email, userInfoDto.getNickName(), userInfoDto.getAuthority());
-            //redis에 accesstoken저장
+            String accessToken = jwtTokenProvider.createToken(email, userInfoDto.getAuthority());
+            String refreshToken = jwtTokenProvider.createRefreshToken(email, userInfoDto.getAuthority());
+            addTokenInRedis(accessToken, refreshToken, email);
+            makeResponse(response, accessToken);
             return;
         }
 
         //최초 로그인
-        //redis에 accesstoken저장
         String nickName = settingUserNickName();
         try {
             oauth2Service.saveUser(email, nickName);
-            makeResponse(response, email, nickName, Authority.User);
-        } catch (Exception e) { //만약에 랜덤닉네임을 받았지만 간발의 차이로 겹칠 경우 일단 유저가 아니라고 예외코드를 보낸다.
+            String accessToken = jwtTokenProvider.createToken(email, Authority.User);
+            String refreshToken = jwtTokenProvider.createRefreshToken(email, Authority.User);
+            addTokenInRedis(accessToken, refreshToken, email);
+            makeResponse(response, accessToken);
+        } catch (Exception e) { //만약에 랜덤닉네임을 받았지만 간발의 차이로 겹칠 경우도 있지만 일단 유저가 아니라고 예외코드를 보낸다.
             makeError(response);
+        }
+    }
+
+    private void deleteBeforeTokenInRedis(String email) {
+        String beforeAccessToken = (String) redisTemplate.opsForValue()
+                .get(email);
+
+        if(beforeAccessToken != null){
+            redisTemplate.delete(beforeAccessToken); //기존 리프레쉬 토큰 삭제
         }
     }
 
@@ -74,11 +95,22 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setCharacterEncoding("utf-8");
     }
 
-    private void makeResponse(HttpServletResponse response, String email, String nickName, Authority authority) throws IOException {
-        response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(jwtTokenProvider.createToken(email, nickName, authority)));
+    private void makeResponse(HttpServletResponse response, String token) throws IOException {
+        response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(token));
         response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000")
                 .build()
                 .toUriString());
+    }
+
+    private void addTokenInRedis(String accessToken, String refreshToken, String email) {
+        //액세스 토큰 저장
+        redisTemplate.opsForValue()
+                .set(email,accessToken,ACCESS_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+        //리프레쉬 저장
+        redisTemplate.opsForValue()
+                .set(accessToken, refreshToken, REFRESH_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
     }
 
     private String makeCookie(String token) {

@@ -7,9 +7,11 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.oauth.handler.OAuth2SuccessHandler;
 import com.ay.exchange.oauth.service.Oauth2Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -27,6 +29,12 @@ public class SecurityConfig{
     private final JwtTokenProvider jwtTokenProvider;
     private final Oauth2Service oauth2Service;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final RedisTemplate<String, Object> redisTemplate;
+    @Value("${cookie.expire-time}")
+    private Integer COOKIE_EXPIRE_TIME;
+
+    @Value("${cookie.domain}")
+    private String DOMAIN;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,7 +54,7 @@ public class SecurityConfig{
                 .and()
                 .successHandler(oAuth2SuccessHandler);
         http
-                .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(jwtTokenProvider, redisTemplate, COOKIE_EXPIRE_TIME, DOMAIN), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
         return http.build();
