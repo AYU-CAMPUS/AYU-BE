@@ -169,7 +169,7 @@ public class BoardController {
                     @ApiResponse(responseCode = "400", description = "파일 형식이 잘못되었습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
                     @ApiResponse(responseCode = "422", description = "최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @PatchMapping("/request-modification")
+    @PutMapping("/request-modification")
     public Boolean requestModificationBoard(
             @RequestPart("writeRequest") @Valid ModificationRequest modificationRequest,
             @RequestPart("file") MultipartFile multipartFile,
