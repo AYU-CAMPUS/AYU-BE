@@ -157,6 +157,8 @@ public class UserService {
             } else { //정지가 유지 중 => 쿠키 삭제 redis도
                 System.out.println("정지 회원입니다.");
                 response.setHeader(HttpHeaders.SET_COOKIE,removeCookie());
+                redisTemplate.delete(token);
+                redisTemplate.delete(email);
                 return loginNotificationResponse;
             }
         }
