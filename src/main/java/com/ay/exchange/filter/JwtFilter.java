@@ -16,6 +16,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +72,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        System.out.println(request.getRequestURI()+" => "+getClientIP(request));
+        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime seoulCurrentTime = ZonedDateTime.now(seoulZoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
+        String formattedDate = seoulCurrentTime.format(formatter);
+
+        System.out.println(formattedDate+" "+request.getRequestURI()+" => "+getClientIP(request));
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }
