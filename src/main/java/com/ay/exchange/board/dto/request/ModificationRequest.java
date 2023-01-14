@@ -19,7 +19,7 @@ public class ModificationRequest {
 
     @Schema(description = "신학대학(0), 인문대학(1), 예술체육대학(2), 사회과학대학(3), 창의융합대학(4), 인성양성(5), 리더십(6), 융합실무(7), 문제해결(8), 글로벌(9), 의사소통(10)," +
             " 레포트(11), PPT템플릿(12), 한국사자격증(13), 토익(14), 토플(15), 논문(16), 이력서(17), 컴활자격증(18)")
-    @Pattern(regexp = "^(0|[1-9]|1[0-8])$")
+    //@Pattern(regexp = "^(0|[1-9]|1[0-8])$")
     private Integer category;
 
     @Schema(description = "신학과(0), 기독교교육과(1), 국어국문학과(2), 영미언어문화학과(3), " +
@@ -28,15 +28,15 @@ public class ModificationRequest {
             "글로벌경영학과(12), 행정학과(13), 관광경영학과(14), 식품영양학과(15), " +
             "컴퓨터공학과(16), 정보전기전자공학과(17), 통계데이터사이언스학과(18), 소프트웨어학과(19), " +
             "도시정보공학과(20), 환경에너지공학과(21), AI융합학과(22)")
-    @Pattern(regexp = "^([0-9]|1[0-9]|2[0-2])$")
+    //@Pattern(regexp = "^([0-9]|1[0-9]|2[0-2])$")
     private Integer departmentType;
 
     @Schema(description = "중간고사(0), 기말고사(1), 과제(2), 요약(3)")
-    @Pattern(regexp = "^[0-3]$")
+    //@Pattern(regexp = "^[0-3]$")
     private Integer fileType;
 
     @Schema(description = "Freshman(0), Sophomore(1), Junior(2), Senior(3)")
-    @Pattern(regexp = "^[0-3]$")
+    //@Pattern(regexp = "^[0-3]$")
     private Integer gradeType;
 
     @Schema(description = "전공 또는 교양 선택 시 과목명 입력")
@@ -46,7 +46,7 @@ public class ModificationRequest {
     private String professorName;
 
     @Schema(description = "파일 페이지 수 => 1~1000으로 제한")
-    @Pattern(regexp = "^([1-9]|[1-9][0-9]|[1-9][0-9][0-9])$")
+    //@Pattern(regexp = "^([1-9]|[1-9][0-9]|[1-9][0-9][0-9])$")
     private Integer numberOfFilePages;
 
     @Schema(description = "글 내용")
