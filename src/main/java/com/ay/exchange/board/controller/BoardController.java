@@ -137,6 +137,7 @@ public class BoardController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ModifiableBoardResponse.class))),
                     @ApiResponse(responseCode = "422", description = "최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/modifiable/{boardId}")
     public ResponseEntity<ModifiableBoardResponse> findModifiableBoard(
             @PathVariable("boardId") Long boardId,
@@ -171,6 +172,7 @@ public class BoardController {
                     @ApiResponse(responseCode = "400", description = "파일 형식이 잘못되었습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
                     @ApiResponse(responseCode = "422", description = "최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )//@Valid
+    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/modification")
     public Boolean requestModificationBoard(
             @RequestPart("writeRequest") ModificationRequest modificationRequest,

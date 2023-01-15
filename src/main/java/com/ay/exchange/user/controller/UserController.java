@@ -45,6 +45,7 @@ public class UserController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = LoginNotificationResponse.class))),
                     @ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             })
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/notification")
     public LoginNotificationResponse searchLoginInfo(HttpServletResponse response, @CookieValue(value = "token") String token) throws ParseException {
         return userService.getUserNotification(response, token);
