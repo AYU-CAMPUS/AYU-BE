@@ -14,7 +14,7 @@ public class MyPageInfo {
     private String profileImage;
     private Integer exchangeSuccessCount;
     private Set<Long> myDataCount;
-    private List<Long> exchangeRequests;
+    private Set<Long> exchangeRequests;
     private String desiredData;
 
     public Set<Long> getMyDataCounts() {
