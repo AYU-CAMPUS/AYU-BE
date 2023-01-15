@@ -20,7 +20,7 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintExchangeCompletion",
-                        columnNames = {"email", "requester_board_id"}
+                        columnNames = {"board_id","email", "requester_board_id"}
                 )
         }
 )
