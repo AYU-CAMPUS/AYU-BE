@@ -21,6 +21,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -183,7 +184,6 @@ public class MyPageRepository {
         return new ExchangeResponse(count, exchangeInfos);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void acceptExchange(ExchangeAccept exchangeAccept, String email) {
         //교환신청삭제
         Long count = queryFactory.delete(exchange)

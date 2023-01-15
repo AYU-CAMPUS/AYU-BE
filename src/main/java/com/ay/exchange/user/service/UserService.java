@@ -15,6 +15,7 @@ import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.repository.MyPageRepository;
 import com.ay.exchange.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -97,6 +98,7 @@ public class UserService {
         return myPageRepository.getExchanges(pageRequest, jwtTokenProvider.getUserEmail(token));
     }
 
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
         myPageRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserEmail(token));
         //알림도 생성
