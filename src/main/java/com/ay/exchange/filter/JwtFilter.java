@@ -33,9 +33,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private final Integer COOKIE_EXPIRE_TIME;
     private final String DOMAIN;
 
-    //"/user/notification"
-    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board"));
-    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+";
+
+    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification"));
+    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+";
 
 
     @Override
@@ -45,6 +45,9 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new JwtException("존재하지 않는 토큰");
         }
 
+        if(request.getRequestURI().contains("modifiable")){
+            System.out.println("수정요청");
+        }
         try {
             String email = jwtTokenProvider.getUserEmail(token);
             if (Boolean.FALSE.equals(redisTemplate.hasKey(email))) {
