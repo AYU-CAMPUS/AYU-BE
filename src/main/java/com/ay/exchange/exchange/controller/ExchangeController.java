@@ -32,6 +32,7 @@ public class ExchangeController {
             @RequestBody ExchangeRequest exchangeRequest,
             @CookieValue(value = "token") String token
     ) {
+        System.out.println("요청: "+exchangeRequest.getRequesterBoardId()+" "+ exchangeRequest.getBoardId());
         return exchangeService.requestExchange(exchangeRequest, token);
     }
 

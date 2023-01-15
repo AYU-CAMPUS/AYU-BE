@@ -87,6 +87,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (Pattern.matches(regexUri, request.getRequestURI())) {
             return true;
         }
+        System.out.println("PASS");
         return false;
     }
 
