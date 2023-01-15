@@ -85,6 +85,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             .and(board.approval.eq(Approval.AGREE.getApproval())))
                     .fetchOne();
 
+            System.out.println("EXCHANGE_TYPE: "+boardContentInfo2Dto.getExchangeType());
+
             return new BoardContentResponse(
                     count,
                     commentList,
