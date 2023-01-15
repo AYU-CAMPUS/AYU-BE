@@ -56,12 +56,6 @@ public class UserService {
         String email = jwtTokenProvider.getUserEmail(token);
         MyPageInfo myPageInfo = myPageRepository.getMyPage(email);
 
-        System.out.print("교환 요청 자료 번호: ");
-        for(Long i:myPageInfo.getExchangeRequests()){
-            System.out.print(i+" ");
-        }
-        System.out.println("");
-
         return new MyPageResponse(myPageInfo.getNickName(),
                 myPageInfo.getProfileImage(),
                 myPageInfo.getExchangeSuccessCount(),
