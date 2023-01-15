@@ -34,20 +34,18 @@ public class JwtFilter extends OncePerRequestFilter {
     private final String DOMAIN;
 
 
-    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification"));
+    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification","/exchange"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+";
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = findToken(request.getCookies());
+        System.out.println("USER TOKEN: "+token);
         if(token == null){
             throw new JwtException("존재하지 않는 토큰");
         }
 
-        if(request.getRequestURI().contains("modifiable")){
-            System.out.println("수정요청");
-        }
         try {
             String email = jwtTokenProvider.getUserEmail(token);
             if (Boolean.FALSE.equals(redisTemplate.hasKey(email))) {
