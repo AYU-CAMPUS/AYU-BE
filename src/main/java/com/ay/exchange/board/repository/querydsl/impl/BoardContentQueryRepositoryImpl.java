@@ -71,9 +71,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                     .from(boardContent)
                     .leftJoin(exchange)
                     .on(boardContent.board.id.eq(exchange.boardId)
-                            .and(exchange.email.eq(email))
-                            .or(boardContent.board.id.eq(exchange.requesterBoardId)
-                                    .and(exchange.requesterEmail.eq(email))))
+                            .and(exchange.email.eq(email)))
                     .innerJoin(boardContent.board, board)
                     .innerJoin(user)
                     .on(board.email.eq(user.email))
@@ -84,8 +82,6 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                             .and(boardContent.board.id.eq(boardId))
                             .and(board.approval.eq(Approval.AGREE.getApproval())))
                     .fetchOne();
-
-            System.out.println("EXCHANGE_TYPE: "+boardContentInfo2Dto.getExchangeType());
 
             return new BoardContentResponse(
                     count,
