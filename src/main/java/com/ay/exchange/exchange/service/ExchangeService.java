@@ -17,10 +17,16 @@ public class ExchangeService {
     private final ExchangeQueryRepository exchangeQueryRepository;
 
     public Boolean requestExchange(ExchangeRequest exchangeRequest, String token) {
-        if(exchangeQueryRepository.existsExchangeCompletion(exchangeRequest)){
+        if (exchangeQueryRepository.existsExchangeCompletion(exchangeRequest)) {
             throw new UnableExchangeException();
         }
-        exchangeQueryRepository.requestExchange(exchangeRequest, jwtTokenProvider.getUserEmail(token));
+
+        String email = jwtTokenProvider.getUserEmail(token);
+        if (exchangeQueryRepository.existsExchange(exchangeRequest, email)) {
+            throw new UnableExchangeException();
+        }
+
+        exchangeQueryRepository.requestExchange(exchangeRequest, email);
         return true;
     }
 

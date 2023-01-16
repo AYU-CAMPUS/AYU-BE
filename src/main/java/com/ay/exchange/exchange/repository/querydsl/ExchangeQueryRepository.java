@@ -95,4 +95,12 @@ public class ExchangeQueryRepository {
                         .and(exchangeCompletion.requesterBoardId.eq(exchangeRequest.getRequesterBoardId())))
                 .fetchFirst() != null;
     }
+
+    public boolean existsExchange(ExchangeRequest exchangeRequest, String email) {
+        return queryFactory.selectOne()
+                .from(exchange)
+                .where(exchange.boardId.eq(exchangeRequest.getBoardId())
+                        .and(exchange.requesterEmail.eq(email)))
+                .fetchFirst() != null;
+    }
 }
