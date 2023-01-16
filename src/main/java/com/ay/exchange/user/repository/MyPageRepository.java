@@ -288,7 +288,7 @@ public class MyPageRepository {
                         user.suspendedDate,
                         user.suspendedReason))
                 .from(user)
-                .innerJoin(exchange)
+                .leftJoin(exchange)
                 .on(exchange.email.eq(user.email))
                 .where(user.email.eq(userEmail))
                 .limit(100L)
