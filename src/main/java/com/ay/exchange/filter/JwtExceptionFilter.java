@@ -1,6 +1,7 @@
 package com.ay.exchange.filter;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
+import com.ay.exchange.common.error.exception.ErrorException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import lombok.NoArgsConstructor;
@@ -23,9 +24,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         } catch (JwtException e) {
             setErrorResponse(HttpStatus.UNAUTHORIZED, response, e);
-        } catch (Exception e) {
+        } catch (ErrorException e) {
             e.printStackTrace();
-            setErrorResponse(HttpStatus.UNAUTHORIZED, response, e);
+            setErrorResponse(e.getErrorMessage().getStatus(), response, e);
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
