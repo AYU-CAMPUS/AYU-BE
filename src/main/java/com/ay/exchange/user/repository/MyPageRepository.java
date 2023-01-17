@@ -48,7 +48,8 @@ public class MyPageRepository {
     public MyPageInfo getMyPage(String email) {
         return queryFactory.from(user)
                 .leftJoin(board)
-                .on(board.email.eq(email))
+                .on(board.email.eq(email)
+                        .and(board.approval.eq(1)))
                 .leftJoin(exchange)
                 .on(exchange.email.eq(email).and(exchange.type.eq(-2)))
                 .where(user.email.eq(email))
