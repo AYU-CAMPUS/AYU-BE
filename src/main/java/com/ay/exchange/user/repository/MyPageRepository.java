@@ -51,7 +51,7 @@ public class MyPageRepository {
                 .on(board.email.eq(email)
                         .and(board.approval.eq(1)))
                 .leftJoin(exchange)
-                .on(exchange.email.eq(email).and(exchange.type.eq(-2)))
+                .on(exchange.email.eq(email).and(exchange.type.eq(-3)))
                 .where(user.email.eq(email))
                 .transform(
                         groupBy(user.email)
@@ -176,7 +176,8 @@ public class MyPageRepository {
                 .on(exchange.requesterEmail.eq(user.email))
                 .innerJoin(board)
                 .on(exchange.requesterBoardId.eq(board.id))
-                .where(exchange.email.eq(email))
+                .where(exchange.email.eq(email)
+                        .and(exchange.type.eq(-3))) //-3: 교환요청을 받음
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .orderBy(exchange.Id.desc())

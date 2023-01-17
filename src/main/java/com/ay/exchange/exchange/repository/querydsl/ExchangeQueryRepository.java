@@ -76,14 +76,14 @@ public class ExchangeQueryRepository {
                 .setParameter(3, exchangeRequest.getBoardId())
                 .setParameter(4, exchangeRequest.getRequesterBoardId())
                 .setParameter(5, email)
-                .setParameter(6, -2)
+                .setParameter(6, -3) //-3은 교환신청을 받음
                 .setParameter(7, boardUserEmail)
                 .setParameter(8, currentDate)
                 .setParameter(9, currentDate)
                 .setParameter(10, exchangeRequest.getRequesterBoardId())
                 .setParameter(11, exchangeRequest.getBoardId())
                 .setParameter(12, boardUserEmail)
-                .setParameter(13, -2)
+                .setParameter(13, -2) //-2는 교환요청을 함
                 .setParameter(14, email);
         if (query.executeUpdate() != 2) throw new UnableExchangeException();
     }
