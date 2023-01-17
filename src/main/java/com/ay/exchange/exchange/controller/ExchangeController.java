@@ -32,7 +32,6 @@ public class ExchangeController {
             @RequestBody ExchangeRequest exchangeRequest,
             @CookieValue(value = "token") String token
     ) {
-        System.out.println("요청: "+exchangeRequest.getRequesterBoardId()+" "+ exchangeRequest.getBoardId());
         return exchangeService.requestExchange(exchangeRequest, token);
     }
 
@@ -45,7 +44,7 @@ public class ExchangeController {
     public ExchangeResponse getMyData(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @CookieValue(value = "token") String token
-    ){
+    ) {
         return exchangeService.getMyData(page, token);
     }
 }
