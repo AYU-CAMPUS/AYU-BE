@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})
     public ResponseEntity<ErrorDto> handleValidateException(
             final Exception e
-    ){
+    ) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(
@@ -48,18 +48,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ErrorDto> handleJwtException(
             final JwtException e
-    ){
+    ) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(
-                        new ErrorDto(e.getMessage(),e.getMessage())
+                        new ErrorDto(e.getMessage(), e.getMessage())
                 );
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorDto>  handle405Error(
+    public ResponseEntity<ErrorDto> handle405Error(
             final HttpRequestMethodNotSupportedException e
-    ){
+    ) {
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorDto> handleMaxUpLoadSizeEexception(
             final MaxUploadSizeExceededException e
-    ){
+    ) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(
