@@ -55,10 +55,10 @@ public class BoardContentService {
         String email = jwtTokenProvider.getUserEmail(token);
 
         BoardCategory boardCategory = BoardCategory.builder()
-                .category(getCategory(modificationRequest.getCategory()))
-                .departmentType(getDepartmentType(modificationRequest.getDepartmentType()))
-                .fileType(getFileType(modificationRequest.getFileType()))
-                .gradeType(getGradeType(modificationRequest.getGradeType()))
+                .category(getCategory(Integer.parseInt(modificationRequest.getCategory())))
+                .departmentType(getDepartmentType(Integer.parseInt(modificationRequest.getDepartmentType())))
+                .fileType(getFileType(Integer.parseInt(modificationRequest.getFileType())))
+                .gradeType(getGradeType(Integer.parseInt(modificationRequest.getGradeType())))
                 .subjectName(modificationRequest.getSubjectName())
                 .professorName(modificationRequest.getProfessorName())
                 .build();

@@ -44,10 +44,10 @@ public class BoardService {
         String email = jwtTokenProvider.getUserEmail(token);
 
         BoardCategory boardCategory = BoardCategory.builder()
-                .category(getCategory(writeRequest.getCategory()))
-                .departmentType(getDepartmentType(writeRequest.getDepartmentType()))
-                .fileType(getFileType(writeRequest.getFileType()))
-                .gradeType(getGradeType(writeRequest.getGradeType()))
+                .category(getCategory(Integer.parseInt(writeRequest.getCategory())))
+                .departmentType(getDepartmentType(Integer.parseInt(writeRequest.getDepartmentType())))
+                .fileType(getFileType(Integer.parseInt(writeRequest.getFileType())))
+                .gradeType(getGradeType(Integer.parseInt(writeRequest.getGradeType())))
                 .subjectName(writeRequest.getSubjectName())
                 .professorName(writeRequest.getProfessorName())
                 .build();
@@ -57,7 +57,7 @@ public class BoardService {
 
             Board board = Board.builder()
                     .title(writeRequest.getTitle())
-                    .numberOfFilePages(writeRequest.getNumberOfFilePages())
+                    .numberOfFilePages(Integer.parseInt(writeRequest.getNumberOfFilePages()))
                     .exchangeSuccessCount(0)
                     .approval(Approval.WAITING.getApproval())
                     .boardCategory(boardCategory)
