@@ -34,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final String DOMAIN;
 
 
-    private final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification","/exchange/request"));
+    private final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification", "/exchange/request", "/user/logout"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+";
 
 
@@ -51,7 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
 
-        System.out.println(formattedDate+" "+request.getRequestURI()+" => "+getClientIP(request));
+        System.out.println(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request));
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }
@@ -64,8 +64,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String token = findToken(request.getCookies());
-        System.out.println("USER TOKEN: "+token);
-        if(token == null){
+        System.out.println("USER TOKEN: " + token);
+        if (token == null) {
             throw new JwtException("존재하지 않는 토큰");
         }
 
@@ -112,7 +112,7 @@ public class JwtFilter extends OncePerRequestFilter {
         return cookie.toString();
     }
 
-    public static String getClientIP(HttpServletRequest request){
+    public static String getClientIP(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
 
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
