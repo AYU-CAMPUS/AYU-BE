@@ -34,12 +34,35 @@ public class JwtFilter extends OncePerRequestFilter {
     private final String DOMAIN;
 
 
-    private static final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification","/exchange/request"));
+    private final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification","/exchange/request"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+";
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        refreshToken(request, response);
+        filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime seoulCurrentTime = ZonedDateTime.now(seoulZoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
+        String formattedDate = seoulCurrentTime.format(formatter);
+
+        System.out.println(formattedDate+" "+request.getRequestURI()+" => "+getClientIP(request));
+        if (passUri.contains(request.getRequestURI())) {
+            return true;
+        }
+        if (Pattern.matches(regexUri, request.getRequestURI())) {
+            return true;
+        }
+        System.out.println("PASS");
+        return false;
+    }
+
+    private void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String token = findToken(request.getCookies());
         System.out.println("USER TOKEN: "+token);
         if(token == null){
@@ -67,26 +90,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 response.sendRedirect(request.getRequestURL().toString());
             }
         }
-
-        filterChain.doFilter(request, response);
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
-        ZonedDateTime seoulCurrentTime = ZonedDateTime.now(seoulZoneId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
-        String formattedDate = seoulCurrentTime.format(formatter);
-
-        System.out.println(formattedDate+" "+request.getRequestURI()+" => "+getClientIP(request));
-        if (passUri.contains(request.getRequestURI())) {
-            return true;
-        }
-        if (Pattern.matches(regexUri, request.getRequestURI())) {
-            return true;
-        }
-        System.out.println("PASS");
-        return false;
     }
 
     private String findToken(Cookie[] cookies) {

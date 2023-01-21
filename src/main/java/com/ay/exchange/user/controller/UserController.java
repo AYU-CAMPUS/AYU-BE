@@ -50,6 +50,18 @@ public class UserController {
         return userService.getUserNotification(response, token);
     }
 
+    @Operation(summary = "로그아웃",
+            description = "로그아웃",
+            parameters = {@Parameter(name = "token", description = "액세스 토큰")},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = LoginNotificationResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+            })
+    @GetMapping("/logout")
+    public Boolean logout(HttpServletResponse response, @CookieValue("token") String token) {
+        return userService.logout(response, token);
+    }
+
     @Operation(summary = "중복 닉네임 확인",
             description = "회원가입 시 중뵥 학교 닉네임인지 확인",
             parameters = {@Parameter(name = "nickName", description = "유저 닉네임")},

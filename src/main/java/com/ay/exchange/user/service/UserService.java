@@ -190,4 +190,11 @@ public class UserService {
         }
         return false;
     }
+
+    public Boolean logout(HttpServletResponse response, String token) {
+        response.setHeader(HttpHeaders.SET_COOKIE,removeCookie());
+        redisTemplate.delete(token);
+        redisTemplate.delete(jwtTokenProvider.getUserEmail(token));
+        return true;
+    }
 }
