@@ -77,6 +77,7 @@ public class SecurityConfig{
                 "/v3/api-docs/report-api",
                 "/v3/api-docs/oauth2-api",
                 "/v3/api-docs/exchange-api",
+                "/v3/api-docs/management-api",
                 "/favicon.ico"
         };
     }

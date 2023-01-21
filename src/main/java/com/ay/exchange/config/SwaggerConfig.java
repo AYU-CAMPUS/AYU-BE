@@ -58,6 +58,14 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi managementApi(){
+        return GroupedOpenApi.builder()
+                .group("management-api")
+                .pathsToMatch("/management/**")
+                .build();
+    }
+
+    @Bean
     public OpenAPI openApi(){
         return new OpenAPI()
                 .info(new Info()

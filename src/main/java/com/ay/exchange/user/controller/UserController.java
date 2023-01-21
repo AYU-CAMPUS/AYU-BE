@@ -54,7 +54,7 @@ public class UserController {
             description = "로그아웃",
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = LoginNotificationResponse.class))),
+                    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
                     @ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
             })
     @GetMapping("/logout")
