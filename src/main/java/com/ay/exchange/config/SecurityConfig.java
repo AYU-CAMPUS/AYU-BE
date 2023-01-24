@@ -7,7 +7,6 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.oauth.handler.OAuth2SuccessHandler;
 import com.ay.exchange.oauth.service.Oauth2Service;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
@@ -22,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.filter.CorsFilter;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
