@@ -112,7 +112,7 @@ public class BoardService {
     private List<String> getSeparateTypeConditions(String type) {
         return Arrays.stream(type.split(","))
                 .filter(t -> t.matches(REGEX))
-                .map(t -> Integer.parseInt(t))
+                .map(Integer::parseInt)
                 .filter(t -> (t >= 0 && t <= 3))
                 .map(t -> getFileType(t).name())
                 .collect(Collectors.toList());
@@ -121,16 +121,16 @@ public class BoardService {
     private List<String> getSeparateGradeConditions(String grade) {
         return Arrays.stream(grade.split(","))
                 .filter(g -> g.matches(REGEX))
-                .map(g -> Integer.parseInt(g))
+                .map(Integer::parseInt)
                 .filter(g -> (g >= 1 && g <= 4))
-                .map(g -> getGradeType(g).name())
+                .map(String::valueOf)
                 .collect(Collectors.toList());
     }
 
     private List<String> getSeparateDepartmentConditions(String department) {
         return Arrays.stream(department.split(","))
                 .filter(d -> d.matches(REGEX))
-                .map(d -> Integer.parseInt(d))
+                .map(Integer::parseInt)
                 .filter(d -> (d >= 0 && d <= 22)) //[하드코딩 리팩토링] 구현이 바뀔수도 있어서 나중에 할 예정
                 .map(d -> getDepartmentType(d).name())
                 .collect(Collectors.toList());
