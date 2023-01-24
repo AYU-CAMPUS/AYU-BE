@@ -34,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final String DOMAIN;
 
 
-    private final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification", "/exchange/request", "/user/logout"));
+    //private final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification", "/exchange/request", "/user/logout"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+";
 
 
@@ -52,13 +52,13 @@ public class JwtFilter extends OncePerRequestFilter {
         String formattedDate = seoulCurrentTime.format(formatter);
 
         System.out.println(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request));
-        if (passUri.contains(request.getRequestURI())) {
-            return true;
-        }
+//        if (passUri.contains(request.getRequestURI())) {
+//            return true;
+//        }
         if (Pattern.matches(regexUri, request.getRequestURI())) {
             return true;
         }
-        System.out.println("PASS");
+        System.out.println("NO PASS");
         return false;
     }
 

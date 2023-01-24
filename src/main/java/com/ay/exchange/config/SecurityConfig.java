@@ -7,6 +7,7 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.oauth.handler.OAuth2SuccessHandler;
 import com.ay.exchange.oauth.service.Oauth2Service;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
@@ -30,6 +31,7 @@ public class SecurityConfig{
     private final Oauth2Service oauth2Service;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final CorsFilter corsFilter;
     @Value("${cookie.expire-time}")
     private Integer COOKIE_EXPIRE_TIME;
 
@@ -39,8 +41,8 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors().configurationSource(corsConfig.corsConfigurationSource())
-                .and()
+                //.cors().configurationSource(corsConfig.corsConfigurationSource())
+                //.and()
                     .httpBasic().disable()
                     .csrf().disable()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -54,7 +56,8 @@ public class SecurityConfig{
                 .and()
                 .successHandler(oAuth2SuccessHandler);
         http
-                .addFilterBefore(new JwtFilter(jwtTokenProvider, redisTemplate, COOKIE_EXPIRE_TIME, DOMAIN), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(jwtTokenProvider, redisTemplate, COOKIE_EXPIRE_TIME, DOMAIN), CorsFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
         return http.build();
