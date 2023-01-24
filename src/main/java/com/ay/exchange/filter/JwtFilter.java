@@ -33,9 +33,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private final Integer COOKIE_EXPIRE_TIME;
     private final String DOMAIN;
 
-
     //private final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification", "/exchange/request", "/user/logout"));
-    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+";
+    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+|/oauth2/authorization/google";
 
 
     @Override
