@@ -33,8 +33,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private final Integer COOKIE_EXPIRE_TIME;
     private final String DOMAIN;
 
-    //private final Set<String> passUri = new HashSet<>(List.of("/user/existence-nickname", "/management/request-board", "/management/suspension", "/board", "/user/notification", "/exchange/request", "/user/logout"));
-    private static final String regexUri = "/board/content/\\d+|/board/\\d+|/comment/\\d+|/board/modifiable/\\d+|/oauth2/authorization/google|/login/oauth2/code/google";
+    private final Set<String> passUri = new HashSet<>(List.of("/login/oauth2/code/google", "/oauth2/authorization/google"));
+    private static final String regexUri = "/board/content/\\d+|/board/\\d+";
 
 
     @Override
@@ -50,11 +50,11 @@ public class JwtFilter extends OncePerRequestFilter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
 
-        System.out.println(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request));
-//        if (passUri.contains(request.getRequestURI())) {
-//            return true;
-//        }
-        if (Pattern.matches(regexUri, request.getRequestURI())) {
+        System.out.println(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request)+" "+request.getMethod());
+        if (passUri.contains(request.getRequestURI())) {
+            return true;
+        }
+        if (Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET")) {
             return true;
         }
         System.out.println("NO PASS");
