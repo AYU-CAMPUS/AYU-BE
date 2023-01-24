@@ -37,8 +37,8 @@ public class ModificationRequest {
     @Pattern(regexp = "^[0-3]$")
     private String fileType;
 
-    @Schema(description = "Freshman(0), Sophomore(1), Junior(2), Senior(3)")
-    @Pattern(regexp = "^[0-3]$")
+    @Schema(description = "Freshman(1), Sophomore(2), Junior(3), Senior(4)")
+    @Pattern(regexp = "^[1-4]$")
     private String gradeType;
 
     @Schema(description = "전공 또는 교양 선택 시 과목명 입력")

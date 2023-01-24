@@ -47,7 +47,7 @@ public class BoardService {
                 .category(getCategory(Integer.parseInt(writeRequest.getCategory())))
                 .departmentType(getDepartmentType(Integer.parseInt(writeRequest.getDepartmentType())))
                 .fileType(getFileType(Integer.parseInt(writeRequest.getFileType())))
-                .gradeType(getGradeType(Integer.parseInt(writeRequest.getGradeType())))
+                .gradeType(writeRequest.getGradeType())
                 .subjectName(writeRequest.getSubjectName())
                 .professorName(writeRequest.getProfessorName())
                 .build();
@@ -94,10 +94,6 @@ public class BoardService {
                 getSeparateGradeConditions(grade),
                 getSeparateTypeConditions(type));
 
-//        System.out.println(pages.getTotalPages());
-//        System.out.println(pages.getTotalElements());
-//        System.out.println(pages.getNumber());
-
         return new BoardResponse(pages.getTotalPages(), pages.getContent());
     }
 
@@ -126,7 +122,7 @@ public class BoardService {
         return Arrays.stream(grade.split(","))
                 .filter(g -> g.matches(REGEX))
                 .map(g -> Integer.parseInt(g))
-                .filter(g -> (g >= 0 && g <= 3))
+                .filter(g -> (g >= 1 && g <= 4))
                 .map(g -> getGradeType(g).name())
                 .collect(Collectors.toList());
     }

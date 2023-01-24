@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class BoardCategory {
 
     @Builder
-    public BoardCategory(Category category, DepartmentType departmentType, FileType fileType, GradeType gradeType, String subjectName, String professorName) {
+    public BoardCategory(Category category, DepartmentType departmentType, FileType fileType, String gradeType, String subjectName, String professorName) {
         this.category = category;
         this.departmentType = departmentType;
         this.fileType = fileType;
@@ -33,8 +33,7 @@ public class BoardCategory {
     @Enumerated(EnumType.STRING)
     private FileType fileType;
 
-    @Enumerated(EnumType.STRING)
-    private GradeType gradeType;
+    private String gradeType;
 
     private String subjectName;
     private String professorName;

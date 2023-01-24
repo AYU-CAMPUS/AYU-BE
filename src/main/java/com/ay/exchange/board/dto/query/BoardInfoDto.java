@@ -23,7 +23,7 @@ public class BoardInfoDto {
     private String subjectName;
 
     @Schema(description = "학년")
-    private GradeType gradeType;
+    private String gradeType;
 
     @Schema(description = "교환수")
     private Integer numberOfSuccessfulExchanges;

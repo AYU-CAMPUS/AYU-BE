@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Objects;
 
 import static com.ay.exchange.common.util.BoardTypeGenerator.*;
-import static com.ay.exchange.common.util.BoardTypeGenerator.getGradeType;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +57,7 @@ public class BoardContentService {
                 .category(getCategory(Integer.parseInt(modificationRequest.getCategory())))
                 .departmentType(getDepartmentType(Integer.parseInt(modificationRequest.getDepartmentType())))
                 .fileType(getFileType(Integer.parseInt(modificationRequest.getFileType())))
-                .gradeType(getGradeType(Integer.parseInt(modificationRequest.getGradeType())))
+                .gradeType(modificationRequest.getGradeType())
                 .subjectName(modificationRequest.getSubjectName())
                 .professorName(modificationRequest.getProfessorName())
                 .build();

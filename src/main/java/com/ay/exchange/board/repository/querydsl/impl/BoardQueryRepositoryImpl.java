@@ -28,7 +28,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     @Override
     public Page<BoardInfoDto> findBoards(Integer approval, Category category, Pageable pageable, List<String> departments, List<String> grades, List<String> types) {
         List<BoardInfoDto> pages = queryFactory
-                .select(Projections.constructor(BoardInfoDto.class,
+                .select(Projections.fields(BoardInfoDto.class,
                         board.id,
                         board.title,
                         user.nickName.as("writer"),
@@ -99,7 +99,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         for (String grade : grades) {
-            booleanBuilder.or(board.boardCategory.gradeType.eq(GradeType.valueOf(grade)));
+            booleanBuilder.or(board.boardCategory.gradeType.eq(grade));
         }
         return booleanBuilder;
     }
