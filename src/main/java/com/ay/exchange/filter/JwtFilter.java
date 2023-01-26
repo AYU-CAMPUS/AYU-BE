@@ -65,7 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = findToken(request.getCookies());
         System.out.println("USER TOKEN: " + token);
         if (token == null) {
-            throw new JwtException("존재하지 않는 토큰");
+            return;
         }
 
         try {
