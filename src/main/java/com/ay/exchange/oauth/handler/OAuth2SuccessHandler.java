@@ -81,7 +81,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String beforeAccessToken = (String) redisTemplate.opsForValue()
                 .get(email);
 
-        if(beforeAccessToken != null){
+        if (beforeAccessToken != null) {
             redisTemplate.delete(beforeAccessToken); //기존 리프레쉬 토큰 삭제
         }
     }
@@ -105,7 +105,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private void addTokenInRedis(String accessToken, String refreshToken, String email) {
         //액세스 토큰 저장
         redisTemplate.opsForValue()
-                .set(email,accessToken,ACCESS_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+                .set(email, accessToken, ACCESS_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         //리프레쉬 저장
         redisTemplate.opsForValue()

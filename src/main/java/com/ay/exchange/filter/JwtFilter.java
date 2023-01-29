@@ -50,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
 
-        System.out.println(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request)+" "+request.getMethod());
+        System.out.println(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request) + " " + request.getMethod());
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }

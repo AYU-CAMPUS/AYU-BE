@@ -27,7 +27,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         } catch (ErrorException e) {
             e.printStackTrace();
             setErrorResponse(e.getErrorMessage().getStatus(), response, e);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             setErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, response, e);
         }

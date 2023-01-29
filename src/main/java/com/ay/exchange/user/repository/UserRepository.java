@@ -6,23 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User,String> {
-
-    //boolean existsByEmail(String email);
-
+public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByNickName(String nickName);
 
-    //boolean existsByUserId(String userId);
-
     Optional<UserInfoDto> findUserInfoByEmail(String email);
-
-//    Optional<UserIdDto> findUserIdByEmail(String email);
-//
-//    @Transactional
-//    @Modifying
-//    @Query(value = "UPDATE User SET password=:password WHERE email=:email", nativeQuery = true)
-//    void updatePassword(
-//            @Param("email") String email
-//            , @Param("password")String password
-//    );
 }

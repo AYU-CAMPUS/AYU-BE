@@ -5,7 +5,6 @@ import com.ay.exchange.management.dto.query.UserInfo;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
-import com.ay.exchange.management.dto.response.UserInfoResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

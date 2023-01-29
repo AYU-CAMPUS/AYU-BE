@@ -2,7 +2,6 @@ package com.ay.exchange.board.service;
 
 import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.request.ModificationRequest;
-import com.ay.exchange.board.dto.request.WriteRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.vo.BoardCategory;

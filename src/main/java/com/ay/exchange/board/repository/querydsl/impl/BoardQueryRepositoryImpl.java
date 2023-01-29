@@ -3,7 +3,6 @@ package com.ay.exchange.board.repository.querydsl.impl;
 import com.ay.exchange.board.dto.query.BoardInfoDto;
 import com.ay.exchange.board.entity.vo.Category;
 import com.ay.exchange.board.entity.vo.FileType;
-import com.ay.exchange.board.entity.vo.GradeType;
 import com.ay.exchange.board.entity.vo.DepartmentType;
 import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardQueryRepository;

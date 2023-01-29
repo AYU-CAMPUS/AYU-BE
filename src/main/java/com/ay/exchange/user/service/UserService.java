@@ -9,13 +9,11 @@ import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
-import com.ay.exchange.user.entity.vo.Authority;
 import com.ay.exchange.user.exception.NotExistsFileException;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.repository.MyPageRepository;
 import com.ay.exchange.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,7 +29,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,10 +64,6 @@ public class UserService {
                         .collect(Collectors.toList())
         );
     }
-
-//    public Boolean updatePassword(PasswordChangeRequest passwordChangeRequest, String token) {
-//        return myPageRepository.updatePassword(jwtTokenProvider.getUserId(token), passwordEncoder.encode(passwordChangeRequest.getPassword()));
-//    }
 
     public MyDataResponse getMyData(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
@@ -158,7 +151,7 @@ public class UserService {
                 loginNotificationResponse.setSuspendedDate(null);
             } else { //정지가 유지 중 => 쿠키 삭제 redis도
                 System.out.println("정지 회원입니다.");
-                response.setHeader(HttpHeaders.SET_COOKIE,removeCookie());
+                response.setHeader(HttpHeaders.SET_COOKIE, removeCookie());
                 redisTemplate.delete(token);
                 redisTemplate.delete(email);
                 return loginNotificationResponse;
@@ -168,7 +161,7 @@ public class UserService {
         return loginNotificationResponse;
     }
 
-    private String removeCookie(){
+    private String removeCookie() {
         ResponseCookie cookie = ResponseCookie.from("token", null)
                 .httpOnly(true)
                 .domain(DOMAIN)
@@ -192,7 +185,7 @@ public class UserService {
     }
 
     public Boolean logout(HttpServletResponse response, String token) {
-        response.setHeader(HttpHeaders.SET_COOKIE,removeCookie());
+        response.setHeader(HttpHeaders.SET_COOKIE, removeCookie());
         redisTemplate.delete(token);
         redisTemplate.delete(jwtTokenProvider.getUserEmail(token));
         return true;

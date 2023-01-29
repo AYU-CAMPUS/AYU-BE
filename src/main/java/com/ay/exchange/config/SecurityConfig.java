@@ -25,7 +25,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class SecurityConfig{
+public class SecurityConfig {
     private final CorsConfig corsConfig;
     private final JwtTokenProvider jwtTokenProvider;
     private final Oauth2Service oauth2Service;
@@ -43,12 +43,12 @@ public class SecurityConfig{
         http
                 //.cors().configurationSource(corsConfig.corsConfigurationSource())
                 //.and()
-                    .httpBasic().disable()
-                    .csrf().disable()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .authorizeHttpRequests()
-                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                .authorizeHttpRequests()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .and()
                 .formLogin().disable()
                 .oauth2Login()
