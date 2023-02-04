@@ -169,7 +169,7 @@ public class BoardController {
     )
     @PutMapping("/modification")
     public Boolean requestModificationBoard(
-            @RequestPart("writeRequest") @Valid ModificationRequest modificationRequest,
+            @RequestPart("modificationRequest") @Valid ModificationRequest modificationRequest,
             @RequestPart("file") MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
