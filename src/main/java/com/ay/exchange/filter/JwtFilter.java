@@ -5,10 +5,12 @@ import com.ay.exchange.user.entity.vo.Authority;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,20 +29,24 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
     private final Integer COOKIE_EXPIRE_TIME;
     private final String DOMAIN;
+    private final String URL;
 
-    private final Set<String> passUri = new HashSet<>(List.of("/login/oauth2/code/google", "/oauth2/authorization/google"));
+    private static final Set<String> passUri = new HashSet<>(List.of("/login/oauth2/code/google", "/oauth2/authorization/google"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+";
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        refreshToken(request, response);
-        filterChain.doFilter(request, response);
+        if(isAuthentication(request, response)){
+            filterChain.doFilter(request, response);
+        }
+
     }
 
     @Override
@@ -50,22 +56,23 @@ public class JwtFilter extends OncePerRequestFilter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
 
-        System.out.println(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request) + " " + request.getMethod());
+        log.info(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request) + " " + request.getMethod());
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }
         if (Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET")) {
             return true;
         }
-        System.out.println("NO PASS");
         return false;
     }
 
-    private void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private boolean isAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String token = findToken(request.getCookies());
-        System.out.println("USER TOKEN: " + token);
+        log.info("USER TOKEN {}",token);
+
         if (token == null) {
-            return;
+            redirectLogin(response);
+            return false;
         }
 
         try {
@@ -78,7 +85,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     .get(token);
 
             if (refreshToken != null) { //리프레쉬 토큰이 존재하면 액세스 토큰 재발급
-                System.out.println("재발급 받았다.");
+                log.info("재발급 완료");
                 String email = jwtTokenProvider.getUserEmail(refreshToken);
                 Authority authority = Authority.valueOf(jwtTokenProvider.getAuthority(refreshToken));
                 String accessToken = jwtTokenProvider.createToken(email, authority);
@@ -87,8 +94,16 @@ public class JwtFilter extends OncePerRequestFilter {
                         .set(email, accessToken, COOKIE_EXPIRE_TIME, TimeUnit.SECONDS);
                 redisTemplate.rename(token, accessToken);
                 response.sendRedirect(request.getRequestURL().toString());
+                return false;
             }
         }
+        return true;
+    }
+
+    private void redirectLogin(HttpServletResponse response) throws IOException {
+        response.sendRedirect(UriComponentsBuilder.fromUriString(URL)
+                .build()
+                .toUriString());
     }
 
     private String findToken(Cookie[] cookies) {
