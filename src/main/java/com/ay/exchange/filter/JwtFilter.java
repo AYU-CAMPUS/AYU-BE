@@ -71,6 +71,7 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("USER TOKEN {}",token);
 
         if (token == null) {
+            log.info("REDIRECT");
             redirectLogin(response);
             return false;
         }
