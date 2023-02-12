@@ -103,8 +103,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 setCorsHeader(response);
                 response.sendRedirect(request.getRequestURL().toString());
                 return false;
+            }else{
+                setCorsHeader(response);
+                throw new JwtException("유효하지 않은 토큰");
             }
         }
+        setCorsHeader(response);
         return true;
     }
 
