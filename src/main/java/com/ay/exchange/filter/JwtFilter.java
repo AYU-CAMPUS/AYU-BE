@@ -102,6 +102,13 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void redirectLogin(HttpServletResponse response) throws IOException {
+        response.setHeader("Access-Control-Allow-Origin", URL);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods","*");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers",
+                "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
         response.sendRedirect(UriComponentsBuilder.fromUriString(URL)
                 .build()
                 .toUriString());
