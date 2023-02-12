@@ -36,7 +36,6 @@ public class Exchange extends BaseEntity {
     private Long Id;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board; //현재 게시물
 
@@ -44,7 +43,6 @@ public class Exchange extends BaseEntity {
     private Long boardId;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user; //게시물 작성자
 
@@ -52,7 +50,6 @@ public class Exchange extends BaseEntity {
     private String email;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "requester_board_id", nullable = false, insertable = false, updatable = false)
     private Board requesterBoard; //요청자 게시물
 
@@ -60,7 +57,6 @@ public class Exchange extends BaseEntity {
     private Long requesterBoardId;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "requester_email", nullable = false, insertable = false, updatable = false)
     private User requesterUser; //요청자 아이디
 

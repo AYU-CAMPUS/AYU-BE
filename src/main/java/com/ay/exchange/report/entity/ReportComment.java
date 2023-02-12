@@ -27,7 +27,6 @@ public class ReportComment {
     private Long id;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "email", insertable = false, updatable = false, nullable = false)
     private User user;
 
@@ -35,7 +34,6 @@ public class ReportComment {
     private String email; //신고자 아이디
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "target_email", insertable = false, updatable = false, nullable = false)
     private User targetUser;
 

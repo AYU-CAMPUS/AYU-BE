@@ -23,7 +23,6 @@ public class BoardContent {
     private String content;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id")
     private Board board;
 

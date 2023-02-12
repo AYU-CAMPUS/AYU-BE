@@ -31,7 +31,6 @@ public class ExchangeCompletion {
     private Long Id;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user;
 
@@ -39,7 +38,6 @@ public class ExchangeCompletion {
     private String email;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board; //다운 가능한 게시물
 
@@ -47,7 +45,6 @@ public class ExchangeCompletion {
     private Long boardId;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "requester_board_id", nullable = false, insertable = false, updatable = false)
     private Board requesterBoard; //다운 가능한 게시물
 

@@ -9,6 +9,8 @@ import com.ay.exchange.report.entity.ReportBoard;
 import com.ay.exchange.report.entity.ReportComment;
 import com.ay.exchange.user.entity.vo.Authority;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -48,27 +50,35 @@ public class User extends BaseEntity implements Persistable<String> {
     private String suspendedReason; //정지사유
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Exchange> exchanges;
 
     @OneToMany(mappedBy = "requesterUser", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Exchange> requesterExchanges;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Board> boards;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ExchangeCompletion> exchangeCompletions;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ReportBoard> reportBoards;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ReportComment> reportComments;
 
     @OneToMany(mappedBy = "targetUser", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ReportComment> reportTargetComments;
 
     @Override

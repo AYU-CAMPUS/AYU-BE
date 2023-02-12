@@ -51,25 +51,29 @@ public class Board extends BaseEntity {
 
     @OneToOne(mappedBy = "board", fetch = FetchType.LAZY,
             orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private BoardContent boardContent;
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,
             orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,
             orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Exchange> exchanges;
 
     @OneToMany(mappedBy = "requesterBoard", fetch = FetchType.LAZY,
             orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Exchange> requesterExchanges;
 
     @OneToMany(mappedBy = "board", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ReportBoard> reportBoards;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user;
 
@@ -77,11 +81,14 @@ public class Board extends BaseEntity {
     private String email;
 
     @OneToMany(mappedBy = "board", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ExchangeCompletion> exchangeCompletions;
 
     @OneToMany(mappedBy = "requesterBoard", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<ExchangeCompletion> requesterExchangeCompletions;
 
     @OneToOne(mappedBy = "board", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ModificationBoard modificationBoard;
 }

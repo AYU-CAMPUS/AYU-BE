@@ -28,7 +28,6 @@ public class ReportBoard {
     private Long id;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id", insertable = false, updatable = false, nullable = false)
     private Board board;
 
@@ -36,7 +35,6 @@ public class ReportBoard {
     private Long boardId; //신고 대상 글
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "email", insertable = false, updatable = false, nullable = false)
     private User user;
 

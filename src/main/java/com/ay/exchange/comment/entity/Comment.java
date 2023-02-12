@@ -23,7 +23,6 @@ public class Comment {
     private Long id;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "board_id", nullable = false, insertable = false, updatable = false)
     private Board board;
 
@@ -31,7 +30,6 @@ public class Comment {
     private Long boardId;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "email", updatable = false, insertable = false, nullable = false)
     private User user;
 
