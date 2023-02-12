@@ -71,9 +71,7 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("USER TOKEN {}",token);
 
         if (token == null) {
-            log.info("REDIRECT");
-            redirectLogin(response);
-            return false;
+            return true;
         }
 
         try {
@@ -95,7 +93,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         .set(email, accessToken, COOKIE_EXPIRE_TIME, TimeUnit.SECONDS);
                 redisTemplate.rename(token, accessToken);
                 response.sendRedirect(request.getRequestURL().toString());
-                return false;
+                //return false;
             }
         }
         return true;
