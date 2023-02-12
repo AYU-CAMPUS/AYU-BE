@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/board")
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
     private final BoardService boardService;
     private final BoardContentService boardContentService;
@@ -173,6 +175,7 @@ public class BoardController {
             @RequestPart("file") MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
+        log.info("modificaiton {}",modificationRequest.getCategory());
         if (FileValidator.isAllowedFileType(multipartFile)) {
             boardContentService.requestModificationBoard(modificationRequest, multipartFile, token);
             return true;

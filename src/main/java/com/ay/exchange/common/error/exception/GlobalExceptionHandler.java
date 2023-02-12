@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleValidateException(
             final Exception e
     ) {
+        e.printStackTrace();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(
