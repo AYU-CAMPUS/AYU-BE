@@ -78,6 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("USER TOKEN {}",token);
 
         if (token == null) {
+            setCorsHeader(response);
             throw new JwtException("유효하지 않은 토큰");
         }
 
