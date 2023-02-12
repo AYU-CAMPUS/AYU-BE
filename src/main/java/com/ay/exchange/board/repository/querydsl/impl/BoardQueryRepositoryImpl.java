@@ -33,7 +33,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                         user.nickName.as("writer"),
                         board.boardCategory.subjectName,
                         board.boardCategory.gradeType,
-                        board.exchangeSuccessCount,
+                        board.exchangeSuccessCount.as("numberOfSuccessfulExchanges"),
                         board.createdDate
                 ))
                 .from(board)
