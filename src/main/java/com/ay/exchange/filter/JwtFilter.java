@@ -45,9 +45,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             log.info("OPTIONS");
-            setCorsHeader(response);
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
+//            setCorsHeader(response);
+//            response.setStatus(HttpServletResponse.SC_OK);
+//            return;
         }
 
         if(isAuthentication(request, response)){
@@ -68,6 +68,10 @@ public class JwtFilter extends OncePerRequestFilter {
             return true;
         }
         if (Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET")) {
+            return true;
+        }
+        if(request.getMethod().equals("OPTIONS")){
+            log.info("OPTIONS2");
             return true;
         }
         return false;
