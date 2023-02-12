@@ -41,13 +41,11 @@ public class ModificationRequest {
     @Pattern(regexp = "^[1-4]$")
     private String gradeType;
 
-    @Schema(description = "전공 또는 교양 선택 시 과목명 입력")
-    @NotNull
+    @Schema(description = "전공 또는 교양 선택 시 과목명 입력 (30자 제한)")
     @Size(max = 30)
     private String subjectName;
 
-    @Schema(description = "전공 또는 교양 선택 시 교수명 입력")
-    @NotNull
+    @Schema(description = "전공 또는 교양 선택 시 교수명 입력 (15자 제한)")
     @Size(max = 15)
     private String professorName;
 
@@ -55,7 +53,7 @@ public class ModificationRequest {
     @Pattern(regexp = "^([1-9]|[1-9][0-9]|[1-9][0-9][0-9])$")
     private String numberOfFilePages;
 
-    @Schema(description = "글 내용")
+    @Schema(description = "글 내용 (200자 제한)")
     @NotNull
     @Size(max = 200)
     private String content;
