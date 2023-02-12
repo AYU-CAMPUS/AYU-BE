@@ -78,7 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("USER TOKEN {}",token);
 
         if (token == null) {
-            return true;
+            throw new JwtException("유효하지 않은 토큰");
         }
 
         try {
@@ -99,8 +99,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 redisTemplate.opsForValue()
                         .set(email, accessToken, COOKIE_EXPIRE_TIME, TimeUnit.SECONDS);
                 redisTemplate.rename(token, accessToken);
+                setCorsHeader(response);
                 response.sendRedirect(request.getRequestURL().toString());
-                //return false;
+                return false;
             }
         }
         return true;
