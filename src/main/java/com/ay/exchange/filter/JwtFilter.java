@@ -43,6 +43,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            log.info("OPTIONS");
+            setCorsHeader(response);
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
         if(isAuthentication(request, response)){
             filterChain.doFilter(request, response);
         }
@@ -100,16 +107,20 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void redirectLogin(HttpServletResponse response) throws IOException {
+        setCorsHeader(response);
+
+        response.sendRedirect(UriComponentsBuilder.fromUriString(URL)
+                .build()
+                .toUriString());
+    }
+
+    private void setCorsHeader(HttpServletResponse response){
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods","*");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers",
                 "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-
-        response.sendRedirect(UriComponentsBuilder.fromUriString(URL)
-                .build()
-                .toUriString());
     }
 
     private String findToken(Cookie[] cookies) {
