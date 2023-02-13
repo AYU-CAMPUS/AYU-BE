@@ -36,6 +36,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private final Integer COOKIE_EXPIRE_TIME;
     private final String DOMAIN;
     private final String URL;
+    private final String clientUrl;
+    private final String devUrl;
 
     private static final Set<String> passUri = new HashSet<>(List.of("/login/oauth2/code/google", "/oauth2/authorization/google"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+";
@@ -43,9 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("origin {}", request.getHeader(HttpHeaders.ORIGIN));
-
-        if(isAuthentication(request, response)){
+        if (isAuthentication(request, response)) {
             filterChain.doFilter(request, response);
         }
 
@@ -58,14 +58,14 @@ public class JwtFilter extends OncePerRequestFilter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
 
-        log.info(formattedDate + " " + request.getRequestURI() + " => " + getClientIP(request) + " " + request.getMethod());
+        log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }
         if (Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET")) {
             return true;
         }
-        if(request.getMethod().equals("OPTIONS")){
+        if (request.getMethod().equals("OPTIONS")) {
             return true;
         }
         return false;
@@ -73,10 +73,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String token = findToken(request.getCookies());
-        log.info("USER TOKEN {}",token);
+        log.info("USER TOKEN {}", token);
+        String origin = request.getHeader(HttpHeaders.ORIGIN);
 
         if (token == null) {
-            setCorsHeader(response);
+            setCorsHeader(response, origin);
             throw new JwtException("유효하지 않은 토큰");
         }
 
@@ -88,7 +89,7 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (JwtException | IllegalArgumentException e) { //액세스 토큰 만료
             String refreshToken = (String) redisTemplate.opsForValue()
                     .get(token);
-
+            setCorsHeader(response, origin);
             if (refreshToken != null) { //리프레쉬 토큰이 존재하면 액세스 토큰 재발급
                 log.info("재발급 완료");
                 String email = jwtTokenProvider.getUserEmail(refreshToken);
@@ -98,33 +99,25 @@ public class JwtFilter extends OncePerRequestFilter {
                 redisTemplate.opsForValue()
                         .set(email, accessToken, COOKIE_EXPIRE_TIME, TimeUnit.SECONDS);
                 redisTemplate.rename(token, accessToken);
-                setCorsHeader(response);
                 response.sendRedirect(request.getRequestURL().toString());
                 return false;
-            }else{
-                setCorsHeader(response);
+            } else {
                 throw new JwtException("유효하지 않은 토큰");
             }
         }
-        setCorsHeader(response);
+        setCorsHeader(response, origin);
         return true;
     }
 
-    private void redirectLogin(HttpServletResponse response) throws IOException {
-        setCorsHeader(response);
-
-        response.sendRedirect(UriComponentsBuilder.fromUriString(URL)
-                .build()
-                .toUriString());
-    }
-
-    private void setCorsHeader(HttpServletResponse response){
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Methods","*");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers",
-                "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    private void setCorsHeader(HttpServletResponse response, String url) {
+        if (url.equals(clientUrl) || url.equals(devUrl)) {
+            response.setHeader("Access-Control-Allow-Origin", url);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Methods", "*");
+            response.setHeader("Access-Control-Max-Age", "3600");
+            response.setHeader("Access-Control-Allow-Headers",
+                    "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+        }
     }
 
     private String findToken(Cookie[] cookies) {

@@ -41,6 +41,12 @@ public class SecurityConfig {
     @Value("${cookie.url}")
     private String URL;
 
+    @Value("${address.client}")
+    private String clientUrl;
+
+    @Value("${address.dev}")
+    private String devUrl;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -60,7 +66,7 @@ public class SecurityConfig {
                 .successHandler(oAuth2SuccessHandler);
         http
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtFilter(jwtTokenProvider, redisTemplate, COOKIE_EXPIRE_TIME, DOMAIN, URL), CorsFilter.class)
+                .addFilterBefore(new JwtFilter(jwtTokenProvider, redisTemplate, COOKIE_EXPIRE_TIME, DOMAIN, URL, clientUrl, devUrl), CorsFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
         return http.build();
