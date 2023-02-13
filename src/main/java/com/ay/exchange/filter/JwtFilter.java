@@ -110,6 +110,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void setCorsHeader(HttpServletResponse response, String url) {
+        if (url == null) return;
         if (url.equals(clientUrl) || url.equals(devUrl)) {
             response.setHeader("Access-Control-Allow-Origin", url);
             response.setHeader("Access-Control-Allow-Credentials", "true");
