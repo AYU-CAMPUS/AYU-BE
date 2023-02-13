@@ -43,9 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("port {}", request.getRemotePort());
-        log.info("protocol {}",request.getProtocol());
-        log.info("host {}", request.getRemoteHost());
+        log.info("origin {}", request.getHeader(HttpHeaders.ORIGIN));
 
         if(isAuthentication(request, response)){
             filterChain.doFilter(request, response);
