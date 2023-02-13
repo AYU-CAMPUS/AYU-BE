@@ -45,6 +45,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${address.client}")
     private String clientUrl;
 
+    @Value("${address.dev}")
+    private String devUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
@@ -100,7 +103,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private void makeResponse(HttpServletResponse response, String token) throws IOException {
         response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(token));
-        response.sendRedirect(UriComponentsBuilder.fromUriString(clientUrl)
+        response.sendRedirect(UriComponentsBuilder.fromUriString(devUrl)
                 .build()
                 .toUriString());
     }
