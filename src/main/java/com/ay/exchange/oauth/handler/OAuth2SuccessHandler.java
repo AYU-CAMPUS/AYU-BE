@@ -42,12 +42,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${jwt.refresh-expire-time}")
     private Long REFRESH_EXPIRE_TIME;
 
-    @Value("${address.client}")
-    private String clientUrl;
-
-    @Value("${address.dev}")
-    private String devUrl;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
@@ -66,7 +60,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String accessToken = jwtTokenProvider.createToken(email, userInfoDto.getAuthority());
             String refreshToken = jwtTokenProvider.createRefreshToken(email, userInfoDto.getAuthority());
             addTokenInRedis(accessToken, refreshToken, email);
-            makeResponse(response, accessToken);
+            makeResponse(response, accessToken, (String) request.getAttribute("url"));
             return;
         }
 
@@ -77,7 +71,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String accessToken = jwtTokenProvider.createToken(email, Authority.User);
             String refreshToken = jwtTokenProvider.createRefreshToken(email, Authority.User);
             addTokenInRedis(accessToken, refreshToken, email);
-            makeResponse(response, accessToken);
+            makeResponse(response, accessToken, (String) request.getAttribute("url"));
         } catch (Exception e) { //만약에 랜덤닉네임을 받았지만 간발의 차이로 겹칠 경우도 있지만 일단 유저가 아니라고 예외코드를 보낸다.
             makeError(response);
         }
@@ -101,9 +95,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setCharacterEncoding("utf-8");
     }
 
-    private void makeResponse(HttpServletResponse response, String token) throws IOException {
+    private void makeResponse(HttpServletResponse response, String token, String url) throws IOException {
         response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(token));
-        response.sendRedirect(UriComponentsBuilder.fromUriString(devUrl)
+        response.sendRedirect(UriComponentsBuilder.fromUriString(url)
                 .build()
                 .toUriString());
     }
