@@ -48,7 +48,6 @@ public class JwtFilter extends OncePerRequestFilter {
         if (isAuthentication(request, response)) {
             filterChain.doFilter(request, response);
         }
-
     }
 
     @Override
@@ -60,7 +59,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
         if (passUri.contains(request.getRequestURI())) {
-            request.setAttribute("url",request.getParameter("url"));
             return true;
         }
         if (Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET")) {
