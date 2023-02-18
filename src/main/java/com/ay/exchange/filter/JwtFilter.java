@@ -58,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String formattedDate = seoulCurrentTime.format(formatter);
 
         log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
-        log.info("host: {}, ", request.getHeader("host"));
+        log.info("url: {}, ", request.getHeader("url"));
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }
