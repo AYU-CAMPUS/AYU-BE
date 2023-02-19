@@ -43,13 +43,13 @@ public class ModificationBoard {
     @Column(nullable = false)
     private Integer numberOfFilePages;
 
-    @Column(nullable = false)
+    @Column
     private String originalFileName;
 
-    @Column(nullable = false)
+    @Column
     private String filePath;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String content;
 
     @Column(nullable = false)

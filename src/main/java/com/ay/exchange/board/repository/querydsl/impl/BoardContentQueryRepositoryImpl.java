@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.comment.entity.QComment.comment;
+import static com.ay.exchange.common.util.DateGenerator.getAvailableDate;
 import static com.ay.exchange.exchange.entity.QExchange.*;
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
@@ -217,13 +218,6 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
 
     @Override
     public void requestModificationBoard(ModificationRequest modificationRequest, String email, String originalFilename, String filePath, BoardCategory boardCategory) {
-        String date = getAvailableDate();
-        if (!updateApproval(email, modificationRequest.getBoardId())
-                && !checkExchangeCompletionDate(date, email, modificationRequest.getBoardId())
-                && !checkExchangeDate(date, modificationRequest.getBoardId())) {
-            throw new FailModifyBoardException();
-        }
-
         String sql = "INSERT INTO modification_board(title, category, department_type, file_type, grade_type, professor_name, subject_name, number_of_file_pages, original_file_name, file_path, board_id, content, date) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, modificationRequest.getTitle())
@@ -246,22 +240,14 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         throw new FailModifyBoardException();
     }
 
-    private boolean updateApproval(String email, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
+    @Override
+    public boolean updateApproval(String email, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
         return queryFactory.update(board)
                 .set(board.approval, Approval.MODIFICATION.getApproval())
                 .where(board.id.eq(boardId)
                         .and(board.email.eq(email))
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .execute() == 1L;
-    }
-
-    private String getAvailableDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -3);
-        Date date = new Date(calendar.getTimeInMillis());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        return simpleDateFormat.format(date);
     }
 
     private Boolean isBoardOwner(String email, Long boardId) {
@@ -276,7 +262,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         return count == 1L;
     }
 
-    private Boolean checkExchangeDate(String date, Long boardId) {
+    @Override
+    public Boolean checkExchangeDate(String date, Long boardId) {
         Long count = queryFactory.select(exchange.count())
                 .from(exchange)
                 .where(getExchangeDate().gt(date)
@@ -287,7 +274,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         return count == 0L;
     }
 
-    private Boolean checkExchangeCompletionDate(String date, String email, Long boardId) {
+    @Override
+    public Boolean checkExchangeCompletionDate(String date, String email, Long boardId) {
         Long count = queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
                 .where(getExchangeCompletionDate().gt(date)

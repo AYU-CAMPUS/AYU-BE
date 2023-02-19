@@ -14,4 +14,10 @@ public interface BoardContentQueryRepository {
     Boolean canDeleted(String email, Long boardId);
 
     void requestModificationBoard(ModificationRequest modificationRequest, String email, String originalFilename, String filePath, BoardCategory boardCategory);
+
+    boolean updateApproval(String email, Long boardId);
+
+    Boolean checkExchangeCompletionDate(String date, String email, Long boardId);
+
+    Boolean checkExchangeDate(String date, Long boardId);
 }

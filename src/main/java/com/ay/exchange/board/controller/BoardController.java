@@ -172,14 +172,10 @@ public class BoardController {
     @PutMapping("/modification")
     public Boolean requestModificationBoard(
             @RequestPart("modificationRequest") @Valid ModificationRequest modificationRequest,
-            @RequestPart("file") MultipartFile multipartFile,
-            @CookieValue("token") String token
+            @RequestPart(value = "file", required = false) MultipartFile multipartFile,
+            @CookieValue(value = "token") String token
     ) {
-        log.info("modificaiton {}",modificationRequest.getCategory());
-        if (FileValidator.isAllowedFileType(multipartFile)) {
-            boardContentService.requestModificationBoard(modificationRequest, multipartFile, token);
-            return true;
-        }
-        throw new FileInvalidException();
+        boardContentService.requestModificationBoard(modificationRequest, multipartFile, token);
+        return true;
     }
 }

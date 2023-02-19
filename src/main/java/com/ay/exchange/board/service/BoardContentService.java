@@ -6,8 +6,10 @@ import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.board.exception.FailModifyBoardException;
+import com.ay.exchange.board.exception.FileInvalidException;
 import com.ay.exchange.board.exception.NotFoundBoardException;
 import com.ay.exchange.board.repository.BoardContentRepository;
+import com.ay.exchange.common.util.FileValidator;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Objects;
 
 import static com.ay.exchange.common.util.BoardTypeGenerator.*;
+import static com.ay.exchange.common.util.DateGenerator.getAvailableDate;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +55,10 @@ public class BoardContentService {
     public void requestModificationBoard(ModificationRequest modificationRequest, MultipartFile multipartFile, String token) {
         String email = jwtTokenProvider.getUserEmail(token);
 
+        if (!canModification(getAvailableDate(), email, modificationRequest.getBoardId())) {
+            throw new FailModifyBoardException();
+        }
+
         BoardCategory boardCategory = BoardCategory.builder()
                 .category(getCategory(Integer.parseInt(modificationRequest.getCategory())))
                 .departmentType(getDepartmentType(Integer.parseInt(modificationRequest.getDepartmentType())))
@@ -61,14 +68,31 @@ public class BoardContentService {
                 .professorName(modificationRequest.getProfessorName())
                 .build();
 
-        try {
-            String filePath = awsS3Service.buildFileName(Objects.requireNonNull(multipartFile.getOriginalFilename()), email, UPLOAD_FILE);
-            boardContentRepository.requestModificationBoard(modificationRequest, email, multipartFile.getOriginalFilename(), filePath, boardCategory);
-            awsS3Service.uploadFile(multipartFile, filePath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new FailModifyBoardException();
+        if (multipartFile == null) { //기존 파일을 유지하고 내용만 변경
+            boardContentRepository.requestModificationBoard(modificationRequest, email, null, null, boardCategory);
+            return;
         }
 
+        if (FileValidator.isAllowedFileType(multipartFile)) { //파일도 변경
+            try {
+                String filePath = awsS3Service.buildFileName(Objects.requireNonNull(multipartFile.getOriginalFilename()), email, UPLOAD_FILE);
+                boardContentRepository.requestModificationBoard(modificationRequest, email, multipartFile.getOriginalFilename(), filePath, boardCategory);
+                awsS3Service.uploadFile(multipartFile, filePath);
+            } catch (Exception e) {
+                throw new FailModifyBoardException();
+            }
+        } else {
+            throw new FileInvalidException();
+        }
     }
+
+    private boolean canModification(String date, String email, Long boardId) {
+        if (!boardContentRepository.updateApproval(email, boardId)
+                && !boardContentRepository.checkExchangeCompletionDate(date, email, boardId)
+                && !boardContentRepository.checkExchangeDate(date, boardId)) {
+            return false;
+        }
+        return true;
+    }
+
 }
