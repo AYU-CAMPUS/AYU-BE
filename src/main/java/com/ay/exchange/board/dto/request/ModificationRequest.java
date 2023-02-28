@@ -14,9 +14,11 @@ import javax.validation.constraints.Size;
 @Getter
 public class ModificationRequest {
     @Schema(description = "게시글 번호")
+    @NotNull
     private Long boardId;
 
     @Schema(description = "글 제목")
+    @NotNull
     private String title;
 
     @Schema(description = "신학대학(0), 인문대학(1), 예술체육대학(2), 사회과학대학(3), 창의융합대학(4), 인성양성(5), 리더십(6), 융합실무(7), 문제해결(8), 글로벌(9), 의사소통(10)," +
