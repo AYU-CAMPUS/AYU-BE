@@ -2,7 +2,7 @@ package com.ay.exchange.user.repository;
 
 
 import com.ay.exchange.common.util.Approval;
-import com.ay.exchange.common.util.DateGenerator;
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.user.dto.*;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
@@ -21,7 +21,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +35,6 @@ import static com.ay.exchange.user.entity.QUser.user;
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.exchange.entity.QExchange.exchange;
 import static com.querydsl.core.group.GroupBy.*;
-import static org.hibernate.sql.InFragment.NULL;
 
 @Repository
 @RequiredArgsConstructor
@@ -196,7 +194,7 @@ public class MyPageRepository {
         if (count != 2L) throw new FailAcceptFileException();
 
         //교환완료
-        String date = DateGenerator.getCurrentDate();
+        String date = DateUtil.getCurrentDate();
         String sql = "INSERT INTO exchange_completion(board_id,date,email,requester_board_id) VALUES(?,?,?,?),(?,?,?,?)";
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, exchangeAccept.getRequesterBoardId())
@@ -282,7 +280,7 @@ public class MyPageRepository {
 
     }
 
-    public LoginNotificationResponse findUserNotificiatonByEmail(String userEmail) {
+    public LoginNotificationResponse findUserNotificationByEmail(String userEmail) {
         return queryFactory.select(Projections.fields(
                         LoginNotificationResponse.class,
                         user.nickName,

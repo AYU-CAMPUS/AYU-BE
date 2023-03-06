@@ -1,6 +1,6 @@
 package com.ay.exchange.report.repository;
 
-import com.ay.exchange.common.util.DateGenerator;
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.report.dto.query.CommentInfo;
 import com.ay.exchange.report.dto.request.ReportBoardRequest;
 import com.ay.exchange.report.dto.request.ReportCommentRequest;
@@ -30,7 +30,7 @@ public class ReportQueryRepository {
                 .setParameter(1, reportBoardRequest.getBoardId())
                 .setParameter(2, email)
                 .setParameter(3, reportBoardRequest.getReason())
-                .setParameter(4, DateGenerator.getCurrentDate());
+                .setParameter(4, DateUtil.getCurrentDate());
 
         try {
             if (query.executeUpdate() != 1) {
@@ -59,7 +59,7 @@ public class ReportQueryRepository {
                 .setParameter(2, commentInfo.getTargetUserEmail())
                 .setParameter(3, commentInfo.getContent())
                 .setParameter(4, reportCommentRequest.getReason())
-                .setParameter(5, DateGenerator.getCurrentDate());
+                .setParameter(5, DateUtil.getCurrentDate());
 
         try {
             if (query.executeUpdate() != 1) {

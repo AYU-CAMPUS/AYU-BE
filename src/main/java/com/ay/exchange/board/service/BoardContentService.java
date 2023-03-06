@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Objects;
 
 import static com.ay.exchange.common.util.BoardTypeGenerator.*;
-import static com.ay.exchange.common.util.DateGenerator.getAvailableDate;
+import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,7 @@
 package com.ay.exchange.user.service;
 
 import com.ay.exchange.aws.service.AwsS3Service;
-import com.ay.exchange.common.util.DateGenerator;
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
@@ -138,7 +138,7 @@ public class UserService {
     @Transactional(rollbackFor = Exception.class)
     public LoginNotificationResponse getUserNotification(HttpServletResponse response, String token) throws ParseException {
         String email = jwtTokenProvider.getUserEmail(token);
-        LoginNotificationResponse loginNotificationResponse = myPageRepository.findUserNotificiatonByEmail(email);
+        LoginNotificationResponse loginNotificationResponse = myPageRepository.findUserNotificationByEmail(email);
 
         if (loginNotificationResponse == null) { //존재하지 않는 회원
             throw new NotExistsUserException();
@@ -176,7 +176,7 @@ public class UserService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         Date date = dateFormat.parse(suspendedDate);
-        Date date2 = dateFormat.parse(DateGenerator.getCurrentDate());
+        Date date2 = dateFormat.parse(DateUtil.getCurrentDate());
 
         if (date.before(date2)) {
             return true;

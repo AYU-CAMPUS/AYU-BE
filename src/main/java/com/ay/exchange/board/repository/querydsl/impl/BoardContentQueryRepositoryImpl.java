@@ -12,7 +12,7 @@ import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.common.util.Approval;
-import com.ay.exchange.common.util.DateGenerator;
+import com.ay.exchange.common.util.DateUtil;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;
@@ -24,14 +24,13 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.comment.entity.QComment.comment;
-import static com.ay.exchange.common.util.DateGenerator.getAvailableDate;
+import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
 import static com.ay.exchange.exchange.entity.QExchange.*;
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
@@ -232,7 +231,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .setParameter(10, filePath)
                 .setParameter(11, modificationRequest.getBoardId())
                 .setParameter(12, modificationRequest.getContent())
-                .setParameter(13, DateGenerator.getCurrentDate());
+                .setParameter(13, DateUtil.getCurrentDate());
         if (query.executeUpdate() == 1) {
             return;
         }

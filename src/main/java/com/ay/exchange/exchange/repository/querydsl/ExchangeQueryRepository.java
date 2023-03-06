@@ -1,7 +1,7 @@
 package com.ay.exchange.exchange.repository.querydsl;
 
 import com.ay.exchange.common.util.Approval;
-import com.ay.exchange.common.util.DateGenerator;
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.exchange.dto.ExchangeInfo;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.dto.response.ExchangeResponse;
@@ -69,7 +69,7 @@ public class ExchangeQueryRepository {
 
         String sql = "INSERT INTO exchange(created_date, last_modified_date, board_id, requester_board_id, requester_email, type, email)" +
                 " VALUES(?,?,?,?,?,?,?), (?,?,?,?,?,?,?)";
-        String currentDate = DateGenerator.getCurrentDate();
+        String currentDate = DateUtil.getCurrentDate();
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, currentDate)
                 .setParameter(2, currentDate)

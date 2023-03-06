@@ -8,6 +8,7 @@ import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.exception.FailUpdateProfileException;
+import com.ay.exchange.user.facade.UserFacade;
 import com.ay.exchange.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,9 +17,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +40,10 @@ import java.text.ParseException;
 public class UserController {
     private final UserService userService;
     private final AwsS3Service awsS3Service;
+    private final UserFacade userFacade;
+
+    @Value("${cookie.domain}")
+    private String DOMAIN;
 
     @Operation(summary = "로그인 성공 시 사용자에 대해 필요한 정보 조회",
             description = "정상적인 사용자면 페이지 상단에 교환 수를 조회, 정지회원이면 정지기간과 정지사유가 있음",
@@ -47,7 +54,11 @@ public class UserController {
             })
     @GetMapping("/notification")
     public LoginNotificationResponse searchLoginInfo(HttpServletResponse response, @CookieValue(value = "token") String token) throws ParseException {
-        return userService.getUserNotification(response, token);
+        LoginNotificationResponse loginNotificationResponse = userFacade.getUserNotification(token);
+        if(loginNotificationResponse.getSuspendedDate() != null){ //정지회원이면 쿠키 삭제
+            response.setHeader(HttpHeaders.SET_COOKIE, removeCookie());
+        }
+        return loginNotificationResponse;
     }
 
     @Operation(summary = "로그아웃",
@@ -247,5 +258,16 @@ public class UserController {
             @CookieValue("token") String token
     ) {
         return userService.withdrawalUser(token);
+    }
+
+    private String removeCookie() {
+        ResponseCookie cookie = ResponseCookie.from("token", null)
+                .httpOnly(true)
+                .domain(DOMAIN)
+                .path("/")
+                .maxAge(0)
+                .secure(true)
+                .sameSite("None").build();
+        return cookie.toString();
     }
 }
