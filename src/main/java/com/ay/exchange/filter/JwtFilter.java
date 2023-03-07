@@ -6,13 +6,11 @@ import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,24 +28,15 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import static com.ay.exchange.common.util.CookieUtil.makeCookie;
+import static com.ay.exchange.common.util.EncryptionUtil.*;
+
 @RequiredArgsConstructor
 @Component
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Value("${cookie.expire-time}")
-    private Integer COOKIE_EXPIRE_TIME;
-
-    @Value("${cookie.domain}")
-    private String DOMAIN;
-
-    @Value("${address.client}")
-    private String clientUrl;
-
-    @Value("${address.dev}")
-    private String devUrl;
 
     private static final Set<String> passUri = new HashSet<>(List.of(
             "/login/oauth2/code/google",
@@ -127,7 +116,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 String accessToken = jwtTokenProvider.createToken(email, authority);
                 response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(accessToken));
                 redisTemplate.opsForValue()
-                        .set(email, accessToken, COOKIE_EXPIRE_TIME, TimeUnit.SECONDS);
+                        .set(email, accessToken, getAccessExpireTime(), TimeUnit.MILLISECONDS);
                 redisTemplate.rename(token, accessToken);
                 response.sendRedirect(request.getRequestURL().toString());
                 return false;
@@ -141,7 +130,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void setCorsHeader(HttpServletResponse response, String url) {
         if (url == null) return;
-        if (url.equals(clientUrl) || url.equals(devUrl)) {
+        if (url.equals(getClientUrl()) || url.equals(getDevUrl())) {
             response.setHeader("Access-Control-Allow-Origin", url);
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods", "*");
@@ -158,17 +147,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);
-    }
-
-    private String makeCookie(String token) {
-        ResponseCookie cookie = ResponseCookie.from("token", token)
-                .httpOnly(true)
-                .domain(DOMAIN)
-                .path("/")
-                .maxAge(COOKIE_EXPIRE_TIME)
-                .secure(true)
-                .sameSite("None").build();
-        return cookie.toString();
     }
 
     private static String getClientIP(HttpServletRequest request) {
