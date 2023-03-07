@@ -6,9 +6,11 @@ import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -29,17 +31,44 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
+@Component
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final Integer COOKIE_EXPIRE_TIME;
-    private final String DOMAIN;
-    private final String URL;
-    private final String clientUrl;
-    private final String devUrl;
 
-    private static final Set<String> passUri = new HashSet<>(List.of("/login/oauth2/code/google", "/oauth2/authorization/google"));
+    @Value("${cookie.expire-time}")
+    private Integer COOKIE_EXPIRE_TIME;
+
+    @Value("${cookie.domain}")
+    private String DOMAIN;
+
+    @Value("${address.client}")
+    private String clientUrl;
+
+    @Value("${address.dev}")
+    private String devUrl;
+
+    private static final Set<String> passUri = new HashSet<>(List.of(
+            "/login/oauth2/code/google",
+            "/oauth2/authorization/google",
+            "/swagger",
+            "/swagger-ui/index.html",
+            "/swagger-ui/swagger-ui.css",
+            "/swagger-ui/index.css",
+            "/swagger-ui/swagger-ui-bundle.js",
+            "/swagger-ui/swagger-ui-standalone-preset.js",
+            "/swagger-ui/swagger-initializer.js",
+            "/v3/api-docs/swagger-config",
+            "/swagger-ui/favicon-32x32.png",
+            "/v3/api-docs/user-api",
+            "/v3/api-docs/board-api",
+            "/v3/api-docs/comment-api",
+            "/v3/api-docs/report-api",
+            "/v3/api-docs/oauth2-api",
+            "/v3/api-docs/exchange-api",
+            "/v3/api-docs/management-api",
+            "/favicon.ico"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+";
 
 
@@ -57,11 +86,12 @@ public class JwtFilter extends OncePerRequestFilter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
 
-        log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
-        log.info("url: {}, ", request.getHeader("url"));
         if (passUri.contains(request.getRequestURI())) {
             return true;
         }
+        log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
+        log.info("url: {}, ", request.getHeader("url"));
+
         if (Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET")) {
             return true;
         }
@@ -141,7 +171,7 @@ public class JwtFilter extends OncePerRequestFilter {
         return cookie.toString();
     }
 
-    public static String getClientIP(HttpServletRequest request) {
+    private static String getClientIP(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
 
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
