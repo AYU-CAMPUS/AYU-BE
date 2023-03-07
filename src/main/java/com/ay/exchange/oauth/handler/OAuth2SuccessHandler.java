@@ -8,11 +8,9 @@ import com.ay.exchange.user.entity.vo.Authority;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -22,8 +20,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Set;
+
 import java.util.concurrent.TimeUnit;
+
+import static com.ay.exchange.common.util.CookieUtil.makeCookie;
+import static com.ay.exchange.common.util.EncryptionUtil.*;
 
 @Component
 @RequiredArgsConstructor
@@ -32,25 +33,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final Oauth2Service oauth2Service;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RedisTemplate<String, Object> redisTemplate;
-    @Value("${cookie.expire-time}")
-    private Integer COOKIE_EXPIRE_TIME;
-    @Value("${cookie.domain}")
-    private String DOMAIN;
-
-    @Value("${jwt.access-expire-time}")
-    private Long ACCESS_EXPIRE_TIME;
-
-    @Value("${jwt.refresh-expire-time}")
-    private Long REFRESH_EXPIRE_TIME;
-
-    @Value("${address.client}")
-    private String clientUrl;
-
-    @Value("${address.dev}")
-    private String devUrl;
-
-    @Value("${developer.email}")
-    private Set<String> developerEmail;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -107,13 +89,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private void makeResponse(HttpServletResponse response, String token, String email) throws IOException {
         response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(token));
-        if(developerEmail.contains(email)){
-            response.sendRedirect(UriComponentsBuilder.fromUriString(devUrl)
+        if (isDeveloper(email)) {
+            response.sendRedirect(UriComponentsBuilder.fromUriString(getDevUrl())
                     .build()
                     .toUriString());
             return;
         }
-        response.sendRedirect(UriComponentsBuilder.fromUriString(clientUrl)
+        response.sendRedirect(UriComponentsBuilder.fromUriString(getClientUrl())
                 .build()
                 .toUriString());
     }
@@ -121,23 +103,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private void addTokenInRedis(String accessToken, String refreshToken, String email) {
         //액세스 토큰 저장
         redisTemplate.opsForValue()
-                .set(email, accessToken, ACCESS_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+                .set(email, accessToken, getAccessExpireTime(), TimeUnit.MILLISECONDS);
 
         //리프레쉬 저장
         redisTemplate.opsForValue()
-                .set(accessToken, refreshToken, REFRESH_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+                .set(accessToken, refreshToken, getRefreshExpireTime(), TimeUnit.MILLISECONDS);
 
-    }
-
-    private String makeCookie(String token) {
-        ResponseCookie cookie = ResponseCookie.from("token", token)
-                .httpOnly(true)
-                .domain(DOMAIN)
-                .path("/")
-                .maxAge(COOKIE_EXPIRE_TIME)
-                .secure(true)
-                .sameSite("None").build();
-        return cookie.toString();
     }
 
     private void makeError(HttpServletResponse response) throws IOException {

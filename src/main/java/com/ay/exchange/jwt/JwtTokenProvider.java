@@ -8,30 +8,22 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Date;
 
+import static com.ay.exchange.common.util.EncryptionUtil.*;
+
 @Component
 @NoArgsConstructor
 public class JwtTokenProvider {
-    @Value("${jwt.secret-key}")
-    private String secretKey;
-
-    @Value("${jwt.access-expire-time}")
-    private Long ACCESS_EXPIRE_TIME;
-
-    @Value("${jwt.refresh-expire-time}")
-    private Long REFRESH_EXPIRE_TIME;
-
     private Key secretMasterKey;
 
     @PostConstruct
     public void initKeys() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(getSecretKey());
         secretMasterKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -42,7 +34,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(new Date(new Date().getTime() + ACCESS_EXPIRE_TIME))
+                .setExpiration(new Date(new Date().getTime() + getAccessExpireTime()))
                 .signWith(secretMasterKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -95,7 +87,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(new Date(new Date().getTime() + REFRESH_EXPIRE_TIME))
+                .setExpiration(new Date(new Date().getTime() + getRefreshExpireTime()))
                 .signWith(secretMasterKey, SignatureAlgorithm.HS256)
                 .compact();
     }
