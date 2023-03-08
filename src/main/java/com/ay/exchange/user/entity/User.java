@@ -27,7 +27,7 @@ public class User extends BaseEntity implements Persistable<String> {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nickName;
 
     @Enumerated(EnumType.STRING)

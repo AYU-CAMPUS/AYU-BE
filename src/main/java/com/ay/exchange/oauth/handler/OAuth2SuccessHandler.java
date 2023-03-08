@@ -57,8 +57,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
         //최초 로그인
-        String nickName = settingUserNickName();
         try {
+            String nickName = createRandomNickname();
             oauth2Service.saveUser(email, nickName);
             String accessToken = jwtTokenProvider.createToken(email, Authority.User);
             String refreshToken = jwtTokenProvider.createRefreshToken(email, Authority.User);
@@ -118,7 +118,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.getWriter().write(result);
     }
 
-    private String makeRandomNickName() {
+    private String createRandomNickname() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 8; i++) {
             sb.append((char) (Math.random() * 26 + 65));
@@ -126,14 +126,4 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         return sb.toString();
     }
 
-    private String settingUserNickName() {
-        String randomNickName = null;
-        while (true) {
-            randomNickName = makeRandomNickName();
-            if (!oauth2Service.checkExistsUserByNickName(randomNickName)) {
-                break;
-            }
-        }
-        return randomNickName;
-    }
 }
