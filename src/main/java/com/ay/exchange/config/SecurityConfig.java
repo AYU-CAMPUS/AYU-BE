@@ -4,7 +4,7 @@ import com.ay.exchange.filter.JwtExceptionFilter;
 import com.ay.exchange.filter.JwtFilter;
 
 import com.ay.exchange.oauth.handler.OAuth2SuccessHandler;
-import com.ay.exchange.oauth.service.Oauth2Service;
+import com.ay.exchange.oauth.facade.Oauth2Facade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 
@@ -22,7 +22,7 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
     //private final CorsConfig corsConfig;
-    private final Oauth2Service oauth2Service;
+    private final Oauth2Facade oauth2Facade;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final CorsFilter corsFilter;
     private final JwtFilter jwtFilter;
@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable()
                 .oauth2Login()
-                .userInfoEndpoint().userService(oauth2Service)
+                .userInfoEndpoint().userService(oauth2Facade)
                 .and()
                 .successHandler(oAuth2SuccessHandler);
         http

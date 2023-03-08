@@ -5,10 +5,13 @@ import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
+import com.ay.exchange.user.dto.query.UserInfoDto;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
+import com.ay.exchange.user.entity.User;
+import com.ay.exchange.user.entity.vo.Authority;
 import com.ay.exchange.user.exception.NotExistsFileException;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.repository.MyPageRepository;
@@ -189,5 +192,18 @@ public class UserService {
         redisTemplate.delete(token);
         redisTemplate.delete(jwtTokenProvider.getUserEmail(token));
         return true;
+    }
+
+    public UserInfoDto findUserInfoByEmail(String email) {
+        return userRepository.findUserInfoByEmail(email).orElse(null);
+    }
+
+    public void saveUser(String email, String randomNickName) {
+        userRepository.save(User.builder()
+                .email(email)
+                .nickName(randomNickName)
+                .authority(Authority.User)
+                .desiredData("")
+                .exchangeSuccessCount(0).build());
     }
 }

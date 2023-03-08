@@ -1,11 +1,9 @@
-package com.ay.exchange.oauth.service;
+package com.ay.exchange.oauth.facade;
 
 
 import com.ay.exchange.user.dto.query.UserInfoDto;
-import com.ay.exchange.user.entity.User;
-import com.ay.exchange.user.entity.vo.Authority;
 
-import com.ay.exchange.user.repository.UserRepository;
+import com.ay.exchange.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -20,9 +18,9 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class Oauth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    private final UserRepository userRepository;
+public class Oauth2Facade implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final String ANYANG_DOMAIN = "gs.anyang.ac.kr";
+    private final UserService userService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -48,23 +46,12 @@ public class Oauth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
     }
 
     public UserInfoDto findUserByEmail(String email) {
-        return userRepository.findUserInfoByEmail(email).orElseGet(() -> {
-            return null;
-        });
-    }
-
-    public boolean checkExistsUserByNickName(String randomNickName) {
-        return userRepository.existsByNickName(randomNickName);
+        return userService.findUserInfoByEmail(email);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void saveUser(String email, String randomNickName) {
-        userRepository.save(User.builder()
-                .email(email)
-                .nickName(randomNickName)
-                .authority(Authority.User)
-                .desiredData("")
-                .exchangeSuccessCount(0).build());
+        userService.saveUser(email, randomNickName);
     }
 
 }

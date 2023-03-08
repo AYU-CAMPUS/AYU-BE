@@ -1,12 +1,12 @@
 package com.ay.exchange.filter;
 
+import com.ay.exchange.common.service.RedisService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.entity.vo.Authority;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
+
 import java.util.regex.Pattern;
 
 import static com.ay.exchange.common.util.CookieUtil.makeCookie;
@@ -36,8 +36,7 @@ import static com.ay.exchange.common.util.EncryptionUtil.*;
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, Object> redisTemplate;
-
+    private final RedisService redisService;
     private static final Set<String> passUri = new HashSet<>(List.of(
             "/login/oauth2/code/google",
             "/oauth2/authorization/google",
@@ -102,12 +101,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String email = jwtTokenProvider.getUserEmail(token);
-            if (Boolean.FALSE.equals(redisTemplate.hasKey(email))) {
+            if (redisService.hasKey(email)) {
                 throw new JwtException("유효하지 않은 토큰");
             }
         } catch (JwtException | IllegalArgumentException e) { //액세스 토큰 만료
-            String refreshToken = (String) redisTemplate.opsForValue()
-                    .get(token);
+            String refreshToken = redisService.getRefreshToken(token);
             setCorsHeader(response, origin);
             if (refreshToken != null) { //리프레쉬 토큰이 존재하면 액세스 토큰 재발급
                 log.info("재발급 완료");
@@ -115,9 +113,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 Authority authority = Authority.valueOf(jwtTokenProvider.getAuthority(refreshToken));
                 String accessToken = jwtTokenProvider.createToken(email, authority);
                 response.setHeader(HttpHeaders.SET_COOKIE, makeCookie(accessToken));
-                redisTemplate.opsForValue()
-                        .set(email, accessToken, getAccessExpireTime(), TimeUnit.MILLISECONDS);
-                redisTemplate.rename(token, accessToken);
+                redisService.addAccessToken(accessToken, email);
+                redisService.renameAccessToken(token, accessToken);
                 response.sendRedirect(request.getRequestURL().toString());
                 return false;
             } else {
