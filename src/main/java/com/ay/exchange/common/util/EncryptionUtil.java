@@ -14,25 +14,19 @@ public class EncryptionUtil {
     private static Long ACCESS_EXPIRE_TIME;
     private static Long REFRESH_EXPIRE_TIME;
     private static Set<String> developerEmail;
-    private static String secretKey;
-
-    @Value("${jwt.secret-key}")
-    private static void setSecretKey(String secretKey) {
-        EncryptionUtil.secretKey = secretKey;
-    }
 
     @Value("${developer.email}")
     private void setDeveloperEmail(Set<String> developerEmail) {
-        this.developerEmail = developerEmail;
+        EncryptionUtil.developerEmail = developerEmail;
     }
 
     @Value("${jwt.access-expire-time}")
-    private static void setAccessExpireTime(Long accessExpireTime) {
+    private void setAccessExpireTime(Long accessExpireTime) {
         ACCESS_EXPIRE_TIME = accessExpireTime;
     }
 
     @Value("${jwt.refresh-expire-time}")
-    private static void setRefreshExpireTime(Long refreshExpireTime) {
+    private void setRefreshExpireTime(Long refreshExpireTime) {
         REFRESH_EXPIRE_TIME = refreshExpireTime;
     }
 
@@ -42,17 +36,17 @@ public class EncryptionUtil {
     }
 
     @Value("${cookie.domain}")
-    private static void setDOMAIN(String DOMAIN) {
+    private void setDOMAIN(String DOMAIN) {
         EncryptionUtil.DOMAIN = DOMAIN;
     }
 
     @Value("${address.client}")
-    private static void setClientUrl(String clientUrl) {
+    private void setClientUrl(String clientUrl) {
         CLIENT_URL = clientUrl;
     }
 
     @Value("${address.dev}")
-    private static void setDevUrl(String devUrl) {
+    private void setDevUrl(String devUrl) {
         DEV_URL = devUrl;
     }
 
@@ -78,10 +72,6 @@ public class EncryptionUtil {
 
     public static Long getRefreshExpireTime() {
         return REFRESH_EXPIRE_TIME;
-    }
-
-    public static String getSecretKey() {
-        return secretKey;
     }
 
     public static boolean isDeveloper(String email){

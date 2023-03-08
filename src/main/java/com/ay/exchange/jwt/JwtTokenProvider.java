@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -19,11 +20,13 @@ import static com.ay.exchange.common.util.EncryptionUtil.*;
 @Component
 @NoArgsConstructor
 public class JwtTokenProvider {
+    @Value("${jwt.secret-key}")
+    private String secretKey;
     private Key secretMasterKey;
 
     @PostConstruct
     public void initKeys() {
-        byte[] keyBytes = Decoders.BASE64.decode(getSecretKey());
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         secretMasterKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
