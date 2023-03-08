@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.ay.exchange.common.util.CookieUtil.makeCookie;
 import static com.ay.exchange.common.util.EncryptionUtil.*;
+import static com.ay.exchange.common.util.NickNameGenerator.createRandomNickName;
 
 @Component
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         //최초 로그인
         try {
-            String nickName = createRandomNickname();
+            String nickName = createRandomNickName();
             oauth2Service.saveUser(email, nickName);
             String accessToken = jwtTokenProvider.createToken(email, Authority.User);
             String refreshToken = jwtTokenProvider.createRefreshToken(email, Authority.User);
@@ -116,14 +117,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String result = objectMapper.writeValueAsString(new ErrorDto(HttpStatus.NOT_FOUND.name(), "안양대학교 웹메일만 로그인이 가능합니다."));
         response.getWriter().write(result);
-    }
-
-    private String createRandomNickname() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 8; i++) {
-            sb.append((char) (Math.random() * 26 + 65));
-        }
-        return sb.toString();
     }
 
 }
