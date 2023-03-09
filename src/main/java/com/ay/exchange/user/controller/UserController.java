@@ -53,7 +53,7 @@ public class UserController {
     @GetMapping("/notification")
     public LoginNotificationResponse searchLoginInfo(HttpServletResponse response, @CookieValue(value = "token") String token) throws ParseException {
         LoginNotificationResponse loginNotificationResponse = userFacade.getUserNotification(token);
-        if(loginNotificationResponse.getSuspendedDate() != null){ //정지회원이면 쿠키 삭제
+        if (loginNotificationResponse.getSuspendedDate() != null) { //정지회원이면 쿠키 삭제
             response.setHeader(HttpHeaders.SET_COOKIE, removeCookie());
         }
         return loginNotificationResponse;
@@ -68,7 +68,11 @@ public class UserController {
             })
     @GetMapping("/logout")
     public Boolean logout(HttpServletResponse response, @CookieValue("token") String token) {
-        return userService.logout(response, token);
+        boolean isSuccessLogout = userFacade.logout(token);
+        if (isSuccessLogout) {
+            response.setHeader(HttpHeaders.SET_COOKIE, removeCookie());
+        }
+        return true;
     }
 
     @Operation(summary = "중복 닉네임 확인",
