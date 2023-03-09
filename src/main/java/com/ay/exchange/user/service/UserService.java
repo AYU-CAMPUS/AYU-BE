@@ -49,7 +49,7 @@ public class UserService {
     @Value("${cookie.domain}")
     private String DOMAIN;
 
-    public Boolean checkExistsNickName(String nickName) {
+    public Boolean existsByNickName(String nickName) {
         return userRepository.existsByNickName(nickName);
     }
 

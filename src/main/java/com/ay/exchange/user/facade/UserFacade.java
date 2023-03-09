@@ -10,11 +10,9 @@ import com.ay.exchange.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 
 import static com.ay.exchange.common.util.DateUtil.isSuspensionPeriodExpired;
@@ -58,4 +56,7 @@ public class UserFacade {
         return true;
     }
 
+    public Boolean checkExistsNickName(String nickName) {
+        return userService.existsByNickName(nickName);
+    }
 }

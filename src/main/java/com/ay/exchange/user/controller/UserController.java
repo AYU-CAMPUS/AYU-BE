@@ -87,7 +87,7 @@ public class UserController {
     public ResponseEntity<Boolean> existsNickName(
             @RequestParam("nickName") @Valid @Pattern(regexp = "^[a-zA-Z\\d가-힣]{1,8}$") String nickName
     ) {
-        return ResponseEntity.ok(userService.checkExistsNickName(nickName));
+        return ResponseEntity.ok(userFacade.checkExistsNickName(nickName));
     }
 
     @Operation(summary = "마이페이지 조회",
