@@ -111,7 +111,7 @@ public class UserFacade {
         FilePathInfo filePathInfo = myPageService.getFilePath(requesterBoardId, jwtTokenProvider.getUserEmail(token));
 
         String filePath = filePathInfo.toString();
-        ByteArrayResource resource = awsS3Service.downloadFile(filePath);
+        ByteArrayResource resource = awsS3Service.downloadFile(filePathInfo.getFilePath());
         return new DownloadFileInfo(filePath, resource);
     }
 
