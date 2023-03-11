@@ -1,6 +1,5 @@
 package com.ay.exchange.user.controller;
 
-import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.common.util.FileValidator;
 import com.ay.exchange.user.dto.DownloadFileInfo;
@@ -10,7 +9,6 @@ import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.exception.FailUpdateProfileException;
 import com.ay.exchange.user.facade.UserFacade;
-import com.ay.exchange.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,8 +40,6 @@ import static com.ay.exchange.common.util.CookieUtil.removeCookie;
 @Validated
 @Tag(name = "유저", description = "유저(마이페이지) 관련 api")
 public class UserController {
-    private final UserService userService;
-    private final AwsS3Service awsS3Service;
     private final UserFacade userFacade;
 
     @Operation(summary = "로그인 성공 시 사용자에 대해 필요한 정보 조회",
