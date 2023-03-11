@@ -1,6 +1,7 @@
 package com.ay.exchange.user.service;
 
 import com.ay.exchange.user.dto.MyPageInfo;
+import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,9 @@ public class MyPageService {
 
     public int getDownloadableCount(String email) {
         return myPageRepository.getDownloadableCount(email).intValue();
+    }
+
+    public boolean updateUserInfo(String email, UserInfoRequest userInfoRequest) {
+        return myPageRepository.updateUserInfo(email, userInfoRequest);
     }
 }

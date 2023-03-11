@@ -4,8 +4,11 @@ import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.common.service.RedisService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.MyPageInfo;
+import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyPageResponse;
+import com.ay.exchange.user.exception.DuplicateNickNameException;
+import com.ay.exchange.user.exception.FailUpdateUserInfoException;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.service.MyPageService;
 import com.ay.exchange.user.service.UserService;
@@ -78,5 +81,20 @@ public class UserFacade {
                 Arrays.stream(myPageInfo.getDesiredData().split(SEPARATOR))
                         .collect(Collectors.toList())
         );
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserInfo(UserInfoRequest userInfoRequest, String token) {
+        String email = jwtTokenProvider.getUserEmail(token);
+
+        boolean isDuplicateNickName = userService.existsByNickName(userInfoRequest.getNickName());
+        if (isDuplicateNickName) {
+            throw new DuplicateNickNameException();
+        }
+
+        boolean isSuccessUpdateUserInfo = myPageService.updateUserInfo(email, userInfoRequest);
+        if (!isSuccessUpdateUserInfo) {
+            throw new FailUpdateUserInfoException();
+        }
     }
 }

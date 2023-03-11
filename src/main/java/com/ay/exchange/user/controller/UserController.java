@@ -115,7 +115,7 @@ public class UserController {
             @RequestBody @Valid UserInfoRequest userInfoRequest,
             @CookieValue("token") String token
     ) {
-        userService.updateUserInfo(userInfoRequest, token);
+        userFacade.updateUserInfo(userInfoRequest, token);
         return true;
     }
 

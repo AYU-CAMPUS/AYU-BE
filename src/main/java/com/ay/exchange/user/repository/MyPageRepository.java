@@ -264,20 +264,12 @@ public class MyPageRepository {
         throw new FailWithdrawalException();
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void updateUserInfo(String email, UserInfoRequest userInfoRequest) {
-        if (checkExistsByNickName(email, userInfoRequest.getNickName())) {
-            throw new DuplicateNickNameException();
-        }
-
-        if (queryFactory.update(user)
+    public boolean updateUserInfo(String email, UserInfoRequest userInfoRequest) {
+        return queryFactory.update(user)
                 .set(user.nickName, userInfoRequest.getNickName())
                 .set(user.desiredData, mergeStrings(userInfoRequest.getDesiredData()))
                 .where(user.email.eq(email))
-                .execute() != 1L) {
-            throw new FailUpdateUserInfoException();
-        }
-
+                .execute() != 1L;
     }
 
     public LoginNotificationResponse findUserNotificationByEmail(String userEmail) {
@@ -301,17 +293,6 @@ public class MyPageRepository {
                 .setNull(user.suspendedReason)
                 .where(user.email.eq(email))
                 .execute();
-    }
-
-    private boolean checkExistsByNickName(String email, String nickName) {
-        if (queryFactory.select(user.count())
-                .from(user)
-                .where(user.email.ne(email)
-                        .and(user.nickName.eq(nickName)))
-                .fetchOne() == 1L) {
-            return true;
-        }
-        return false;
     }
 
     private String mergeStrings(List<String> desiredData) {
