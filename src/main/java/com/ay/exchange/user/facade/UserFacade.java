@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ public class UserFacade {
     private final RedisService redisService;
     private final MyPageService myPageService;
     private final String SEPARATOR = ";";
+    private final int UPDATE_PROFILE = 1;
 
     @Transactional(rollbackFor = Exception.class)
     public LoginNotificationResponse getUserNotification(String token) throws ParseException {
@@ -137,6 +139,20 @@ public class UserFacade {
         myPageService.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserEmail(token));
 
         //추후 알림도 생성
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateProfile(MultipartFile multipartFile, String token) {
+        String email = jwtTokenProvider.getUserEmail(token);
+
+        String beforeProfilePath = myPageService.findProfilePath(email);
+        String profilePath = awsS3Service.buildFileName(multipartFile.getOriginalFilename(), email, UPDATE_PROFILE);
+        myPageService.updateProfile(email, profilePath);
+
+        if (beforeProfilePath != null) {
+            awsS3Service.deleteProfile("profile/" + beforeProfilePath); //기본 프로필이 아니라면 이전 프로필 삭제
+        }
+        awsS3Service.uploadFile(multipartFile, profilePath);
     }
 
     @Transactional(rollbackFor = Exception.class)

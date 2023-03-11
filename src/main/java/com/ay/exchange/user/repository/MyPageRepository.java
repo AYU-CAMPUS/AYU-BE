@@ -209,14 +209,11 @@ public class MyPageRepository {
                 ).execute();
     }
 
-    public void updateProfile(String email, String filePath) {
-        System.out.println(filePath);
-        if (queryFactory.update(user)
+    public boolean updateProfile(String email, String filePath) {
+        return queryFactory.update(user)
                 .set(user.profileImage, filePath)
                 .where(user.email.eq(email))
-                .execute() != 1L) {
-            throw new FailUpdateProfileException();
-        }
+                .execute() != 1L;
     }
 
     public String findProfilePath(String email) {

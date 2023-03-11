@@ -132,4 +132,11 @@ public class MyPageService {
         }
         throw new FailWithdrawalException();
     }
+
+    public void updateProfile(String email, String profilePath) {
+        boolean isSuccessUpdatedProfile = myPageRepository.updateProfile(email, profilePath);
+        if (!isSuccessUpdatedProfile) {
+            throw new FailUpdateProfileException();
+        }
+    }
 }

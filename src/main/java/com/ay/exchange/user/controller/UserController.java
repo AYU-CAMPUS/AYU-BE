@@ -243,8 +243,9 @@ public class UserController {
             @RequestPart("file") MultipartFile multipartFile,
             @CookieValue("token") String token
     ) {
-        if (FileValidator.isAllowedImageType(multipartFile)) {
-            return userService.updateProfile(multipartFile, token);
+        if (FileValidator.isAllowedImageType(multipartFile)) { //데이터 검증을 표현 영역에서 하는 것이 맞나?..
+            userFacade.updateProfile(multipartFile, token);
+            return true;
         }
         throw new FailUpdateProfileException();
     }
