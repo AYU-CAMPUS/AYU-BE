@@ -96,7 +96,7 @@ public class UserService {
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
-        myPageRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserEmail(token));
+        //myPageRepository.acceptExchange(exchangeAccept, jwtTokenProvider.getUserEmail(token));
         //알림도 생성
         return true;
     }

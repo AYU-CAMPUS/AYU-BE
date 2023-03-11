@@ -184,43 +184,19 @@ public class MyPageRepository {
         return new ExchangeResponse(count, exchangeInfos);
     }
 
-    public void acceptExchange(ExchangeAccept exchangeAccept, String email) {
-        //교환신청삭제
-        Long count = queryFactory.delete(exchange)
-                .where(exchange.Id.eq(exchangeAccept.getExchangeId())
-                        .or(exchange.boardId.eq(exchangeAccept.getRequesterBoardId())
-                                .and(exchange.email.eq(exchangeAccept.getRequesterId()))))
-                .execute();
-        if (count != 2L) throw new FailAcceptFileException();
-
+    public int acceptExchange(String currentDate, ExchangeAccept exchangeAccept, String email) {
         //교환완료
-        String date = DateUtil.getCurrentDate();
         String sql = "INSERT INTO exchange_completion(board_id,date,email,requester_board_id) VALUES(?,?,?,?),(?,?,?,?)";
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, exchangeAccept.getRequesterBoardId())
-                .setParameter(2, date)
+                .setParameter(2, currentDate)
                 .setParameter(3, exchangeAccept.getRequesterId())
                 .setParameter(4, exchangeAccept.getBoardId())
                 .setParameter(5, exchangeAccept.getBoardId())
-                .setParameter(6, date)
+                .setParameter(6, currentDate)
                 .setParameter(7, email)
                 .setParameter(8, exchangeAccept.getRequesterBoardId());
-        if (query.executeUpdate() != 2) throw new FailAcceptFileException();
-
-        //게시글과 사용자 교환 완료 증가
-        sql = "UPDATE board b, user u SET b.exchange_success_count=b.exchange_success_count+1" +
-                ", u.exchange_success_count=u.exchange_success_count+1 WHERE b.email=u.email AND b.board_id=? AND u.email = ? OR b.board_id=? AND u.email=?";
-        query = em.createNativeQuery(sql)
-                .setParameter(1, exchangeAccept.getBoardId())
-                .setParameter(2, email)
-                .setParameter(3, exchangeAccept.getRequesterBoardId())
-                .setParameter(4, exchangeAccept.getRequesterId());
-        if (query.executeUpdate() != 4) {
-            throw new FailAcceptFileException();
-        }
-
-
-        //exchangeRequest.getApplicantId(); //사용자 고유 아이디로 알림을 주자
+        return query.executeUpdate();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -321,5 +297,27 @@ public class MyPageRepository {
                 exchangeCompletion.date,
                 ConstantImpl.create("%Y-%m-%d")
         );
+    }
+
+    public Long deleteExchange(ExchangeAccept exchangeAccept) {
+        //교환신청삭제
+        Long count = queryFactory.delete(exchange)
+                .where(exchange.Id.eq(exchangeAccept.getExchangeId())
+                        .or(exchange.boardId.eq(exchangeAccept.getRequesterBoardId())
+                                .and(exchange.email.eq(exchangeAccept.getRequesterId()))))
+                .execute();
+        return count;
+    }
+
+    public int increaseExchangeCompletion(ExchangeAccept exchangeAccept, String email) {
+        //게시글과 사용자 교환 완료 증가
+        String sql = "UPDATE board b, user u SET b.exchange_success_count=b.exchange_success_count+1" +
+                ", u.exchange_success_count=u.exchange_success_count+1 WHERE b.email=u.email AND b.board_id=? AND u.email = ? OR b.board_id=? AND u.email=?";
+        return em.createNativeQuery(sql)
+                .setParameter(1, exchangeAccept.getBoardId())
+                .setParameter(2, email)
+                .setParameter(3, exchangeAccept.getRequesterBoardId())
+                .setParameter(4, exchangeAccept.getRequesterId())
+                .executeUpdate();
     }
 }

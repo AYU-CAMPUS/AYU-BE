@@ -6,12 +6,10 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.DownloadFileInfo;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
+import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
-import com.ay.exchange.user.exception.DuplicateNickNameException;
-import com.ay.exchange.user.exception.FailUpdateUserInfoException;
-import com.ay.exchange.user.exception.NotExistsFileException;
-import com.ay.exchange.user.exception.NotExistsUserException;
+import com.ay.exchange.user.exception.*;
 import com.ay.exchange.user.service.MyPageService;
 import com.ay.exchange.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -124,5 +122,20 @@ public class UserFacade {
 
     public ExchangeResponse getExchanges(Integer page, String token) {
         return myPageService.getExchanges(page, jwtTokenProvider.getUserEmail(token));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
+        String email = jwtTokenProvider.getUserEmail(token);
+
+        myPageService.deleteExchange(exchangeAccept); //교환 요청 목록 삭제
+
+        myPageService.acceptExchange(exchangeAccept, email); //교환 완료
+
+        myPageService.increaseExchangeCompletion(exchangeAccept, email); //도메인에 비즈니스 로직을 하는 것이 좀 더 깔끔할 것 같다. 추후 비즈니스 로직을 도메인으로 변경하자.
+
+        //추후 알림도 생성
+        //exchangeRequest.getApplicantId(); 사용자 고유 아이디로 알림을 주자
+        return true;
     }
 }
