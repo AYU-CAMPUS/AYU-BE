@@ -208,7 +208,7 @@ public class UserController {
             @RequestBody ExchangeAccept exchangeAccept,
             @CookieValue("token") String token
     ) {
-        return userService.acceptExchange(exchangeAccept, token);
+        return userFacade.acceptExchange(exchangeAccept, token);
     }
 
     @Operation(summary = "교환신청 거절",

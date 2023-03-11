@@ -10,6 +10,9 @@ import com.ay.exchange.user.dto.response.ExchangeResponse;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.exception.FailAcceptFileException;
+import com.ay.exchange.user.exception.FailUpdateUserInfoException;
+import com.ay.exchange.user.exception.NotExistsFileException;
+import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +25,11 @@ public class MyPageService {
     private final MyPageRepository myPageRepository;
 
     public LoginNotificationResponse findUserNotificationByEmail(String email) {
-        return myPageRepository.findUserNotificationByEmail(email);
+        LoginNotificationResponse loginNotificationResponse =  myPageRepository.findUserNotificationByEmail(email);
+        if (loginNotificationResponse == null) { //존재하지 않는 회원
+            throw new NotExistsUserException();
+        }
+        return loginNotificationResponse;
     }
 
     public void updateUserSuspendedDate(String email) {
@@ -37,8 +44,11 @@ public class MyPageService {
         return myPageRepository.getDownloadableCount(email).intValue();
     }
 
-    public boolean updateUserInfo(String email, UserInfoRequest userInfoRequest) {
-        return myPageRepository.updateUserInfo(email, userInfoRequest);
+    public void updateUserInfo(String email, UserInfoRequest userInfoRequest) {
+        boolean isSuccessUpdateUserInfo = myPageRepository.updateUserInfo(email, userInfoRequest);
+        if (!isSuccessUpdateUserInfo) {
+            throw new FailUpdateUserInfoException();
+        }
     }
 
     public MyDataResponse getMyData(Integer page, String email) {
@@ -55,7 +65,11 @@ public class MyPageService {
     }
 
     public FilePathInfo getFilePath(Long requesterBoardId, String email) {
-        return myPageRepository.getFilePath(requesterBoardId, email);
+        FilePathInfo filePathInfo = myPageRepository.getFilePath(requesterBoardId, email);
+        if (filePathInfo == null) {
+            throw new NotExistsFileException();
+        }
+        return filePathInfo;
     }
 
     public ExchangeResponse getExchanges(Integer page, String email) {

@@ -43,10 +43,6 @@ public class UserFacade {
         String email = jwtTokenProvider.getUserEmail(token);
         LoginNotificationResponse loginNotificationResponse = myPageService.findUserNotificationByEmail(email);
 
-        if (loginNotificationResponse == null) { //존재하지 않는 회원
-            throw new NotExistsUserException();
-        }
-
         if (loginNotificationResponse.getSuspendedDate() != null) { //정지회원이라면
             if (isSuspensionPeriodExpired(loginNotificationResponse.getSuspendedDate())) { //정지가 만료되었다면 => update
                 log.info("정지 만료된 회원");
@@ -67,8 +63,13 @@ public class UserFacade {
         return true;
     }
 
-    public Boolean checkExistsNickName(String nickName) {
-        return userService.existsByNickName(nickName);
+    public boolean checkExistsNickName(String nickName) {
+        try { //프론트엔드에서 중복닉네임 체크를 true와 false로 확인하고 있어서 우선 예외처리를 함.
+            userService.existsByNickName(nickName);
+            return true;
+        } catch (DuplicateNickNameException exception) {
+            return false;
+        }
     }
 
     public MyPageResponse getMyPage(String token) {
@@ -90,15 +91,9 @@ public class UserFacade {
     public void updateUserInfo(UserInfoRequest userInfoRequest, String token) {
         String email = jwtTokenProvider.getUserEmail(token);
 
-        boolean isDuplicateNickName = userService.existsByNickName(userInfoRequest.getNickName());
-        if (isDuplicateNickName) {
-            throw new DuplicateNickNameException();
-        }
+        userService.existsByNickName(userInfoRequest.getNickName());
 
-        boolean isSuccessUpdateUserInfo = myPageService.updateUserInfo(email, userInfoRequest);
-        if (!isSuccessUpdateUserInfo) {
-            throw new FailUpdateUserInfoException();
-        }
+        myPageService.updateUserInfo(email, userInfoRequest);
     }
 
     public MyDataResponse getMyData(Integer page, String token) {
@@ -111,9 +106,6 @@ public class UserFacade {
 
     public DownloadFileInfo downloadFile(Long requesterBoardId, String token) {
         FilePathInfo filePathInfo = myPageService.getFilePath(requesterBoardId, jwtTokenProvider.getUserEmail(token));
-        if (filePathInfo == null) {
-            throw new NotExistsFileException();
-        }
 
         String filePath = filePathInfo.toString();
         ByteArrayResource resource = awsS3Service.downloadFile(filePath);

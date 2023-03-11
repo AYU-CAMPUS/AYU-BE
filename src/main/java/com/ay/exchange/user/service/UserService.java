@@ -12,6 +12,7 @@ import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.entity.vo.Authority;
+import com.ay.exchange.user.exception.DuplicateNickNameException;
 import com.ay.exchange.user.exception.NotExistsFileException;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.repository.MyPageRepository;
@@ -49,8 +50,11 @@ public class UserService {
     @Value("${cookie.domain}")
     private String DOMAIN;
 
-    public Boolean existsByNickName(String nickName) {
-        return userRepository.existsByNickName(nickName);
+    public void existsByNickName(String nickName) {
+        boolean isDuplicateNickName = userRepository.existsByNickName(nickName);
+        if (isDuplicateNickName) {
+            throw new DuplicateNickNameException();
+        }
     }
 
     public MyPageResponse getMypage(String token) {
