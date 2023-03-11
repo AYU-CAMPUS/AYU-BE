@@ -98,7 +98,7 @@ public class UserController {
     public MyPageResponse getMyPage(
             @CookieValue("token") String token
     ) {
-        return userService.getMypage(token);
+        return userFacade.getMyPage(token);
     }
 
     @Operation(summary = "내 정보 변경",

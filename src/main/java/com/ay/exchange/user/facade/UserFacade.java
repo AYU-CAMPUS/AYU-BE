@@ -3,7 +3,9 @@ package com.ay.exchange.user.facade;
 import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.common.service.RedisService;
 import com.ay.exchange.jwt.JwtTokenProvider;
+import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
+import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.service.MyPageService;
 import com.ay.exchange.user.service.UserService;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static com.ay.exchange.common.util.DateUtil.isSuspensionPeriodExpired;
 
@@ -26,6 +30,7 @@ public class UserFacade {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private final MyPageService myPageService;
+    private final String SEPARATOR = ";";
 
     @Transactional(rollbackFor = Exception.class)
     public LoginNotificationResponse getUserNotification(String token) throws ParseException {
@@ -58,5 +63,20 @@ public class UserFacade {
 
     public Boolean checkExistsNickName(String nickName) {
         return userService.existsByNickName(nickName);
+    }
+
+    public MyPageResponse getMyPage(String token) {
+        String email = jwtTokenProvider.getUserEmail(token);
+        MyPageInfo myPageInfo = myPageService.getMyPage(email);
+
+        return new MyPageResponse(myPageInfo.getNickName(),
+                myPageInfo.getProfileImage(),
+                myPageInfo.getExchangeSuccessCount(),
+                myPageInfo.getMyDataCounts().size(),
+                myPageService.getDownloadableCount(email),
+                myPageInfo.getExchangeRequestsCount(),
+                Arrays.stream(myPageInfo.getDesiredData().split(SEPARATOR))
+                        .collect(Collectors.toList())
+        );
     }
 }

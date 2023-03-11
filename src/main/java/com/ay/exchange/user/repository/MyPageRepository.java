@@ -65,7 +65,7 @@ public class MyPageRepository {
                 ).get(email);
     }
 
-    public Long getDonwloadableCount(String email) {
+    public Long getDownloadableCount(String email) {
         return queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
                 .where(exchangeCompletion.email.eq(email))

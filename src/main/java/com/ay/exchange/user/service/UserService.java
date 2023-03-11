@@ -61,7 +61,7 @@ public class UserService {
                 myPageInfo.getProfileImage(),
                 myPageInfo.getExchangeSuccessCount(),
                 myPageInfo.getMyDataCounts().size(),
-                myPageRepository.getDonwloadableCount(email).intValue(),
+                myPageRepository.getDownloadableCount(email).intValue(),
                 myPageInfo.getExchangeRequestsCount(),
                 Arrays.stream(myPageInfo.getDesiredData().split(SEPARATOR))
                         .collect(Collectors.toList())
