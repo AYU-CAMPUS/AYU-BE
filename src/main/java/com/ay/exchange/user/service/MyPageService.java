@@ -4,6 +4,7 @@ import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
+import com.ay.exchange.user.dto.response.ExchangeResponse;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.repository.MyPageRepository;
@@ -52,5 +53,11 @@ public class MyPageService {
 
     public FilePathInfo getFilePath(Long requesterBoardId, String email) {
         return myPageRepository.getFilePath(requesterBoardId, email);
+    }
+
+    public ExchangeResponse getExchanges(Integer page, String email) {
+        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
+                Sort.by(Sort.Direction.DESC, "id"));
+        return myPageRepository.getExchanges(pageRequest, email);
     }
 }

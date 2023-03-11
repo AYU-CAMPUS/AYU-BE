@@ -7,10 +7,7 @@ import com.ay.exchange.user.dto.DownloadFileInfo;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
-import com.ay.exchange.user.dto.response.DownloadableResponse;
-import com.ay.exchange.user.dto.response.LoginNotificationResponse;
-import com.ay.exchange.user.dto.response.MyDataResponse;
-import com.ay.exchange.user.dto.response.MyPageResponse;
+import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.exception.DuplicateNickNameException;
 import com.ay.exchange.user.exception.FailUpdateUserInfoException;
 import com.ay.exchange.user.exception.NotExistsFileException;
@@ -123,5 +120,9 @@ public class UserFacade {
         String filePath = filePathInfo.toString();
         ByteArrayResource resource = awsS3Service.downloadFile(filePath);
         return new DownloadFileInfo(filePath, resource);
+    }
+
+    public ExchangeResponse getExchanges(Integer page, String token) {
+        return myPageService.getExchanges(page, jwtTokenProvider.getUserEmail(token));
     }
 }

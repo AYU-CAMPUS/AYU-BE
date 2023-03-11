@@ -182,8 +182,8 @@ public class UserController {
                 .body(downloadFileInfo.getResource());
     }
 
-    @Operation(summary = "교환신청 조회",
-            description = "교환신청 조회",
+    @Operation(summary = "교환 신청 조회",
+            description = "교환 신청 조회",
             parameters = {
                     @Parameter(name = "page", description = "페이지 번호"),
                     @Parameter(name = "token", description = "액세스 토큰")}
@@ -193,7 +193,7 @@ public class UserController {
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @CookieValue("token") String token
     ) {
-        return userService.getExchanges(page, token);
+        return userFacade.getExchanges(page, token);
     }
 
     @Operation(summary = "교환신청 수락",
