@@ -7,6 +7,7 @@ import com.ay.exchange.user.dto.DownloadFileInfo;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
+import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.*;
 import com.ay.exchange.user.exception.*;
@@ -117,7 +118,7 @@ public class UserFacade {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Boolean acceptExchange(ExchangeAccept exchangeAccept, String token) {
+    public void acceptExchange(ExchangeAccept exchangeAccept, String token) {
         String email = jwtTokenProvider.getUserEmail(token);
 
         myPageService.deleteExchange(exchangeAccept); //교환 요청 목록 삭제
@@ -128,6 +129,23 @@ public class UserFacade {
 
         //추후 알림도 생성
         //exchangeRequest.getApplicantId(); 사용자 고유 아이디로 알림을 주자
-        return true;
+
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void refuseExchange(ExchangeRefusal exchangeRefusal, String token) {
+        myPageService.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserEmail(token));
+
+        //추후 알림도 생성
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void withdrawalUser(String token) {
+        String email = jwtTokenProvider.getUserEmail(token);
+        String profilePath = myPageService.findProfilePath(email);
+        myPageService.withdrawalUser(email);
+
+        awsS3Service.deleteProfile("profile/" + profilePath);
+        awsS3Service.deleteUserFiles(email);
     }
 }

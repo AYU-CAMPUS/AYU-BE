@@ -4,20 +4,23 @@ import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
+import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.ExchangeResponse;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
-import com.ay.exchange.user.exception.FailAcceptFileException;
-import com.ay.exchange.user.exception.FailUpdateUserInfoException;
-import com.ay.exchange.user.exception.NotExistsFileException;
-import com.ay.exchange.user.exception.NotExistsUserException;
+import com.ay.exchange.user.exception.*;
 import com.ay.exchange.user.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class MyPageService {
     private final MyPageRepository myPageRepository;
 
     public LoginNotificationResponse findUserNotificationByEmail(String email) {
-        LoginNotificationResponse loginNotificationResponse =  myPageRepository.findUserNotificationByEmail(email);
+        LoginNotificationResponse loginNotificationResponse = myPageRepository.findUserNotificationByEmail(email);
         if (loginNotificationResponse == null) { //존재하지 않는 회원
             throw new NotExistsUserException();
         }
@@ -98,5 +101,35 @@ public class MyPageService {
         if (successCount != 4) {
             throw new FailAcceptFileException();
         }
+    }
+
+    public void refuseExchange(ExchangeRefusal exchangeRefusal, String email) {
+        Long deletedExchangeCount = myPageRepository.refuseExchange(exchangeRefusal, email);
+        if (deletedExchangeCount != 2L) { //교환 목록 삭제
+            throw new FailRefusalFileException();
+        }
+    }
+
+    public String findProfilePath(String email) {
+        String profileImagePath = myPageRepository.findProfilePath(email);
+        if (profileImagePath == null) {
+            throw new NotExistsUserException();
+        }
+        return profileImagePath;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void withdrawalUser(String email) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -3);
+        Date date = new Date(calendar.getTimeInMillis());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        boolean canWithdrawal = myPageRepository.canWithdrawal(simpleDateFormat.format(date), email);
+
+        if (canWithdrawal) { //최근 교환 내역이 3일이 넘었으면 회원 탈퇴 가능
+            myPageRepository.withdrawalUser(email);
+            return;
+        }
+        throw new FailWithdrawalException();
     }
 }

@@ -199,17 +199,14 @@ public class MyPageRepository {
         return query.executeUpdate();
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void refuseExchange(ExchangeRefusal exchangeRefusal, String email) {
-        if (queryFactory.delete(exchange)
+    public Long refuseExchange(ExchangeRefusal exchangeRefusal, String email) {
+        return queryFactory.delete(exchange)
                 .where(exchange.Id.eq(exchangeRefusal.getExchangeId())
                         .or(exchange.requesterEmail.eq(email)
                                 .and(exchange.email.eq(exchangeRefusal.getRequesterId()))
                                 .and(exchange.boardId.eq(exchangeRefusal.getRequesterBoardId()))
-                                .and(exchange.requesterBoardId.eq(exchangeRefusal.getBoardId()))))
-                .execute() != 2L) {
-            throw new FailRefusalFileException();
-        }
+                                .and(exchange.requesterBoardId.eq(exchangeRefusal.getBoardId())))
+                ).execute();
     }
 
     public void updateProfile(String email, String filePath) {
@@ -223,21 +220,16 @@ public class MyPageRepository {
     }
 
     public String findProfilePath(String email) {
-        String profileImage = queryFactory.select(user.profileImage)
+        return queryFactory.select(user.profileImage)
                 .from(user)
                 .where(user.email.eq(email))
                 .fetchOne();
-        return profileImage;
     }
 
     public void withdrawalUser(String email) {
-        if (canWithdrawal(email)) {
-            queryFactory.delete(user)
-                    .where(user.email.eq(email))
-                    .execute();
-            return;
-        }
-        throw new FailWithdrawalException();
+        queryFactory.delete(user)
+                .where(user.email.eq(email))
+                .execute();
     }
 
     public boolean updateUserInfo(String email, UserInfoRequest userInfoRequest) {
@@ -275,19 +267,13 @@ public class MyPageRepository {
         return StringUtils.join(desiredData, SEPARATOR);
     }
 
-    private Boolean canWithdrawal(String email) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -3);
-        Date date = new Date(calendar.getTimeInMillis());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        Long count = queryFactory.select(exchangeCompletion.count())
+    public boolean canWithdrawal(String date, String email) {
+        return queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
-                .where(getExchangeDate().gt(simpleDateFormat.format(date))
+                .where(getExchangeDate().gt(date)
                         .and(exchangeCompletion.email.eq(email)))
                 .limit(1L)
-                .fetchOne();
-        return count == 0L;
+                .fetchOne() == 0L;
     }
 
     private DateTemplate getExchangeDate() {

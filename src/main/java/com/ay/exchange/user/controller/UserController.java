@@ -208,7 +208,8 @@ public class UserController {
             @RequestBody ExchangeAccept exchangeAccept,
             @CookieValue("token") String token
     ) {
-        return userFacade.acceptExchange(exchangeAccept, token);
+        userFacade.acceptExchange(exchangeAccept, token);
+        return true;
     }
 
     @Operation(summary = "교환신청 거절",
@@ -223,7 +224,8 @@ public class UserController {
             @RequestBody ExchangeRefusal exchangeRefusal,
             @CookieValue("token") String token
     ) {
-        return userService.refuseExchange(exchangeRefusal, token);
+        userFacade.refuseExchange(exchangeRefusal, token);
+        return true;
     }
 
     @Operation(summary = "프로필 이미지 변경",
@@ -259,7 +261,8 @@ public class UserController {
     public Boolean withdrawalUser(
             @CookieValue("token") String token
     ) {
-        return userService.withdrawalUser(token);
+        userFacade.withdrawalUser(token);
+        return true;
     }
 
     private ContentDisposition createContentDisposition(String filePath) {
