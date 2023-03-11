@@ -77,7 +77,7 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length = 200)
     private String email;
 
     @OneToMany(mappedBy = "board", orphanRemoval = true)

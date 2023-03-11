@@ -17,7 +17,7 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintReportComment",
-                        columnNames = {"email", "target_email", "content"}
+                        columnNames = {"email", "target_email"}
                 )
         }
 )
@@ -30,14 +30,14 @@ public class ReportComment {
     @JoinColumn(name = "email", insertable = false, updatable = false, nullable = false)
     private User user;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length = 200)
     private String email; //신고자 아이디
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "target_email", insertable = false, updatable = false, nullable = false)
     private User targetUser;
 
-    @Column(name = "target_email", nullable = false)
+    @Column(name = "target_email", nullable = false, length = 200)
     private String targetEmail; //신고자 아이디
 
     @Column(length = 100, nullable = false)

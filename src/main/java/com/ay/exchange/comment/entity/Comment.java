@@ -33,7 +33,7 @@ public class Comment {
     @JoinColumn(name = "email", updatable = false, insertable = false, nullable = false)
     private User user;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length = 200)
     private String email;
 
     @Column(nullable = false)
