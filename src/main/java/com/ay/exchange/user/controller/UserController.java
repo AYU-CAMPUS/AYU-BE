@@ -146,7 +146,7 @@ public class UserController {
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @CookieValue("token") String token
     ) {
-        return userService.getDownloadable(page, token);
+        return userFacade.getDownloadable(page, token);
     }
 
     @Operation(summary = "자료 다운로드",

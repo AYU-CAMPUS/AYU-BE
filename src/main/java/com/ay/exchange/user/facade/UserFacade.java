@@ -5,6 +5,7 @@ import com.ay.exchange.common.service.RedisService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
+import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.dto.response.MyPageResponse;
@@ -103,5 +104,9 @@ public class UserFacade {
 
     public MyDataResponse getMyData(Integer page, String token) {
         return myPageService.getMyData(page, jwtTokenProvider.getUserEmail(token));
+    }
+
+    public DownloadableResponse getDownloadable(Integer page, String token) {
+        return myPageService.getDownloadable(page, jwtTokenProvider.getUserEmail(token));
     }
 }

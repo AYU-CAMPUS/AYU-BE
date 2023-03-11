@@ -2,6 +2,7 @@ package com.ay.exchange.user.service;
 
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
+import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.repository.MyPageRepository;
@@ -40,5 +41,11 @@ public class MyPageService {
                 Sort.by(Sort.Direction.DESC, "id"));
 
         return myPageRepository.getMyData(pageRequest, email);
+    }
+
+    public DownloadableResponse getDownloadable(Integer page, String email) {
+        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
+                Sort.by(Sort.Direction.DESC, "id"));
+        return myPageRepository.getDownloadable(pageRequest, email);
     }
 }
