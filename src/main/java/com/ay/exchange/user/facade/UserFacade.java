@@ -6,6 +6,7 @@ import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
+import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.exception.DuplicateNickNameException;
 import com.ay.exchange.user.exception.FailUpdateUserInfoException;
@@ -15,6 +16,8 @@ import com.ay.exchange.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,5 +99,9 @@ public class UserFacade {
         if (!isSuccessUpdateUserInfo) {
             throw new FailUpdateUserInfoException();
         }
+    }
+
+    public MyDataResponse getMyData(Integer page, String token) {
+        return myPageService.getMyData(page, jwtTokenProvider.getUserEmail(token));
     }
 }
