@@ -7,6 +7,7 @@ import com.ay.exchange.aws.exception.EmptyFileException;
 import com.ay.exchange.aws.exception.FileUploadFailedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,14 +44,15 @@ public class AwsS3Service {
         // https://exchange-data-s3-bucket.s3.ap-northeast-2.amazonaws.com/profile
     }
 
-    public byte[] downloadFile(String filePath) {
+    public ByteArrayResource downloadFile(String filePath) {
         validateFileExistsAtUrl(filePath);
 
         S3Object s3Object = amazonS3Client.getObject(bucketName, filePath);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
 
         try {
-            return IOUtils.toByteArray(inputStream);
+            byte[] data = IOUtils.toByteArray(inputStream);
+            return new ByteArrayResource(data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,15 +60,6 @@ public class AwsS3Service {
 
     public void deleteProfile(String path) {
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, path));
-    }
-
-    public static ContentDisposition createContentDisposition(String filePath) {
-        String fileName = filePath.substring(
-                filePath.lastIndexOf("/") + 1);
-
-        return ContentDisposition.builder("attachment")
-                .filename(fileName, StandardCharsets.UTF_8)
-                .build();
     }
 
     public void deleteUserFiles(String userId) {

@@ -3,6 +3,8 @@ package com.ay.exchange.user.facade;
 import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.common.service.RedisService;
 import com.ay.exchange.jwt.JwtTokenProvider;
+import com.ay.exchange.user.dto.DownloadFileInfo;
+import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
@@ -11,12 +13,14 @@ import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.dto.response.MyPageResponse;
 import com.ay.exchange.user.exception.DuplicateNickNameException;
 import com.ay.exchange.user.exception.FailUpdateUserInfoException;
+import com.ay.exchange.user.exception.NotExistsFileException;
 import com.ay.exchange.user.exception.NotExistsUserException;
 import com.ay.exchange.user.service.MyPageService;
 import com.ay.exchange.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -108,5 +112,16 @@ public class UserFacade {
 
     public DownloadableResponse getDownloadable(Integer page, String token) {
         return myPageService.getDownloadable(page, jwtTokenProvider.getUserEmail(token));
+    }
+
+    public DownloadFileInfo downloadFile(Long requesterBoardId, String token) {
+        FilePathInfo filePathInfo = myPageService.getFilePath(requesterBoardId, jwtTokenProvider.getUserEmail(token));
+        if (filePathInfo == null) {
+            throw new NotExistsFileException();
+        }
+
+        String filePath = filePathInfo.toString();
+        ByteArrayResource resource = awsS3Service.downloadFile(filePath);
+        return new DownloadFileInfo(filePath, resource);
     }
 }

@@ -3,6 +3,7 @@ package com.ay.exchange.user.controller;
 import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.common.util.FileValidator;
+import com.ay.exchange.user.dto.DownloadFileInfo;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 import static com.ay.exchange.common.util.CookieUtil.removeCookie;
@@ -166,20 +169,17 @@ public class UserController {
     ) {
         //tkddls8900/김상인파일_1666970104756.txt
         //bpax7m4BI/김상인파일.txt
-        String filePath = userService.getFilePath(requesterBoardId, token);
-
-        byte[] data = awsS3Service.downloadFile(filePath);
-        ByteArrayResource resource = new ByteArrayResource(data);
+        DownloadFileInfo downloadFileInfo = userFacade.downloadFile(requesterBoardId, token);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentLength(data.length);
+        headers.setContentLength(downloadFileInfo.getDataLength());
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDisposition(AwsS3Service.createContentDisposition(filePath));
+        headers.setContentDisposition(createContentDisposition(downloadFileInfo.getFilePath()));
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .body(resource);
+                .body(downloadFileInfo.getResource());
     }
 
     @Operation(summary = "교환신청 조회",
@@ -262,4 +262,12 @@ public class UserController {
         return userService.withdrawalUser(token);
     }
 
+    private ContentDisposition createContentDisposition(String filePath) {
+        String fileName = filePath.substring(
+                filePath.lastIndexOf("/") + 1);
+
+        return ContentDisposition.builder("attachment")
+                .filename(fileName, StandardCharsets.UTF_8)
+                .build();
+    }
 }

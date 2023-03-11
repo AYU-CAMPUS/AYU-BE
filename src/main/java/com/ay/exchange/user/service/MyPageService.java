@@ -1,5 +1,6 @@
 package com.ay.exchange.user.service;
 
+import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
@@ -47,5 +48,9 @@ public class MyPageService {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
         return myPageRepository.getDownloadable(pageRequest, email);
+    }
+
+    public FilePathInfo getFilePath(Long requesterBoardId, String email) {
+        return myPageRepository.getFilePath(requesterBoardId, email);
     }
 }
