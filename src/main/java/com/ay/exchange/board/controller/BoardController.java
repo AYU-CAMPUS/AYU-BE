@@ -7,6 +7,7 @@ import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.exception.FileInvalidException;
+import com.ay.exchange.board.facade.BoardFacade;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
 import com.ay.exchange.common.error.dto.ErrorDto;
@@ -31,6 +32,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @Slf4j
 public class BoardController {
+    private final BoardFacade boardFacade;
     private final BoardService boardService;
     private final BoardContentService boardContentService;
 
@@ -66,7 +68,7 @@ public class BoardController {
             @CookieValue("token") String token
     ) {
         if (FileValidator.isAllowedFileType(multipartFile)) {
-            boardService.writeBoard(writeRequest, multipartFile, token);
+            boardFacade.writeBoard(writeRequest, multipartFile, token);
             return ResponseEntity.ok(true);
         }
         throw new FileInvalidException();

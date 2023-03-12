@@ -136,4 +136,27 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    public Board save(WriteRequest writeRequest, String email, String filePath, String originalFileName) {
+        BoardCategory boardCategory = BoardCategory.builder()
+                .category(getCategory(Integer.parseInt(writeRequest.getCategory())))
+                .departmentType(getDepartmentType(Integer.parseInt(writeRequest.getDepartmentType())))
+                .fileType(getFileType(Integer.parseInt(writeRequest.getFileType())))
+                .gradeType(writeRequest.getGradeType())
+                .subjectName(writeRequest.getSubjectName())
+                .professorName(writeRequest.getProfessorName())
+                .build();
+
+        Board board = Board.builder()
+                .title(writeRequest.getTitle())
+                .numberOfFilePages(Integer.parseInt(writeRequest.getNumberOfFilePages()))
+                .exchangeSuccessCount(0)
+                .approval(Approval.WAITING.getApproval())
+                .boardCategory(boardCategory)
+                .originalFileName(originalFileName)
+                .email(email)
+                .filePath(filePath)
+                .build();
+
+        return boardRepository.save(board);
+    }
 }

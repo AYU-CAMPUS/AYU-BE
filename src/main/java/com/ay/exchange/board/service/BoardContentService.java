@@ -4,6 +4,8 @@ import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.request.ModificationRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
+import com.ay.exchange.board.entity.Board;
+import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.exception.FileInvalidException;
@@ -95,4 +97,11 @@ public class BoardContentService {
         return true;
     }
 
+    public void save(Board board, String content) {
+        BoardContent boardContent = BoardContent.builder()
+                .content(content)
+                .board(board)
+                .build();
+        boardContentRepository.save(boardContent);
+    }
 }
