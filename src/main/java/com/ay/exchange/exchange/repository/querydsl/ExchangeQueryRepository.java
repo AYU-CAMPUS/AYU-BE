@@ -1,17 +1,16 @@
 package com.ay.exchange.exchange.repository.querydsl;
 
 import com.ay.exchange.common.util.Approval;
-import com.ay.exchange.common.util.DateUtil;
+
 import com.ay.exchange.exchange.dto.ExchangeInfo;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.dto.response.ExchangeResponse;
-import com.ay.exchange.exchange.exception.UnableExchangeException;
+
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
