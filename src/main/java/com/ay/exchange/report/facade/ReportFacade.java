@@ -2,6 +2,7 @@ package com.ay.exchange.report.facade;
 
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.report.dto.request.ReportBoardRequest;
+import com.ay.exchange.report.dto.request.ReportCommentRequest;
 import com.ay.exchange.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,10 @@ public class ReportFacade {
     @Transactional(rollbackFor = Exception.class)
     public void reportBoard(ReportBoardRequest reportBoardRequest, String token) {
         reportService.reportBoard(reportBoardRequest, jwtTokenProvider.getUserEmail(token));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void reportComment(ReportCommentRequest reportCommentRequest, String token) {
+        reportService.reportComment(reportCommentRequest,jwtTokenProvider.getUserEmail(token));
     }
 }

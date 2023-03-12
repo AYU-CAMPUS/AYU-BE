@@ -33,32 +33,13 @@ public class ReportQueryRepository {
         query.executeUpdate();
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void reportComment(ReportCommentRequest reportCommentRequest, String email) {
-        CommentInfo commentInfo = queryFactory.select(Projections.fields(
-                        CommentInfo.class,
-                        comment.email.as("targetUserEmail"),
-                        comment.content
-                ))
-                .from(comment)
-                .where(comment.id.eq(reportCommentRequest.getCommentId()))
-                .fetchOne();
-        if (commentInfo == null) throw new ReportException();
-
-        String sql = "INSERT INTO report_comment(email,target_email,content,reason,date) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO report_comment(email,comment_id, reason,date) VALUES(?,?,?,?,?)";
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, email)
-                .setParameter(2, commentInfo.getTargetUserEmail())
-                .setParameter(3, commentInfo.getContent())
-                .setParameter(4, reportCommentRequest.getReason())
-                .setParameter(5, DateUtil.getCurrentDate());
-
-        try {
-            if (query.executeUpdate() != 1) {
-                throw new ReportException();
-            }
-        } catch (Exception e) {
-            throw new ReportException();
-        }
+                .setParameter(2, reportCommentRequest.getCommentId())
+                .setParameter(3, reportCommentRequest.getReason())
+                .setParameter(4, DateUtil.getCurrentDate());
+        query.executeUpdate();
     }
 }

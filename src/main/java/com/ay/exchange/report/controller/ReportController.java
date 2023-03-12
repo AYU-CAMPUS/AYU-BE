@@ -52,7 +52,8 @@ public class ReportController {
             @RequestBody ReportCommentRequest reportCommentRequest,
             @CookieValue("token") String token
     ) {
-        return reportService.reportComment(reportCommentRequest, token);
+        reportFacade.reportComment(reportCommentRequest, token);
+        return true;
     }
 
 }

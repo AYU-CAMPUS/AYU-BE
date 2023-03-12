@@ -1,6 +1,5 @@
 package com.ay.exchange.report.service;
 
-import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.report.dto.request.ReportBoardRequest;
 import com.ay.exchange.report.dto.request.ReportCommentRequest;
 import com.ay.exchange.report.exception.ReportException;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReportService {
     private final ReportQueryRepository reportQueryRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
     public void reportBoard(ReportBoardRequest reportBoardRequest, String email) {
         try {
@@ -23,8 +21,11 @@ public class ReportService {
 
     }
 
-    public Boolean reportComment(ReportCommentRequest reportCommentRequest, String token) {
-        reportQueryRepository.reportComment(reportCommentRequest,jwtTokenProvider.getUserEmail(token));
-        return true;
+    public void reportComment(ReportCommentRequest reportCommentRequest, String email) {
+        try {
+            reportQueryRepository.reportComment(reportCommentRequest, email); //하나의 댓글에는 하나의 신고만 가능하도록 한다.
+        } catch (Exception e) {
+            throw new ReportException();
+        }
     }
 }
