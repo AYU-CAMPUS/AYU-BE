@@ -5,6 +5,7 @@ import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
 import com.ay.exchange.management.dto.response.UserInfoResponse;
+import com.ay.exchange.management.facade.ManagementFacade;
 import com.ay.exchange.management.service.ManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "관리자", description = "관리자 관련 api")
 public class ManagementController {
     private final ManagementService managementService;
+    private final ManagementFacade managementFacade;
 
     @Operation(summary = "요청 게시글 조회", description = "요청 게시글 조회",
             parameters = {
@@ -35,7 +37,7 @@ public class ManagementController {
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @CookieValue("token") String token
     ) {
-        return managementService.findRequestBoard(page);
+        return managementFacade.findRequestBoard(page);
     }
 
     @Operation(summary = "요청 게시글 허가", description = "요청 게시글 허가",

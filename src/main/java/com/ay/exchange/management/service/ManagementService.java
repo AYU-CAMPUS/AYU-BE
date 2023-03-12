@@ -25,12 +25,9 @@ public class ManagementService {
     private final JwtTokenProvider jwtTokenProvider;
     private final int PAGE_LIMIT_LENGTH = 2;
 
-    public RequestBoardResponse findRequestBoard(Integer page) {
-        Long totalPages = managementRepository.findRequestBoardTotal();
-
+    public List<BoardInfo> findRequestBoard(Integer page) {
         List<BoardInfo> boardInfos = managementRepository.findRequestBoards(getPageRequest(page));
-
-        return new RequestBoardResponse(totalPages, boardInfos);
+        return boardInfos;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -73,5 +70,9 @@ public class ManagementService {
     private PageRequest getPageRequest(Integer page) {
         return PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
                 Sort.by(Sort.Direction.DESC, "id"));
+    }
+
+    public Long findRequestBoardTotal() {
+        return managementRepository.findRequestBoardTotal();
     }
 }
