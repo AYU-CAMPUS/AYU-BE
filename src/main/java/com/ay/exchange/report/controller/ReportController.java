@@ -4,7 +4,6 @@ import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.report.dto.request.ReportBoardRequest;
 import com.ay.exchange.report.dto.request.ReportCommentRequest;
 import com.ay.exchange.report.facade.ReportFacade;
-import com.ay.exchange.report.service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "신고", description = "신고 관련 api")
 public class ReportController {
-    private final ReportService reportService;
     private final ReportFacade reportFacade;
 
     @Operation(summary = "게시글 신고",

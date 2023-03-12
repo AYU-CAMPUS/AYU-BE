@@ -3,8 +3,6 @@ package com.ay.exchange.report.entity;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
