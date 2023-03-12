@@ -22,16 +22,15 @@ public class CommentService {
     private final CommentQueryRepository commentQueryRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void writeComment(WriteRequest writeRequest, String token) {
-        Comment comment = Comment.builder()
-                .content(writeRequest.getContent())
-                .depth(writeRequest.getDepth())
-                .groupId(writeRequest.getGroupId())
-                .email(jwtTokenProvider.getUserEmail(token))
-                .boardId(writeRequest.getBoardId())
-                .build();
+    public void writeComment(WriteRequest writeRequest, String email) {
         try {
-            commentRepository.save(comment);
+            commentRepository.save(Comment.builder()
+                            .content(writeRequest.getContent())
+                            .depth(writeRequest.getDepth())
+                            .groupId(writeRequest.getGroupId())
+                            .email(email)
+                            .boardId(writeRequest.getBoardId())
+                            .build());
         } catch (Exception e) {
             throw new FailWriteCommentException();
         }

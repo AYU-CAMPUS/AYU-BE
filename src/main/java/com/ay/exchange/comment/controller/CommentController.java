@@ -3,6 +3,7 @@ package com.ay.exchange.comment.controller;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
+import com.ay.exchange.comment.facade.CommentFacade;
 import com.ay.exchange.comment.service.CommentService;
 import com.ay.exchange.common.error.dto.ErrorDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,8 +25,9 @@ import java.util.List;
 @Tag(name = "대댓글", description = "대댓글 관련 api")
 public class CommentController {
     private final CommentService commentService;
+    private final CommentFacade commentFacade;
 
-    @PostMapping("/write")
+    @PostMapping("")
     @Operation(summary = "대댓글 작성", description = "댓글 및 대댓글 작성",
             parameters = {@Parameter(name = "token", description = "액세스 토큰")},
             responses = {
@@ -36,7 +38,7 @@ public class CommentController {
             @RequestBody WriteRequest writeRequest,
             @CookieValue("token") String token
     ) {
-        commentService.writeComment(writeRequest, token);
+        commentFacade.writeComment(writeRequest, token);
         return ResponseEntity.ok(true);
     }
 
