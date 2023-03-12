@@ -6,7 +6,7 @@ import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
 import com.ay.exchange.management.dto.response.UserInfoResponse;
-import com.ay.exchange.management.exception.FailAcceptRequestBoard;
+
 import com.ay.exchange.management.service.ManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
