@@ -51,11 +51,9 @@ public class ManagementService {
         }
     }
 
-    public UserInfoResponse getUserInfos(Integer page) {
-        Long totalPages = managementRepository.findUserTotal();
-
+    public List<UserInfo> getUserInfos(Integer page) {
         List<UserInfo> userInfos = managementRepository.findUserInfos(getPageRequest(page));
-        return new UserInfoResponse(totalPages, userInfos);
+        return userInfos;
     }
 
     private PageRequest getPageRequest(Integer page) {
@@ -65,5 +63,9 @@ public class ManagementService {
 
     public Long findRequestBoardTotal() {
         return managementRepository.findRequestBoardTotal();
+    }
+
+    public Long findUserTotal() {
+        return managementRepository.findUserTotal();
     }
 }

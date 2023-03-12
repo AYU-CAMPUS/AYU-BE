@@ -99,6 +99,6 @@ public class ManagementController {
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @CookieValue("token") String token
     ) {
-        return managementService.getUserInfos(page);
+        return managementFacade.getUserInfos(page);
     }
 }

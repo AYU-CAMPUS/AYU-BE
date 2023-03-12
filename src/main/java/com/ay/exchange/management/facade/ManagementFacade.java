@@ -1,9 +1,11 @@
 package com.ay.exchange.management.facade;
 
+import com.ay.exchange.management.dto.query.UserInfo;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
+import com.ay.exchange.management.dto.response.UserInfoResponse;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
 import com.ay.exchange.management.service.ManagementService;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +41,13 @@ public class ManagementFacade {
     @Transactional(rollbackFor = Exception.class)
     public void updateSuspension(SuspensionRequest suspensionRequest) {
         managementService.updateSuspension(suspensionRequest);
+    }
+
+    public UserInfoResponse getUserInfos(Integer page) {
+        Long totalPages = managementService.findUserTotal();
+
+        List<UserInfo> userInfos = managementService.getUserInfos(page);
+
+        return new UserInfoResponse(totalPages, userInfos);
     }
 }
