@@ -70,7 +70,7 @@ public class ManagementController {
             @RequestBody BoardIdRequest boardIdRequest,
             @CookieValue("token") String token
     ) {
-        managementService.rejectRequestBoard(boardIdRequest);
+        managementFacade.rejectRequestBoard(boardIdRequest);
         return true;
     }
 
