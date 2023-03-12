@@ -4,7 +4,7 @@ import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
 import com.ay.exchange.comment.facade.CommentFacade;
-import com.ay.exchange.comment.service.CommentService;
+
 import com.ay.exchange.common.error.dto.ErrorDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,7 +24,6 @@ import java.util.List;
 @RequestMapping("/comment")
 @Tag(name = "대댓글", description = "대댓글 관련 api")
 public class CommentController {
-    private final CommentService commentService;
     private final CommentFacade commentFacade;
 
     @PostMapping("")
@@ -67,7 +66,7 @@ public class CommentController {
             @PathVariable("boardId") Long boardId,
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ) {
-        return commentService.getComments(boardId, page);
+        return commentFacade.getComments(boardId, page);
     }
 
 
