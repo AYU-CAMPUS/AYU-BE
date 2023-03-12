@@ -48,12 +48,12 @@ public class CommentController {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
                     @ApiResponse(responseCode = "422", description = "댓글 삭제에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public ResponseEntity<Boolean> deleteComment(
             @RequestBody DeleteRequest deleteRequest,
             @CookieValue("token") String token
     ) {
-        commentService.deleteComment(deleteRequest, token);
+        commentFacade.deleteComment(deleteRequest, token);
         return ResponseEntity.ok(true);
     }
 

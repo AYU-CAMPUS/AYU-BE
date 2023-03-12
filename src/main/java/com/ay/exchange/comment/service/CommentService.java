@@ -4,6 +4,7 @@ import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
 import com.ay.exchange.comment.entity.Comment;
+import com.ay.exchange.comment.exception.FailDeleteCommentException;
 import com.ay.exchange.comment.exception.FailWriteCommentException;
 import com.ay.exchange.comment.repository.CommentRepository;
 import com.ay.exchange.comment.repository.querydsl.CommentQueryRepository;
@@ -25,20 +26,23 @@ public class CommentService {
     public void writeComment(WriteRequest writeRequest, String email) {
         try {
             commentRepository.save(Comment.builder()
-                            .content(writeRequest.getContent())
-                            .depth(writeRequest.getDepth())
-                            .groupId(writeRequest.getGroupId())
-                            .email(email)
-                            .boardId(writeRequest.getBoardId())
-                            .build());
+                    .content(writeRequest.getContent())
+                    .depth(writeRequest.getDepth())
+                    .groupId(writeRequest.getGroupId())
+                    .email(email)
+                    .boardId(writeRequest.getBoardId())
+                    .build());
         } catch (Exception e) {
             throw new FailWriteCommentException();
         }
 
     }
 
-    public void deleteComment(DeleteRequest deleteRequest, String token) {
-        commentQueryRepository.deleteComment(jwtTokenProvider.getUserEmail(token), deleteRequest.getCommentId());
+    public void deleteComment(DeleteRequest deleteRequest, String email) {
+        long successDeletedCount = commentQueryRepository.deleteComment(email, deleteRequest);
+        if (successDeletedCount != 1L) {
+            throw new FailDeleteCommentException();
+        }
     }
 
     private boolean isAuthorized(String accessToken, String userId) {
