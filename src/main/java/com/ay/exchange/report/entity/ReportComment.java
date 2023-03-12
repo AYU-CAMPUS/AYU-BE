@@ -1,6 +1,7 @@
 package com.ay.exchange.report.entity;
 
 
+import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -17,7 +18,7 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "constraintReportComment",
-                        columnNames = {"email", "target_email"}
+                        columnNames = {"email", "comment_id"}
                 )
         }
 )
@@ -33,17 +34,15 @@ public class ReportComment {
     @Column(name = "email", nullable = false, length = 200)
     private String email; //신고자 아이디
 
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_email", insertable = false, updatable = false, nullable = false)
-    private User targetUser;
+    @ManyToOne(targetEntity = Comment.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id", insertable = false, updatable = false, nullable = false)
+    private Comment comment;
 
-    @Column(name = "target_email", nullable = false, length = 200)
-    private String targetEmail; //신고자 아이디
+    @Column(name = "comment_id", nullable = false)
+    private Long commentId;
 
     @Column(length = 100, nullable = false)
     private String reason; //사유
-
-    private String content; //댓글 내용
 
     private String date;
 }

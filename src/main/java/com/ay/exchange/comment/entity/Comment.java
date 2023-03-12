@@ -1,6 +1,7 @@
 package com.ay.exchange.comment.entity;
 
 import com.ay.exchange.board.entity.Board;
+import com.ay.exchange.report.entity.ReportComment;
 import com.ay.exchange.user.entity.User;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,6 +37,10 @@ public class Comment {
 
     @Column(name = "email", nullable = false, length = 200)
     private String email;
+
+    @OneToMany(mappedBy = "comment", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<ReportComment> reportComments;
 
     @Column(nullable = false)
     private String content;
