@@ -3,6 +3,7 @@ package com.ay.exchange.report.service;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.report.dto.request.ReportBoardRequest;
 import com.ay.exchange.report.dto.request.ReportCommentRequest;
+import com.ay.exchange.report.exception.ReportException;
 import com.ay.exchange.report.repository.ReportQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,13 @@ public class ReportService {
     private final ReportQueryRepository reportQueryRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    public void reportBoard(ReportBoardRequest reportBoardRequest, String email) {
+        try {
+            reportQueryRepository.reportBoard(reportBoardRequest, email); //하나의 게시글에서는 하나의 신고만 가능하도록 한다.
+        } catch (Exception e) {
+            throw new ReportException();
+        }
 
-    public Boolean reportBoard(ReportBoardRequest reportBoardRequest, String token) {
-        reportQueryRepository.reportBoard(reportBoardRequest, jwtTokenProvider.getUserEmail(token));
-        return true;
     }
 
     public Boolean reportComment(ReportCommentRequest reportCommentRequest, String token) {

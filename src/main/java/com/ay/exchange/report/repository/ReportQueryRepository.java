@@ -23,7 +23,6 @@ public class ReportQueryRepository {
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 
-    @Transactional(rollbackFor = Exception.class)
     public void reportBoard(ReportBoardRequest reportBoardRequest, String email) {
         String sql = "INSERT INTO report_board(board_id,email,reason,date) VALUES(?,?,?,?)";
         Query query = em.createNativeQuery(sql)
@@ -31,14 +30,7 @@ public class ReportQueryRepository {
                 .setParameter(2, email)
                 .setParameter(3, reportBoardRequest.getReason())
                 .setParameter(4, DateUtil.getCurrentDate());
-
-        try {
-            if (query.executeUpdate() != 1) {
-                throw new ReportException();
-            }
-        } catch (Exception e) {
-            throw new ReportException();
-        }
+        query.executeUpdate();
     }
 
     @Transactional(rollbackFor = Exception.class)

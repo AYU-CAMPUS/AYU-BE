@@ -3,6 +3,7 @@ package com.ay.exchange.report.controller;
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.report.dto.request.ReportBoardRequest;
 import com.ay.exchange.report.dto.request.ReportCommentRequest;
+import com.ay.exchange.report.facade.ReportFacade;
 import com.ay.exchange.report.service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "신고", description = "신고 관련 api")
 public class ReportController {
     private final ReportService reportService;
+    private final ReportFacade reportFacade;
 
     @Operation(summary = "게시글 신고",
             description = "게시글 신고",
@@ -33,7 +35,8 @@ public class ReportController {
             @RequestBody ReportBoardRequest reportBoardRequest,
             @CookieValue("token") String token
     ) {
-        return reportService.reportBoard(reportBoardRequest, token);
+        reportFacade.reportBoard(reportBoardRequest, token);
+        return true;
     }
 
     @Operation(summary = "댓글 신고",
