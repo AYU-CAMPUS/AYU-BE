@@ -52,7 +52,6 @@ public class CommentService {
     public List<CommentInfoDto> getComments(Long boardId, Integer page) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
-
         return commentQueryRepository.getComments(pageRequest, boardId);
     }
 }

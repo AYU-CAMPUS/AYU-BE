@@ -2,11 +2,15 @@ package com.ay.exchange.comment.facade;
 
 import com.ay.exchange.comment.dto.request.DeleteRequest;
 import com.ay.exchange.comment.dto.request.WriteRequest;
+import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.service.CommentService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,5 +26,9 @@ public class CommentFacade {
     @Transactional(rollbackFor = Exception.class)
     public void deleteComment(DeleteRequest deleteRequest, String token) {
         commentService.deleteComment(deleteRequest, jwtTokenProvider.getUserEmail(token));
+    }
+
+    public List<CommentInfoDto> getComments(Long boardId, Integer page) {
+        return commentService.getComments(boardId, page);
     }
 }
