@@ -53,10 +53,10 @@ public class ManagementRepository {
                 .execute();
     }
 
-    public boolean deleteBoard(BoardIdRequest boardIdRequest) {
+    public long deleteBoard(BoardIdRequest boardIdRequest) {
         return queryFactory.delete(board)
                 .where(board.id.eq(boardIdRequest.getBoardId()))
-                .execute() == 1L;
+                .execute();
     }
 
     public long updateUserSuspensionByEmail(SuspensionRequest suspensionRequest) {

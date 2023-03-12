@@ -3,6 +3,7 @@ package com.ay.exchange.management.facade;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
+import com.ay.exchange.management.exception.FailAcceptRequestBoard;
 import com.ay.exchange.management.service.ManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,10 @@ public class ManagementFacade {
     public void acceptRequestBoard(BoardIdRequest boardIdRequest) {
         managementService.acceptRequestBoard(boardIdRequest);
         //추후 알림까지 추가
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void rejectRequestBoard(BoardIdRequest boardIdRequest) {
+        managementService.rejectRequestBoard(boardIdRequest);
     }
 }

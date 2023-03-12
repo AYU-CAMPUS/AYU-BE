@@ -37,17 +37,11 @@ public class ManagementService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void rejectRequestBoard(BoardIdRequest boardIdRequest) {
-        try {
-            if (managementRepository.deleteBoard(boardIdRequest)) {
-                //추후 알림까지 추가
-                return;
-            }
-        } catch (Exception e) {
+        long successDeletedBoardCount = managementRepository.deleteBoard(boardIdRequest);
+        if(successDeletedBoardCount != 1L){
             throw new FailAcceptRequestBoard();
         }
-        throw new FailAcceptRequestBoard();
     }
 
     @Transactional(rollbackFor = Exception.class)
