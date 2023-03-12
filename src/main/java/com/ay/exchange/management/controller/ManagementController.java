@@ -86,7 +86,7 @@ public class ManagementController {
             @RequestBody SuspensionRequest suspensionRequest,
             @CookieValue("token") String token
     ) {
-        managementService.updateSuspension(suspensionRequest);
+        managementFacade.updateSuspension(suspensionRequest);
         return true;
     }
 

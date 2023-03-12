@@ -1,6 +1,7 @@
 package com.ay.exchange.management.facade;
 
 import com.ay.exchange.management.dto.request.BoardIdRequest;
+import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.dto.response.RequestBoardResponse;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
@@ -33,5 +34,10 @@ public class ManagementFacade {
     @Transactional(rollbackFor = Exception.class)
     public void rejectRequestBoard(BoardIdRequest boardIdRequest) {
         managementService.rejectRequestBoard(boardIdRequest);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateSuspension(SuspensionRequest suspensionRequest) {
+        managementService.updateSuspension(suspensionRequest);
     }
 }

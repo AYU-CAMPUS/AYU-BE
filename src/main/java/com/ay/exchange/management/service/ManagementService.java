@@ -44,12 +44,11 @@ public class ManagementService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void updateSuspension(SuspensionRequest suspensionRequest) {
-        if (managementRepository.updateUserSuspensionByEmail(suspensionRequest) == 1L) {
-            return;
+        long successUpdatedUserSuspendedCount = managementRepository.updateUserSuspensionByEmail(suspensionRequest);
+        if (successUpdatedUserSuspendedCount != 1L) {
+            throw new FailUpdatedSuspension();
         }
-        throw new FailUpdatedSuspension();
     }
 
     public UserInfoResponse getUserInfos(Integer page) {
