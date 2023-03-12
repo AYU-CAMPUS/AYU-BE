@@ -1,9 +1,11 @@
 package com.ay.exchange.exchange.facade;
 
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
+import com.ay.exchange.exchange.dto.response.ExchangeResponse;
 import com.ay.exchange.exchange.service.ExchangeService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,5 +24,9 @@ public class ExchangeFacade {
         exchangeService.existsExchange(exchangeRequest, email);
 
         exchangeService.requestExchange(exchangeRequest, email);
+    }
+
+    public ExchangeResponse getMyData(Integer page, String token) {
+        return exchangeService.getMyData(page, jwtTokenProvider.getUserEmail(token));
     }
 }

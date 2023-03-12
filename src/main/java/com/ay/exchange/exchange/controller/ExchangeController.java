@@ -48,6 +48,6 @@ public class ExchangeController {
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @CookieValue(value = "token") String token
     ) {
-        return exchangeService.getMyData(page, token);
+        return exchangeFacade.getMyData(page, token);
     }
 }
