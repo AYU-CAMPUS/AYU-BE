@@ -30,13 +30,11 @@ public class ManagementService {
         return boardInfos;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void acceptRequestBoard(BoardIdRequest boardIdRequest) {
-        if (!managementRepository.updateBoardApproval(boardIdRequest)) {
+        long successUpdatedApprovalCount = managementRepository.updateBoardApproval(boardIdRequest);
+        if (successUpdatedApprovalCount != 1L) {
             throw new FailAcceptRequestBoard();
         }
-
-        //추후 알림까지 추가
     }
 
     @Transactional(rollbackFor = Exception.class)

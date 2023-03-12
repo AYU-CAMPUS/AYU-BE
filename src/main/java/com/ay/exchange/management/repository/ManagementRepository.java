@@ -46,11 +46,11 @@ public class ManagementRepository {
                 .fetch();
     }
 
-    public boolean updateBoardApproval(BoardIdRequest boardIdRequest) {
+    public long updateBoardApproval(BoardIdRequest boardIdRequest) {
         return queryFactory.update(board)
                 .set(board.approval, Approval.AGREE.getApproval())
                 .where(board.id.eq(boardIdRequest.getBoardId()))
-                .execute() == 1L;
+                .execute();
     }
 
     public boolean deleteBoard(BoardIdRequest boardIdRequest) {

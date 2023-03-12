@@ -53,7 +53,7 @@ public class ManagementController {
             @RequestBody BoardIdRequest boardIdRequest,
             @CookieValue("token") String token
     ) {
-        managementService.acceptRequestBoard(boardIdRequest);
+        managementFacade.acceptRequestBoard(boardIdRequest);
         return true;
     }
 
