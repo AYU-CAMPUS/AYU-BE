@@ -1,5 +1,6 @@
 package com.ay.exchange.exchange.service;
 
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.dto.response.ExchangeResponse;
 import com.ay.exchange.exchange.exception.UnableExchangeException;
@@ -16,23 +17,38 @@ public class ExchangeService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ExchangeQueryRepository exchangeQueryRepository;
 
-    public Boolean requestExchange(ExchangeRequest exchangeRequest, String token) {
-        if (exchangeQueryRepository.existsExchangeCompletion(exchangeRequest)) {
+    public void requestExchange(ExchangeRequest exchangeRequest, String email) {
+        String boardUserEmail = exchangeQueryRepository.findBoardUserEmail(exchangeRequest.getBoardId(), email);
+        if (boardUserEmail == null) {
             throw new UnableExchangeException();
         }
 
-        String email = jwtTokenProvider.getUserEmail(token);
-        if (exchangeQueryRepository.existsExchange(exchangeRequest, email)) {
+        boolean isRequesterBoard = exchangeQueryRepository.existsRequesterBoard(exchangeRequest.getRequesterBoardId(), email);
+        if (!isRequesterBoard) {
             throw new UnableExchangeException();
         }
 
-        exchangeQueryRepository.requestExchange(exchangeRequest, email);
-        return true;
+        int successExchangeCount = exchangeQueryRepository.requestExchange(exchangeRequest, boardUserEmail, email, DateUtil.getCurrentDate());
+        if (successExchangeCount != 2) {
+            throw new UnableExchangeException();
+        }
     }
 
     public ExchangeResponse getMyData(Integer page, String token) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
                 Sort.by(Sort.Direction.DESC, "id"));
         return exchangeQueryRepository.getMyData(pageRequest, jwtTokenProvider.getUserEmail(token));
+    }
+
+    public void existsExchangeCompletion(ExchangeRequest exchangeRequest) {
+        if(exchangeQueryRepository.existsExchangeCompletion(exchangeRequest)){
+            throw new UnableExchangeException();
+        }
+    }
+
+    public void existsExchange(ExchangeRequest exchangeRequest, String email) {
+        if(exchangeQueryRepository.existsExchange(exchangeRequest, email)){
+            throw new UnableExchangeException();
+        }
     }
 }

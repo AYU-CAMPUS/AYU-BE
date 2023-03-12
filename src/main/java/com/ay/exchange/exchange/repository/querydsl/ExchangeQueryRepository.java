@@ -50,26 +50,9 @@ public class ExchangeQueryRepository {
         return new ExchangeResponse(count, exchangaInfos);
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void requestExchange(ExchangeRequest exchangeRequest, String email) {
-        String boardUserEmail = queryFactory.select(board.email)
-                .from(board)
-                .where(board.id.eq(exchangeRequest.getBoardId())
-                        .and(board.approval.eq(Approval.AGREE.getApproval())))
-                .fetchOne();
-        if (boardUserEmail == null) throw new UnableExchangeException();
-
-        Integer canExchange = queryFactory.selectOne()
-                .from(board)
-                .where(board.id.eq(exchangeRequest.getRequesterBoardId())
-                        .and(board.email.eq(email))
-                        .and(board.approval.eq(Approval.AGREE.getApproval())))
-                .fetchFirst();
-        if (canExchange == null) throw new UnableExchangeException();
-
+    public int requestExchange(ExchangeRequest exchangeRequest, String boardUserEmail, String email, String currentDate) {
         String sql = "INSERT INTO exchange(created_date, last_modified_date, board_id, requester_board_id, requester_email, type, email)" +
                 " VALUES(?,?,?,?,?,?,?), (?,?,?,?,?,?,?)";
-        String currentDate = DateUtil.getCurrentDate();
         Query query = em.createNativeQuery(sql)
                 .setParameter(1, currentDate)
                 .setParameter(2, currentDate)
@@ -85,7 +68,7 @@ public class ExchangeQueryRepository {
                 .setParameter(12, boardUserEmail)
                 .setParameter(13, -2) //-2는 교환요청을 함
                 .setParameter(14, email);
-        if (query.executeUpdate() != 2) throw new UnableExchangeException();
+        return query.executeUpdate();
     }
 
     public boolean existsExchangeCompletion(ExchangeRequest exchangeRequest) {
@@ -101,6 +84,25 @@ public class ExchangeQueryRepository {
                 .from(exchange)
                 .where(exchange.boardId.eq(exchangeRequest.getBoardId())
                         .and(exchange.requesterEmail.eq(email)))
+                .fetchFirst() != null;
+    }
+
+    public String findBoardUserEmail(Long boardId, String email) {
+        String boardUserEmail = queryFactory.select(board.email)
+                .from(board)
+                .where(board.id.eq(boardId)
+                        .and(board.approval.eq(Approval.AGREE.getApproval()))
+                        .and(board.email.ne(email)))
+                .fetchOne();
+        return boardUserEmail;
+    }
+
+    public boolean existsRequesterBoard(Long requesterBoardId, String email) {
+        return queryFactory.selectOne()
+                .from(board)
+                .where(board.id.eq(requesterBoardId)
+                        .and(board.email.eq(email))
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .fetchFirst() != null;
     }
 }
