@@ -45,8 +45,19 @@ public class BoardContentService {
         }
     }
 
-    public ModifiableBoardResponse findModifiableBoard(String token, Long boardId) {
-        return boardContentRepository.findModifiableBoard(jwtTokenProvider.getUserEmail(token), boardId);
+    public ModifiableBoardResponse findModifiableBoard(String email, Long boardId) {
+        String date = getAvailableDate();
+
+        ModifiableBoardResponse modifiableBoardResponse = boardContentRepository.findModifiableBoard(date, email, boardId);
+
+        boolean isExchangeDatePassed3Days = boardContentRepository.checkExchangeDate(date, boardId);
+        boolean isExchangeCompletionDatePassed3Days = boardContentRepository.checkExchangeCompletionDate(date, email, boardId);
+
+        if (modifiableBoardResponse != null && isExchangeDatePassed3Days && isExchangeCompletionDatePassed3Days) {
+            return modifiableBoardResponse;
+        }
+
+        throw new FailModifyBoardException();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -102,7 +113,7 @@ public class BoardContentService {
     }
 
     public void checkDeleteable(String email, Long boardId) {
-        if(boardContentRepository.canDeleted(email, boardId)){
+        if (boardContentRepository.canDeleted(email, boardId)) {
             return;
         }
         throw new FailDeleteBoardException();

@@ -140,7 +140,7 @@ public class BoardController {
             @PathVariable("boardId") Long boardId,
             @CookieValue("token") String token
     ) {
-        return ResponseEntity.ok(boardContentService.findModifiableBoard(token, boardId));
+        return ResponseEntity.ok(boardFacade.findModifiableBoard(token, boardId));
     }
 
     @Operation(summary = "게시글 수정 요청", description = "게시글을 수정 요청",

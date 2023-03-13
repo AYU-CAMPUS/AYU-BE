@@ -183,10 +183,8 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .fetch();
     }
 
-    public ModifiableBoardResponse findModifiableBoard(String email, Long boardId) {
-        String date = getAvailableDate();
-
-        ModifiableBoardResponse modifiableBoardResponse = queryFactory.select(Projections.fields(
+    public ModifiableBoardResponse findModifiableBoard(String date, String email, Long boardId) {
+        return queryFactory.select(Projections.fields(
                         ModifiableBoardResponse.class,
                         board.title,
                         board.boardCategory,
@@ -202,12 +200,6 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         .and(board.approval.eq(Approval.AGREE.getApproval()))
                 )
                 .fetchOne();
-
-        if (modifiableBoardResponse != null && checkExchangeDate(date, boardId)
-                && checkExchangeCompletionDate(date, email, boardId)) {
-            return modifiableBoardResponse;
-        }
-        throw new FailModifyBoardException();
     }
 
     @Override

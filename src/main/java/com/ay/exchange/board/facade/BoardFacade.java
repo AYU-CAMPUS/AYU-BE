@@ -7,9 +7,9 @@ import com.ay.exchange.board.dto.request.WriteRequest;
 
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.BoardResponse;
+import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 
-import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
@@ -86,5 +86,9 @@ public class BoardFacade {
         awsS3Service.deleteUserFile(filePath);
 
 
+    }
+
+    public ModifiableBoardResponse findModifiableBoard(String token, Long boardId) {
+        return boardContentService.findModifiableBoard(jwtTokenProvider.getUserEmail(token), boardId);
     }
 }
