@@ -12,4 +12,6 @@ public interface BoardQueryRepository {
     void deleteBoard(String email, Long boardID);
 
     String findFilePathByBoardId(Long boardId);
+
+    Long updateApproval(String email, Long boardId);
 }

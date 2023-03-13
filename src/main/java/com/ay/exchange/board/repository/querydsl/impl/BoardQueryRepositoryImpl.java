@@ -83,6 +83,16 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 .fetchOne();
     }
 
+    @Override
+    public Long updateApproval(String email, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
+        return queryFactory.update(board)
+                .set(board.approval, Approval.MODIFICATION.getApproval())
+                .where(board.id.eq(boardId)
+                        .and(board.email.eq(email))
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
+                .execute();
+    }
+
     private BooleanBuilder typeEq(List<String> types) {
         if (types.size() == 0) return null;
 

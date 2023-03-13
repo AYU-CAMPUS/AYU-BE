@@ -64,10 +64,6 @@ public class BoardContentService {
     public void requestModificationBoard(ModificationRequest modificationRequest, MultipartFile multipartFile, String token) {
         String email = jwtTokenProvider.getUserEmail(token);
 
-        if (!canModification(getAvailableDate(), email, modificationRequest.getBoardId())) {
-            throw new FailModifyBoardException();
-        }
-
         BoardCategory boardCategory = BoardCategory.builder()
                 .category(getCategory(Integer.parseInt(modificationRequest.getCategory())))
                 .departmentType(getDepartmentType(Integer.parseInt(modificationRequest.getDepartmentType())))
@@ -95,14 +91,14 @@ public class BoardContentService {
         }
     }
 
-    private boolean canModification(String date, String email, Long boardId) {
-        if (!boardContentRepository.updateApproval(email, boardId)
-                && !boardContentRepository.checkExchangeCompletionDate(date, email, boardId)
-                && !boardContentRepository.checkExchangeDate(date, boardId)) {
-            return false;
-        }
-        return true;
-    }
+//    private boolean canModification(String date, String email, Long boardId) {
+//        if (!boardContentRepository.updateApproval(email, boardId)
+//                && !boardContentRepository.checkExchangeCompletionDate(date, email, boardId)
+//                && !boardContentRepository.checkExchangeDate(date, boardId)) {
+//            return false;
+//        }
+//        return true;
+//    }
 
     public void save(Board board, String content) {
         BoardContent boardContent = BoardContent.builder()
@@ -117,5 +113,18 @@ public class BoardContentService {
             return;
         }
         throw new FailDeleteBoardException();
+    }
+
+    public void checkExchangeDate(String date, Long boardId) {
+        boolean isExchangeDatePassed3Days = boardContentRepository.checkExchangeDate(date, boardId);
+        if (isExchangeDatePassed3Days) {
+            return;
+        }
+        throw new FailModifyBoardException();
+    }
+
+    public void checkExchangeCompletionDate(String date, String email, Long boardId) {
+        boolean isExchangeCompletionDatePassed3Days = boardContentRepository.checkExchangeCompletionDate(date, email, boardId);
+
     }
 }

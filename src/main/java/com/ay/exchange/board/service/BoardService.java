@@ -8,6 +8,7 @@ import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.entity.vo.*;
 import com.ay.exchange.board.exception.FailDeleteBoardException;
+import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.repository.BoardContentRepository;
 import com.ay.exchange.board.repository.BoardRepository;
@@ -166,5 +167,12 @@ public class BoardService {
 
     public void delete(String email, Long boardId) {
         boardRepository.deleteBoard(email, boardId);
+    }
+
+    public void updateApproval(String email, Long boardId) {
+        Long cnt = boardRepository.updateApproval(email, boardId);
+        if(cnt != 1L){
+            throw new FailModifyBoardException();
+        }
     }
 }

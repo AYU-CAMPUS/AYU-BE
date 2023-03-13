@@ -232,16 +232,6 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
         throw new FailModifyBoardException();
     }
 
-    @Override
-    public boolean updateApproval(String email, Long boardId) { //게시글 관리자에게 수정을 허가 받기 위해 approval을 false로 변경
-        return queryFactory.update(board)
-                .set(board.approval, Approval.MODIFICATION.getApproval())
-                .where(board.id.eq(boardId)
-                        .and(board.email.eq(email))
-                        .and(board.approval.eq(Approval.AGREE.getApproval())))
-                .execute() == 1L;
-    }
-
     private Boolean isBoardOwner(String email, Long boardId) {
         Long count = queryFactory.select(board.count())
                 .from(board)

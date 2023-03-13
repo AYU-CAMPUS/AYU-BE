@@ -175,7 +175,10 @@ public class BoardController {
             @RequestPart(value = "file", required = false) MultipartFile multipartFile,
             @CookieValue(value = "token") String token
     ) {
-        boardContentService.requestModificationBoard(modificationRequest, multipartFile, token);
+        if(multipartFile != null && !FileValidator.isAllowedFileType(multipartFile)){
+            throw new FileInvalidException();
+        }
+        boardFacade.requestModificationBoard(modificationRequest, multipartFile, token);
         return true;
     }
 }
