@@ -80,7 +80,7 @@ public class BoardService {
         }
     }
 
-    public BoardResponse getBoardList(Integer page, Integer category,
+    public Page<BoardInfoDto> getBoardList(Integer page, Integer category,
                                       String department, String grade, String type
     ) {
         PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
@@ -94,7 +94,7 @@ public class BoardService {
                 getSeparateGradeConditions(grade),
                 getSeparateTypeConditions(type));
 
-        return new BoardResponse(pages.getTotalPages(), pages.getContent());
+        return pages;
     }
 
     @Transactional(rollbackFor = Exception.class)

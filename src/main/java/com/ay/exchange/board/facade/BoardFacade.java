@@ -1,16 +1,20 @@
 package com.ay.exchange.board.facade;
 
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.board.dto.query.BoardInfoDto;
 import com.ay.exchange.board.dto.request.WriteRequest;
 
+import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.entity.Board;
 
 import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
 
+
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,5 +44,22 @@ public class BoardFacade {
         } catch (Exception e) {
             throw new FailWriteBoardException();
         }
+    }
+
+    public BoardResponse getBoardList( //파라미터 값들을 dto로 묶는 것이 좀 더 깔끔해 보일 것 같다.
+            Integer page,
+            Integer category,
+            String department,
+            String grade,
+            String type
+    ) {
+        Page<BoardInfoDto> pages = boardService.getBoardList(
+                page,
+                category,
+                department,
+                grade,
+                type);
+
+        return new BoardResponse(pages.getTotalPages(), pages.getContent());
     }
 }

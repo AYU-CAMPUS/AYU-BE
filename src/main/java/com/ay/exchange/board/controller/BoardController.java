@@ -92,10 +92,8 @@ public class BoardController {
             @RequestParam(name = "grade", required = false, defaultValue = ",") String grade,
             @RequestParam(name = "type", required = false, defaultValue = ",") String type
     ) {
-        return ResponseEntity.ok(boardService
-                .getBoardList(page, category, department, grade, type));
+        return ResponseEntity.ok(boardFacade.getBoardList(page, category, department, grade, type));
     }
-
 
     @Operation(summary = "게시글 보기", description = "게시글 목록에서 글을 눌렀을 때",
             parameters = {
