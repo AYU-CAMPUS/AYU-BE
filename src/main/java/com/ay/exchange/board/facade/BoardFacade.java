@@ -11,8 +11,6 @@ import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 
-import com.ay.exchange.board.entity.vo.BoardCategory;
-import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
@@ -28,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
-import static com.ay.exchange.common.util.BoardTypeGenerator.*;
 import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
 
 

@@ -2,14 +2,12 @@ package com.ay.exchange.board.repository.querydsl;
 
 import com.ay.exchange.board.dto.request.ModificationRequest;
 import com.ay.exchange.board.entity.vo.BoardCategory;
-import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.common.util.DateUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 @Repository
 @RequiredArgsConstructor

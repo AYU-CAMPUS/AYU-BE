@@ -2,17 +2,13 @@ package com.ay.exchange.board.repository.querydsl.impl;
 
 import com.ay.exchange.board.dto.query.BoardContentInfo2Dto;
 import com.ay.exchange.board.dto.query.BoardContentInfoDto;
-import com.ay.exchange.board.dto.request.ModificationRequest;
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
-import com.ay.exchange.board.entity.vo.BoardCategory;
-import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.common.util.Approval;
-import com.ay.exchange.common.util.DateUtil;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;
@@ -23,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -206,30 +201,6 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
     public Boolean canDeleted(String email, Long boardId) {
         return isBoardOwner(email, boardId)
                 && checkExchangeCompletionDate(getAvailableDate(), email, boardId);
-    }
-
-    @Override
-    public void requestModificationBoard(ModificationRequest modificationRequest, String email, String originalFilename, String filePath, BoardCategory boardCategory) {
-        String sql = "INSERT INTO modification_board(title, category, department_type, file_type, grade_type, professor_name, subject_name, number_of_file_pages, original_file_name, file_path, board_id, content, date) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Query query = em.createNativeQuery(sql)
-                .setParameter(1, modificationRequest.getTitle())
-                .setParameter(2, String.valueOf(boardCategory.getCategory()))
-                .setParameter(3, String.valueOf(boardCategory.getDepartmentType()))
-                .setParameter(4, String.valueOf(boardCategory.getFileType()))
-                .setParameter(5, boardCategory.getGradeType())
-                .setParameter(6, boardCategory.getProfessorName())
-                .setParameter(7, boardCategory.getSubjectName())
-                .setParameter(8, modificationRequest.getNumberOfFilePages())
-                .setParameter(9, originalFilename)
-                .setParameter(10, filePath)
-                .setParameter(11, modificationRequest.getBoardId())
-                .setParameter(12, modificationRequest.getContent())
-                .setParameter(13, DateUtil.getCurrentDate());
-        if (query.executeUpdate() == 1) {
-            return;
-        }
-
-        throw new FailModifyBoardException();
     }
 
     private Boolean isBoardOwner(String email, Long boardId) {

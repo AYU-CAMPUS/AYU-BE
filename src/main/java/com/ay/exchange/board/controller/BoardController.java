@@ -8,8 +8,6 @@ import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.exception.FileInvalidException;
 import com.ay.exchange.board.facade.BoardFacade;
-import com.ay.exchange.board.service.BoardContentService;
-import com.ay.exchange.board.service.BoardService;
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.common.util.FileValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,8 +31,6 @@ import javax.validation.Valid;
 @Slf4j
 public class BoardController {
     private final BoardFacade boardFacade;
-    private final BoardService boardService;
-    private final BoardContentService boardContentService;
 
     @Operation(summary = "게시글 작성", description = "게시글 작성",
             parameters = {
