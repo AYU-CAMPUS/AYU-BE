@@ -4,10 +4,12 @@ import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.query.BoardInfoDto;
 import com.ay.exchange.board.dto.request.WriteRequest;
 
+import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.entity.Board;
 
 import com.ay.exchange.board.exception.FailWriteBoardException;
+import com.ay.exchange.board.exception.NotFoundBoardException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
 
@@ -15,6 +17,8 @@ import com.ay.exchange.board.service.BoardService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,13 +50,13 @@ public class BoardFacade {
         }
     }
 
-    public BoardResponse getBoardList( //파라미터 값들을 dto로 묶는 것이 좀 더 깔끔해 보일 것 같다.
+    public BoardResponse getBoardList(
             Integer page,
             Integer category,
             String department,
             String grade,
             String type
-    ) {
+    ) { //파라미터 값들을 dto로 묶는 것이 좀 더 깔끔해 보일 것 같다.
         Page<BoardInfoDto> pages = boardService.getBoardList(
                 page,
                 category,
@@ -61,5 +65,12 @@ public class BoardFacade {
                 type);
 
         return new BoardResponse(pages.getTotalPages(), pages.getContent());
+    }
+
+    public BoardContentResponse getBoardContent(Long boardId, String token) {
+        if (token == null) { //로그인하지 않은 유저여도 게시글은 볼 수 있다.
+            return boardContentService.getBoardContent(boardId, "");
+        }
+        return boardContentService.getBoardContent(boardId, jwtTokenProvider.getUserEmail(token));
     }
 }

@@ -109,7 +109,7 @@ public class BoardController {
             @PathVariable("boardId") Long boardId,
             @CookieValue(value = "token", required = false) String token
     ) {
-        return ResponseEntity.ok(boardContentService.getBoardContent(boardId, token));
+        return ResponseEntity.ok(boardFacade.getBoardContent(boardId, token));
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글 삭제",

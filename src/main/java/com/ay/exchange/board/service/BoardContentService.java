@@ -34,16 +34,11 @@ public class BoardContentService {
     private final int UPLOAD_FILE = 0;
     private final int PAGE_LIMIT_LENGTH = 2;
 
-    @Transactional(readOnly = true)
-    public BoardContentResponse getBoardContent(Long boardId, String token) {
+    public BoardContentResponse getBoardContent(Long boardId, String email) {
         PageRequest pageRequest = PageRequest.of(0, PAGE_LIMIT_LENGTH,
                 Sort.by(Sort.Direction.DESC, "id"));
         try {
-            if (token == null) {
-                return boardContentRepository.findBoardContent(boardId, pageRequest, "");
-            }
-
-            return boardContentRepository.findBoardContent(boardId, pageRequest, jwtTokenProvider.getUserEmail(token));
+            return boardContentRepository.findBoardContent(boardId, pageRequest, email);
         } catch (Exception e) {
             throw new NotFoundBoardException();
         }

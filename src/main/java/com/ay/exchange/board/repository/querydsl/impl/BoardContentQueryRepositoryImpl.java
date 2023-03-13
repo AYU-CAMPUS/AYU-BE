@@ -45,6 +45,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
 
     @Override
     public BoardContentResponse findBoardContent(Long boardId, Pageable pageable, String email) {
+        //infrastructure에 복잡한 로직이 들어간 것 같다. 일단 원하는 대로 동작하니 나중에 리팩터링하는 걸로......
         Long count = queryFactory
                 .select(comment.count())
                 .from(comment)
