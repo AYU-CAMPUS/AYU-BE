@@ -35,7 +35,7 @@ public class ModificationRequest {
     @Pattern(regexp = "^([0-9]|1[0-9]|2[0-2])$")
     private String departmentType;
 
-    @Schema(description = "중간고사(0), 기말고사(1), 과제(2), 요약(3)")
+    @Schema(description = "중간고사(0), 기말고사(1), 요약(2)")
     @Pattern(regexp = "^[0-3]$")
     private String fileType;
 
