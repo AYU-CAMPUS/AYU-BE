@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardContentQueryRepository {
     BoardContentResponse findBoardContent(Long boardId, Pageable page, String email);
-    ModifiableBoardResponse findModifiableBoard(String date, String email, Long boardId);
+    ModifiableBoardResponse findModifiableBoard(String email, Long boardId);
 
     Boolean canDeleted(String email, Long boardId);
 

@@ -11,6 +11,7 @@ import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 
+import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
@@ -92,22 +93,26 @@ public class BoardFacade {
         boardService.delete(email, deleteRequest.getBoardId());
 
         awsS3Service.deleteUserFile(filePath);
-
-
     }
 
     public ModifiableBoardResponse findModifiableBoard(String token, Long boardId) {
-        return boardContentService.findModifiableBoard(jwtTokenProvider.getUserEmail(token), boardId);
+        String email = jwtTokenProvider.getUserEmail(token);
+
+        checkModifiable(email, boardId);
+
+        ModifiableBoardResponse modifiableBoardResponse = boardContentService.findModifiableBoard(email, boardId);
+        if (modifiableBoardResponse == null) {
+            throw new FailModifyBoardException();
+        }
+        return modifiableBoardResponse;
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void requestModificationBoard(ModificationRequest modificationRequest, MultipartFile multipartFile, String token) {
         String email = jwtTokenProvider.getUserEmail(token);
 
-        //교환 가능한 지 확인
-        String date=getAvailableDate();
-        boardContentService.checkExchangeDate(date, modificationRequest.getBoardId()); //최근 교환 중인 날짜가 3일이 넘었는 지
-        boardContentService.checkExchangeCompletionDate(date, email, modificationRequest.getBoardId()); //최근 교환 완료한 날짜가 3일이 넘었는 지
+        //수정 가능한 지 확인
+        checkModifiable(email, modificationRequest.getBoardId());
         boardService.updateApproval(email, modificationRequest.getBoardId()); //기존 게시글은 삭제하지 않고 approval만 수정해서 게시글 목록에 조회되지 않도록 한다.
 
         if (multipartFile == null) { //기존 파일을 유지하고 내용만 변경
@@ -119,5 +124,11 @@ public class BoardFacade {
         String filePath = awsS3Service.buildFileName(Objects.requireNonNull(multipartFile.getOriginalFilename()), email, UPLOAD_FILE);
         modificationBoardService.save(modificationRequest, email, multipartFile.getOriginalFilename(), filePath);
         awsS3Service.uploadFile(multipartFile, filePath);
+    }
+
+    private void checkModifiable(String email, Long boardId){
+        String date=getAvailableDate();
+        boardContentService.checkExchangeDate(date, boardId); //최근 교환 중인 날짜가 3일이 넘었는 지
+        boardContentService.checkExchangeCompletionDate(date, email, boardId); //최근 교환 완료한 날짜가 3일이 넘었는 지
     }
 }

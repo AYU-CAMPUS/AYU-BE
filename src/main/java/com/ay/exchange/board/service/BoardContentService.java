@@ -32,18 +32,7 @@ public class BoardContentService {
     }
 
     public ModifiableBoardResponse findModifiableBoard(String email, Long boardId) {
-        String date = getAvailableDate();
-
-        ModifiableBoardResponse modifiableBoardResponse = boardContentRepository.findModifiableBoard(date, email, boardId);
-
-        boolean isExchangeDatePassed3Days = boardContentRepository.checkExchangeDate(date, boardId);
-        boolean isExchangeCompletionDatePassed3Days = boardContentRepository.checkExchangeCompletionDate(date, email, boardId);
-
-        if (modifiableBoardResponse != null && isExchangeDatePassed3Days && isExchangeCompletionDatePassed3Days) {
-            return modifiableBoardResponse;
-        }
-
-        throw new FailModifyBoardException();
+        return boardContentRepository.findModifiableBoard(email, boardId);
     }
 
     public void save(Board board, String content) {

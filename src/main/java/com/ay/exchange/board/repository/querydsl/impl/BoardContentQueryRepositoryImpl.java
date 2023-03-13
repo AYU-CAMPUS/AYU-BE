@@ -178,7 +178,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .fetch();
     }
 
-    public ModifiableBoardResponse findModifiableBoard(String date, String email, Long boardId) {
+    public ModifiableBoardResponse findModifiableBoard(String email, Long boardId) {
         return queryFactory.select(Projections.fields(
                         ModifiableBoardResponse.class,
                         board.title,
