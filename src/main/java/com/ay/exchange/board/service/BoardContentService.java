@@ -7,6 +7,7 @@ import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.entity.vo.BoardCategory;
+import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.exception.FileInvalidException;
 import com.ay.exchange.board.exception.NotFoundBoardException;
@@ -98,5 +99,12 @@ public class BoardContentService {
                 .board(board)
                 .build();
         boardContentRepository.save(boardContent);
+    }
+
+    public void checkDeleteable(String email, Long boardId) {
+        if(boardContentRepository.canDeleted(email, boardId)){
+            return;
+        }
+        throw new FailDeleteBoardException();
     }
 }

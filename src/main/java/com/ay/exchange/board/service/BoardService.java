@@ -159,4 +159,12 @@ public class BoardService {
 
         return boardRepository.save(board);
     }
+
+    public String findFilePathByBoardId(Long boardId) {
+        return boardRepository.findFilePathByBoardId(boardId);
+    }
+
+    public void delete(String email, Long boardId) {
+        boardRepository.deleteBoard(email, boardId);
+    }
 }

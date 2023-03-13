@@ -123,7 +123,7 @@ public class BoardController {
             @RequestBody DeleteRequest deleteRequest,
             @CookieValue("token") String token
     ) {
-        boardService.deleteBoard(token, deleteRequest);
+        boardFacade.deleteBoard(token, deleteRequest);
         return ResponseEntity.ok(true);
     }
 

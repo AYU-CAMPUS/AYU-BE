@@ -2,14 +2,15 @@ package com.ay.exchange.board.facade;
 
 import com.ay.exchange.aws.service.AwsS3Service;
 import com.ay.exchange.board.dto.query.BoardInfoDto;
+import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.WriteRequest;
 
 import com.ay.exchange.board.dto.response.BoardContentResponse;
 import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.entity.Board;
 
+import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailWriteBoardException;
-import com.ay.exchange.board.exception.NotFoundBoardException;
 import com.ay.exchange.board.service.BoardContentService;
 import com.ay.exchange.board.service.BoardService;
 
@@ -17,8 +18,6 @@ import com.ay.exchange.board.service.BoardService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,5 +71,20 @@ public class BoardFacade {
             return boardContentService.getBoardContent(boardId, "");
         }
         return boardContentService.getBoardContent(boardId, jwtTokenProvider.getUserEmail(token));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteBoard(String token, DeleteRequest deleteRequest) {
+        String email = jwtTokenProvider.getUserEmail(token);
+
+        boardContentService.checkDeleteable(email, deleteRequest.getBoardId()); //삭제 가능한 지
+
+        String filePath = boardService.findFilePathByBoardId(deleteRequest.getBoardId());
+
+        boardService.delete(email, deleteRequest.getBoardId());
+
+        awsS3Service.deleteUserFile(filePath);
+
+
     }
 }
