@@ -54,6 +54,7 @@ public class BoardFacade {
 
             awsS3Service.uploadFile(multipartFile, filePath);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new FailWriteBoardException();
         }
     }
