@@ -250,7 +250,7 @@ public class MyPageRepository {
         return StringUtils.join(desiredData, SEPARATOR);
     }
 
-    public boolean canWithdrawal(String date, String email) {
+    public boolean checkExchangeCompletionDate(String date, String email) {
         return queryFactory.select(exchangeCompletion.count())
                 .from(exchangeCompletion)
                 .where(getExchangeDate().gt(date)

@@ -118,16 +118,18 @@ public class MyPageService {
         return profileImagePath;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void withdrawalUser(String email) {
+        myPageRepository.withdrawalUser(email);
+    }
+
+    public void checkExchangeCompletionDate(String email){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -3);
         Date date = new Date(calendar.getTimeInMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        boolean canWithdrawal = myPageRepository.canWithdrawal(simpleDateFormat.format(date), email);
 
-        if (canWithdrawal) { //최근 교환 내역이 3일이 넘었으면 회원 탈퇴 가능
-            myPageRepository.withdrawalUser(email);
+        boolean isExchangeDatePassed3Days = myPageRepository.checkExchangeCompletionDate(simpleDateFormat.format(date), email);
+        if (isExchangeDatePassed3Days) { //최근 교환 내역이 3일이 넘었으면 회원 탈퇴 가능
             return;
         }
         throw new FailWithdrawalException();

@@ -159,6 +159,8 @@ public class UserFacade {
     public void withdrawalUser(String token) {
         String email = jwtTokenProvider.getUserEmail(token);
         String profilePath = myPageService.findProfilePath(email);
+
+        myPageService.checkExchangeCompletionDate(email);
         myPageService.withdrawalUser(email);
 
         awsS3Service.deleteProfile("profile/" + profilePath);
