@@ -12,6 +12,7 @@ import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.user.dto.DownloadableInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
+import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.entity.User;
@@ -259,6 +260,17 @@ class MyPageServiceTest {
         MyPageInfo actual = myPageService.getMyPage(user.getEmail());
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Order(7)
+    void 교환_거절() {
+        ExchangeRefusal exchangeRefusal = new ExchangeRefusal(exchange3.getId(),
+                user2.getEmail(), board2.getId(), board4.getId());
+
+        assertDoesNotThrow(() -> {
+            myPageService.refuseExchange(exchangeRefusal, user.getEmail());
+        });
     }
 
     @AfterAll
