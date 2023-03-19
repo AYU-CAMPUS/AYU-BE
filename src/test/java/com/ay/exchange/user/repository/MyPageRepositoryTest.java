@@ -166,6 +166,16 @@ class MyPageRepositoryTest {
         assertEquals(2, actual);
     }
 
+    @Test
+    @Order(2)
+    void 교환_완료_수() {
+        Long actual = myPageRepository.getDownloadableCount(user.getEmail());
+        Long actual2 = myPageRepository.getDownloadableCount(user2.getEmail());
+
+        assertEquals(1L, actual);
+        assertEquals(1L, actual2);
+    }
+
     @AfterAll
     void deleteEntity() {
         userRepository.delete(user);
