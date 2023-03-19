@@ -10,17 +10,22 @@ import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.user.dto.DownloadableInfo;
+import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
+import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,11 +48,11 @@ class MyPageServiceTest {
 
     User user, user2;
     Board board, board2, board3, board4;
-    Exchange exchange, exchange2;
+    Exchange exchange, exchange2, exchange3, exchange4;
 
     @BeforeAll
-        //마이페이지 쿼리문에 필요한 데이터 세팅
     void init() {
+        //마이페이지 쿼리문에 필요한 데이터 세팅
         user = User.builder()
                 .email("test@gmail.com")
                 .nickName("test")
@@ -70,7 +75,7 @@ class MyPageServiceTest {
                 .filePath("filePath")
                 .originalFileName("fileName")
                 .approval(1)
-                .email(user2.getEmail())
+                .email(user.getEmail())
                 .boardCategory(BoardCategory.builder().
                         category(Category.신학대학)
                         .departmentType(DepartmentType.신학과)
@@ -157,6 +162,24 @@ class MyPageServiceTest {
                 .type(-2) //-2는 교환 요청함
                 .build();
         exchangeRepository.save(exchange2);
+
+        exchange3 = Exchange.builder()
+                .boardId(board2.getId())
+                .email(user.getEmail())
+                .requesterBoardId(board4.getId())
+                .requesterEmail(user2.getEmail())
+                .type(-3) //-3은 교환 받음
+                .build();
+        exchangeRepository.save(exchange3);
+
+        exchange4 = Exchange.builder()
+                .boardId(board4.getId())
+                .email(user2.getEmail())
+                .requesterBoardId(board2.getId())
+                .requesterEmail(user.getEmail())
+                .type(-2) //-2는 교환 요청함
+                .build();
+        exchangeRepository.save(exchange4);
     }
 
     @Test
@@ -164,7 +187,7 @@ class MyPageServiceTest {
     @Rollback(false)
     void 교환_수락() {
         ExchangeAccept exchangeAccept = new ExchangeAccept(exchange.getId(),
-                user2.getEmail(), board2.getId(), board4.getId());
+                user2.getEmail(), board.getId(), board3.getId());
 
         assertDoesNotThrow(() -> {
             myPageService.acceptExchange(exchangeAccept, user.getEmail());
@@ -186,10 +209,10 @@ class MyPageServiceTest {
     void 다운로드_가능한_자료_조회() {
         List<DownloadableInfo> downloadableInfos = List.of(
                 new DownloadableInfo(exchange.getCreatedDate(),
-                        board4.getTitle(),
+                        board3.getTitle(),
                         user2.getNickName(),
-                        board4.getId(),
-                        board4.getBoardCategory().getCategory()));
+                        board3.getId(),
+                        board3.getBoardCategory().getCategory()));
         DownloadableResponse expected = new DownloadableResponse(1L, downloadableInfos);
 
         DownloadableResponse actual = myPageService.getDownloadable(0, user.getEmail());
@@ -199,7 +222,8 @@ class MyPageServiceTest {
 
     @Test
     @Order(4)
-    void 교환_요청_삭제(){
+    @Rollback(false)
+    void 교환_요청_삭제() {
         ExchangeAccept exchangeAccept = new ExchangeAccept(exchange.getId(),
                 user2.getEmail(), board.getId(), board3.getId());
 
@@ -210,13 +234,31 @@ class MyPageServiceTest {
 
     @Test
     @Order(5)
-    void 교환_완료_증가(){
+    @Rollback(false)
+    void 교환_완료_증가() {
+        System.out.println("exchange ID: " + exchange.getId());
         ExchangeAccept exchangeAccept = new ExchangeAccept(exchange.getId(),
-                user2.getEmail(), board2.getId(), board4.getId());
+                user2.getEmail(), board.getId(), board3.getId());
 
         assertDoesNotThrow(() -> {
             myPageService.increaseExchangeCompletion(exchangeAccept, user.getEmail());
         });
+    }
+
+    @Test
+    @Order(6)
+    void 마이페이지_첫_화면_조회() {
+        MyDataResponse my = myPageService.getMyData(0, user.getEmail());
+        MyPageInfo expected = new MyPageInfo(user.getNickName(),
+                "default.svg",
+                1,
+                Set.of(board.getId(), board2.getId()),
+                Set.of(exchange3.getId()),
+                user.getDesiredData());
+
+        MyPageInfo actual = myPageService.getMyPage(user.getEmail());
+
+        assertEquals(expected, actual);
     }
 
     @AfterAll

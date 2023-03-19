@@ -1,5 +1,7 @@
 package com.ay.exchange.user.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class MyPageInfo {
     private String nickName;
     private String profileImage;
