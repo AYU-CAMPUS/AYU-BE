@@ -1,4 +1,4 @@
-package com.ay.exchange.user.repository;
+package com.ay.exchange.user.service;
 
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.vo.BoardCategory;
@@ -6,11 +6,12 @@ import com.ay.exchange.board.entity.vo.Category;
 import com.ay.exchange.board.entity.vo.DepartmentType;
 import com.ay.exchange.board.entity.vo.FileType;
 import com.ay.exchange.board.repository.BoardRepository;
-import com.ay.exchange.common.util.DateUtil;
+
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.entity.User;
+import com.ay.exchange.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Transactional
-class MyPageRepositoryTest {
+class MyPageServiceTest {
     @Autowired
-    MyPageRepository myPageRepository;
+    MyPageService myPageService;
 
     @Autowired
     UserRepository userRepository;
@@ -40,7 +41,8 @@ class MyPageRepositoryTest {
     Board board, board2, board3, board4;
     Exchange exchange, exchange2;
 
-    @BeforeAll //마이페이지 쿼리문에 필요한 데이터 세팅
+    @BeforeAll
+        //마이페이지 쿼리문에 필요한 데이터 세팅
     void init() {
         user = User.builder()
                 .email("test@gmail.com")
@@ -151,7 +153,6 @@ class MyPageRepositoryTest {
                 .type(-2) //-2는 교환 요청함
                 .build();
         exchangeRepository.save(exchange2);
-
     }
 
     @Test
@@ -161,19 +162,19 @@ class MyPageRepositoryTest {
         ExchangeAccept exchangeAccept = new ExchangeAccept(exchange.getId(),
                 user2.getEmail(), board2.getId(), board4.getId());
 
-        int actual = myPageRepository.acceptExchange(DateUtil.getCurrentDate(), exchangeAccept, user.getEmail());
-
-        assertEquals(2, actual);
+        assertDoesNotThrow(() -> {
+            myPageService.acceptExchange(exchangeAccept, user.getEmail());
+        });
     }
 
     @Test
     @Order(2)
     void 교환_완료_수() {
-        Long actual = myPageRepository.getDownloadableCount(user.getEmail());
-        Long actual2 = myPageRepository.getDownloadableCount(user2.getEmail());
+        int actual = myPageService.getDownloadableCount(user.getEmail());
+        int actual2 = myPageService.getDownloadableCount(user2.getEmail());
 
-        assertEquals(1L, actual);
-        assertEquals(1L, actual2);
+        assertEquals(1, actual);
+        assertEquals(1, actual2);
     }
 
     @AfterAll
