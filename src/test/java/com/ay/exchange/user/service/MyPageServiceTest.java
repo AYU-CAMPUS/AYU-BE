@@ -9,7 +9,9 @@ import com.ay.exchange.board.repository.BoardRepository;
 
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
+import com.ay.exchange.user.dto.DownloadableInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
+import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -175,6 +179,22 @@ class MyPageServiceTest {
 
         assertEquals(1, actual);
         assertEquals(1, actual2);
+    }
+
+    @Test
+    @Order(3)
+    void 다운로드_가능한_자료_조회() {
+        List<DownloadableInfo> downloadableInfos = List.of(
+                new DownloadableInfo(exchange.getCreatedDate(),
+                        board4.getTitle(),
+                        user2.getNickName(),
+                        board4.getId(),
+                        board4.getBoardCategory().getCategory()));
+        DownloadableResponse expected = new DownloadableResponse(1L, downloadableInfos);
+
+        DownloadableResponse actual = myPageService.getDownloadable(0, user.getEmail());
+
+        assertIterableEquals(expected.getDownloadableInfos(), actual.getDownloadableInfos());
     }
 
     @AfterAll

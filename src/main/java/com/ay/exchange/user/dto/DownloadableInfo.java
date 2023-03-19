@@ -3,12 +3,14 @@ package com.ay.exchange.user.dto;
 import com.ay.exchange.board.entity.vo.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class DownloadableInfo {
     @Schema(description = "교환일")
     private String exchangeDate;
