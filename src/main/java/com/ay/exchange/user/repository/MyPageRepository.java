@@ -95,10 +95,7 @@ public class MyPageRepository {
     }
 
     public DownloadableResponse getDownloadable(PageRequest pageRequest, String email) {
-        Long count = queryFactory.select(exchangeCompletion.count())
-                .from(exchangeCompletion)
-                .where(exchangeCompletion.email.eq(email))
-                .fetchOne();
+        Long count = getDownloadableCount(email);
 
         List<DownloadableInfo> downloadableInfos = queryFactory
                 .select(Projections.fields(
