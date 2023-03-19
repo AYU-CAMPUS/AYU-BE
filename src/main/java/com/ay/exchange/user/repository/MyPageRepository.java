@@ -2,7 +2,6 @@ package com.ay.exchange.user.repository;
 
 
 import com.ay.exchange.common.util.Approval;
-import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.user.dto.*;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
@@ -12,7 +11,6 @@ import com.ay.exchange.user.dto.response.ExchangeResponse;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 
-import com.ay.exchange.user.exception.*;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.DateTemplate;
@@ -23,11 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.text.SimpleDateFormat;
+
 import java.util.*;
 
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
@@ -71,14 +68,6 @@ public class MyPageRepository {
                 .where(exchangeCompletion.email.eq(email))
                 .fetchOne();
     }
-
-//    @Transactional(rollbackFor = Exception.class)
-//    public Boolean updatePassword(String userId, String password) {
-//        return queryFactory.update(user)
-//                .where(user.userId.eq(userId))
-//                .set(user.password, password)
-//                .execute() == 1L;
-//    }
 
     public MyDataResponse getMyData(PageRequest pageRequest, String email) {
         Long count = queryFactory.select(board.count())
