@@ -197,6 +197,17 @@ class MyPageServiceTest {
         assertIterableEquals(expected.getDownloadableInfos(), actual.getDownloadableInfos());
     }
 
+    @Test
+    @Order(4)
+    void 교환_요청_삭제(){
+        ExchangeAccept exchangeAccept = new ExchangeAccept(exchange.getId(),
+                user2.getEmail(), board.getId(), board3.getId());
+
+        assertDoesNotThrow(() -> {
+            myPageService.deleteExchange(exchangeAccept);
+        });
+    }
+
     @AfterAll
     void deleteEntity() {
         userRepository.delete(user);
