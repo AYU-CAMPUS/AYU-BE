@@ -208,6 +208,17 @@ class MyPageServiceTest {
         });
     }
 
+    @Test
+    @Order(5)
+    void 교환_완료_증가(){
+        ExchangeAccept exchangeAccept = new ExchangeAccept(exchange.getId(),
+                user2.getEmail(), board2.getId(), board4.getId());
+
+        assertDoesNotThrow(() -> {
+            myPageService.increaseExchangeCompletion(exchangeAccept, user.getEmail());
+        });
+    }
+
     @AfterAll
     void deleteEntity() {
         userRepository.delete(user);
