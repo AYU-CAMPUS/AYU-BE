@@ -16,6 +16,7 @@ import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.dto.response.MyDataResponse;
 import com.ay.exchange.user.entity.User;
+import com.ay.exchange.user.exception.FailWithdrawalException;
 import com.ay.exchange.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -270,6 +271,15 @@ class MyPageServiceTest {
 
         assertDoesNotThrow(() -> {
             myPageService.refuseExchange(exchangeRefusal, user.getEmail());
+        });
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("최근 교환 일이 3일 이내면 회원 탈퇴 실패")
+    void 회원_탈퇴_실패() {
+        assertThrows(FailWithdrawalException.class, () -> {
+            myPageService.checkExchangeCompletionDate(user.getEmail());
         });
     }
 
