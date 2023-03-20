@@ -81,9 +81,55 @@ class ExchangeServiceTest {
                 .exchangeSuccessCount(0)
                 .build();
         boardRepository.save(board);
-        ExchangeRequest exchangeRequest = new ExchangeRequest(board.getId(), board.getId()+1);
+        ExchangeRequest exchangeRequest = new ExchangeRequest(board.getId(), board.getId() + 1);
 
         assertThrows(UnableExchangeException.class, () -> {
+            exchangeService.requestExchange(exchangeRequest, "test@gmail.com");
+        });
+    }
+
+    @Test
+    void 교환_요청_성공() {
+        Board board = Board.builder()
+                .title("title")
+                .numberOfFilePages(1)
+                .filePath("filePath")
+                .originalFileName("fileName")
+                .approval(1)
+                .email("test@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject")
+                        .professorName("professor")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board);
+
+        Board board2 = Board.builder()
+                .title("title3")
+                .numberOfFilePages(1)
+                .filePath("filePath3")
+                .originalFileName("fileName3")
+                .approval(1)
+                .email("test2@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.기독교교육과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject3")
+                        .professorName("professor3")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board2);
+        ExchangeRequest exchangeRequest = new ExchangeRequest(board2.getId(), board.getId());
+
+        assertDoesNotThrow(() -> {
             exchangeService.requestExchange(exchangeRequest, "test@gmail.com");
         });
     }
