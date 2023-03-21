@@ -1,6 +1,12 @@
 package com.ay.exchange.management.service;
 
+import com.ay.exchange.board.entity.Board;
+import com.ay.exchange.board.entity.vo.BoardCategory;
+import com.ay.exchange.board.entity.vo.Category;
+import com.ay.exchange.board.entity.vo.DepartmentType;
+import com.ay.exchange.board.entity.vo.FileType;
 import com.ay.exchange.board.repository.BoardRepository;
+import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
 import com.ay.exchange.user.entity.User;
@@ -55,6 +61,33 @@ class ManagementServiceTest {
         BoardIdRequest boardIdRequest = new BoardIdRequest(1L);
 
         assertThrows(FailAcceptRequestBoard.class, () -> {
+            managementService.acceptRequestBoard(boardIdRequest);
+        });
+    }
+
+    @Test
+    void 요청_게시글_허가_성공() {
+        Board board = Board.builder()
+                .title("title")
+                .numberOfFilePages(1)
+                .filePath("filePath")
+                .originalFileName("fileName")
+                .approval(Approval.WAITING.getApproval())
+                .email("test@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject")
+                        .professorName("professor")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board);
+        BoardIdRequest boardIdRequest = new BoardIdRequest(board.getId());
+
+        assertDoesNotThrow(()->{
             managementService.acceptRequestBoard(boardIdRequest);
         });
     }
