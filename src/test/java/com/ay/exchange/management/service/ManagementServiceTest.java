@@ -135,7 +135,16 @@ class ManagementServiceTest {
         SuspensionRequest suspensionRequest = new SuspensionRequest("anonymous@gmail.com", "2023-03-25");
 
         assertThrows(FailUpdatedSuspension.class, () -> {
-           managementService.updateSuspension(suspensionRequest);
+            managementService.updateSuspension(suspensionRequest);
+        });
+    }
+
+    @Test
+    void 사용자_정지_주기_성공() {
+        SuspensionRequest suspensionRequest = new SuspensionRequest("test@gmail.com", "2023-03-25");
+
+        assertDoesNotThrow(() -> {
+            managementService.updateSuspension(suspensionRequest);
         });
     }
 
