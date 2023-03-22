@@ -31,7 +31,7 @@ public class ManagementRepository {
     public List<BoardInfo> findRequestBoards(PageRequest pageRequest) {
         return queryFactory.select(Projections.fields(
                         BoardInfo.class,
-                        board.id,
+                        board.id.as("boardId"),
                         board.boardCategory,
                         board.title,
                         user.nickName.as("writer"),
