@@ -8,7 +8,9 @@ import com.ay.exchange.board.entity.vo.FileType;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
+import com.ay.exchange.management.dto.request.SuspensionRequest;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
+import com.ay.exchange.management.exception.FailUpdatedSuspension;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.entity.vo.Authority;
 import com.ay.exchange.user.repository.UserRepository;
@@ -125,6 +127,15 @@ class ManagementServiceTest {
 
         assertDoesNotThrow(() -> {
             managementService.rejectRequestBoard(boardIdRequest);
+        });
+    }
+
+    @Test
+    void 사용자_정지_주기_실패() {
+        SuspensionRequest suspensionRequest = new SuspensionRequest("anonymous@gmail.com", "2023-03-25");
+
+        assertThrows(FailUpdatedSuspension.class, () -> {
+           managementService.updateSuspension(suspensionRequest);
         });
     }
 
