@@ -9,6 +9,7 @@ import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
+import com.ay.exchange.management.dto.response.BoardInfo;
 import com.ay.exchange.management.exception.FailAcceptRequestBoard;
 import com.ay.exchange.management.exception.FailUpdatedSuspension;
 import com.ay.exchange.user.entity.User;
@@ -21,6 +22,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -146,6 +149,53 @@ class ManagementServiceTest {
         assertDoesNotThrow(() -> {
             managementService.updateSuspension(suspensionRequest);
         });
+    }
+
+    @Test
+    void 사용자_요청_게시글_조회() {
+        Board board = Board.builder()
+                .title("title")
+                .numberOfFilePages(1)
+                .filePath("filePath")
+                .originalFileName("fileName")
+                .approval(Approval.WAITING.getApproval())
+                .email("test@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject")
+                        .professorName("professor")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board);
+
+        Board board2 = Board.builder()
+                .title("title2")
+                .numberOfFilePages(1)
+                .filePath("filePath2")
+                .originalFileName("fileName2")
+                .approval(Approval.WAITING.getApproval())
+                .email("test2@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject2")
+                        .professorName("professor2")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board2);
+
+        List<BoardInfo> boardInfos = managementService.findRequestBoard(0);
+
+        assertEquals(2, boardInfos.size());
+        assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getBoardId().equals(board.getId())));
+        assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getBoardId().equals(board2.getId())));
     }
 
     @AfterAll
