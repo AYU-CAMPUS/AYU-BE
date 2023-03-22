@@ -87,8 +87,17 @@ class ManagementServiceTest {
         boardRepository.save(board);
         BoardIdRequest boardIdRequest = new BoardIdRequest(board.getId());
 
-        assertDoesNotThrow(()->{
+        assertDoesNotThrow(() -> {
             managementService.acceptRequestBoard(boardIdRequest);
+        });
+    }
+
+    @Test
+    void 요청_게시글_거절_실패() {
+        BoardIdRequest boardIdRequest = new BoardIdRequest(1L);
+
+        assertThrows(FailAcceptRequestBoard.class, () -> {
+            managementService.rejectRequestBoard(boardIdRequest);
         });
     }
 
