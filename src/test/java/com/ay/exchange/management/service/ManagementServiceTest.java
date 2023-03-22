@@ -101,6 +101,33 @@ class ManagementServiceTest {
         });
     }
 
+    @Test
+    void 요청_게시글_거절_성공() {
+        Board board = Board.builder()
+                .title("title")
+                .numberOfFilePages(1)
+                .filePath("filePath")
+                .originalFileName("fileName")
+                .approval(Approval.WAITING.getApproval())
+                .email("test@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject")
+                        .professorName("professor")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board);
+        BoardIdRequest boardIdRequest = new BoardIdRequest(board.getId());
+
+        assertDoesNotThrow(() -> {
+            managementService.rejectRequestBoard(boardIdRequest);
+        });
+    }
+
     @AfterAll
     void deleteEntity() {
         userRepository.deleteById("test@gmail.com");
