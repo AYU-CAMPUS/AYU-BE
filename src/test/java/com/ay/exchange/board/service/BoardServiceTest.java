@@ -87,7 +87,7 @@ class BoardServiceTest {
                 Category.신학대학.ordinal(),
                 "0",
                 "1,2",
-                FileType.중간고사.name()).getContent();
+                "0").getContent();
 
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board.getId())));
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board2.getId())));
@@ -136,8 +136,59 @@ class BoardServiceTest {
         List<BoardInfoDto> boardInfos = boardService.getBoardList(0,
                 Category.신학대학.ordinal(),
                 "0, 1",
-                "1,2",
-                FileType.중간고사.name()).getContent();
+                "1",
+                "0").getContent();
+
+        assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board.getId())));
+        assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board2.getId())));
+    }
+
+    @Test
+    @DisplayName("파일 타입(중간고사, 기말고사) 필터링")
+    void 게시글_조회3() {
+        Board board = Board.builder()
+                .title("title")
+                .numberOfFilePages(1)
+                .filePath("filePath")
+                .originalFileName("fileName")
+                .approval(1)
+                .email("test@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject")
+                        .professorName("professor")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board);
+
+        Board board2 = Board.builder()
+                .title("title2")
+                .numberOfFilePages(1)
+                .filePath("filePath2")
+                .originalFileName("fileName2")
+                .approval(1)
+                .email("test@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.기말고사)
+                        .gradeType("1")
+                        .subjectName("subject2")
+                        .professorName("professor2")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board2);
+
+        List<BoardInfoDto> boardInfos = boardService.getBoardList(0,
+                Category.신학대학.ordinal(),
+                "0",
+                "1",
+                "0,1").getContent();
 
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board.getId())));
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board2.getId())));
