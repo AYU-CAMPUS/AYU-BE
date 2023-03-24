@@ -44,7 +44,7 @@ public class BoardContentService {
     }
 
     public void checkDeleteable(String email, Long boardId) {
-        if (boardContentRepository.canDeleted(email, boardId)) {
+        if (boardContentRepository.isBoardOwner(email, boardId) && boardContentRepository.checkExchangeCompletionDate(getAvailableDate(), email, boardId)) {
             return;
         }
         throw new FailDeleteBoardException();

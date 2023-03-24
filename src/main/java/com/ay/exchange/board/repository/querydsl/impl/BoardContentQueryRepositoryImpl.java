@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.board.entity.QBoardContent.boardContent;
 import static com.ay.exchange.comment.entity.QComment.comment;
-import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
 import static com.ay.exchange.exchange.entity.QExchange.*;
 import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
@@ -198,12 +197,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
     }
 
     @Override
-    public Boolean canDeleted(String email, Long boardId) {
-        return isBoardOwner(email, boardId)
-                && checkExchangeCompletionDate(getAvailableDate(), email, boardId);
-    }
-
-    private Boolean isBoardOwner(String email, Long boardId) {
+    public Boolean isBoardOwner(String email, Long boardId) {
         Long count = queryFactory.select(board.count())
                 .from(board)
                 .where(board.email.eq(email)
