@@ -44,4 +44,12 @@ public class CommentQueryRepository {
                         .and(comment.id.eq(deleteRequest.getCommentId())))
                 .execute();
     }
+
+    public Long getCountByBoardId(Long boardId) {
+        return queryFactory
+                .select(comment.count())
+                .from(comment)
+                .where(comment.board.id.eq(boardId))
+                .fetchOne();
+    }
 }

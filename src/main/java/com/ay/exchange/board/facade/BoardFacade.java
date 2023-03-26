@@ -1,6 +1,8 @@
 package com.ay.exchange.board.facade;
 
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.board.dto.query.BoardContentInfo2Dto;
+import com.ay.exchange.board.dto.query.BoardContentInfoDto;
 import com.ay.exchange.board.dto.query.BoardInfoDto;
 import com.ay.exchange.board.dto.request.DeleteRequest;
 import com.ay.exchange.board.dto.request.ModificationRequest;
@@ -11,6 +13,7 @@ import com.ay.exchange.board.dto.response.BoardResponse;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 
+import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.exception.FailWriteBoardException;
 import com.ay.exchange.board.service.BoardContentService;
@@ -18,6 +21,8 @@ import com.ay.exchange.board.service.BoardService;
 
 
 import com.ay.exchange.board.service.ModificationBoardService;
+import com.ay.exchange.comment.dto.response.CommentInfoDto;
+import com.ay.exchange.comment.service.CommentService;
 import com.ay.exchange.exchange.service.ExchangeCompletionService;
 import com.ay.exchange.exchange.service.ExchangeService;
 import com.ay.exchange.jwt.JwtTokenProvider;
@@ -27,7 +32,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
 
@@ -38,11 +47,14 @@ public class BoardFacade {
     private final BoardService boardService;
     private final BoardContentService boardContentService;
     private final ExchangeService exchangeService;
+    private final CommentService commentService;
     private final ExchangeCompletionService exchangeCompletionService;
     private final ModificationBoardService modificationBoardService;
     private final AwsS3Service awsS3Service;
     private final JwtTokenProvider jwtTokenProvider;
     private final int UPLOAD_FILE = 0;
+    private final String SEPARATOR = ";";
+    private final int BOARD_OWNER = -1;
 
     @Transactional(rollbackFor = Exception.class)
     public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String token) {
@@ -63,28 +75,54 @@ public class BoardFacade {
         }
     }
 
-    public BoardResponse getBoardList(
-            Integer page,
-            Integer category,
-            String department,
-            String grade,
-            String type
-    ) { //파라미터 값들을 dto로 묶는 것이 좀 더 깔끔해 보일 것 같다.
-        Page<BoardInfoDto> pages = boardService.getBoardList(
-                page,
-                category,
-                department,
-                grade,
-                type);
+    public BoardResponse getBoardList(Integer page,
+                                      Integer category,
+                                      String department,
+                                      String grade,
+                                      String type) { //파라미터 값들을 dto로 묶는 것이 좀 더 깔끔해 보일 것 같다.
+        Page<BoardInfoDto> pages = boardService.getBoardList(page, category, department, grade, type);
 
         return new BoardResponse(pages.getTotalPages(), pages.getContent());
     }
 
+    @Transactional(readOnly = true)
     public BoardContentResponse getBoardContent(Long boardId, String token) {
-        if (token == null) { //로그인하지 않은 유저여도 게시글은 볼 수 있다.
-            return boardContentService.getBoardContent(boardId, "");
+        Long commentCount = commentService.getCommentCount(boardId);
+        String email = token == null ? "" : jwtTokenProvider.getUserEmail(token); //토큰이 없어도 email을 ""로 줘서 쿼리를 할 때 게시글 조회는 가능하도록 함
+
+        if (commentCount == 0) { //댓글이 없으면 댓글 테이블을 제외하고 join시킴
+            BoardContentInfo2Dto boardContentInfo2Dto = boardContentService.findBoardContentWithNoComments(boardId, email);
+            return new BoardContentResponse(commentCount,
+                    new ArrayList<>(),
+                    boardContentInfo2Dto.getContent(),
+                    boardContentInfo2Dto.getTitle(),
+                    boardContentInfo2Dto.getWriter(),
+                    boardContentInfo2Dto.getBoardCategory(),
+                    boardContentInfo2Dto.getNumberOfFilePages(),
+                    boardContentInfo2Dto.getNumberOfSuccessfulExchanges(),
+                    boardContentInfo2Dto.getCreatedDate(),
+                    boardContentInfo2Dto.getEmail().equals(email) ? BOARD_OWNER : (boardContentInfo2Dto.getExchangeType() >= 1 ? 1 : boardContentInfo2Dto.getExchangeType()), //-1이면 내가 쓴 글임,
+                    splitDesiredData(boardContentInfo2Dto.getDesiredData()));
         }
-        return boardContentService.getBoardContent(boardId, jwtTokenProvider.getUserEmail(token));
+
+        //댓글 존재
+        List<BoardContentInfoDto> boardContentInfos = boardContentService.findBoardContentWithComments(boardId, email);
+
+        List<CommentInfoDto> comments = createComments(boardContentInfos);
+
+        BoardContent resultBoardContent = boardContentInfos.get(0).getBoardContent();
+        Board resultBoard = boardContentInfos.get(0).getBoard();
+        return new BoardContentResponse(commentCount,
+                comments,
+                resultBoardContent.getContent(),
+                resultBoard.getTitle(),
+                boardContentInfos.get(0).getNickName(),
+                resultBoard.getBoardCategory(),
+                resultBoard.getNumberOfFilePages(),
+                resultBoard.getExchangeSuccessCount(),
+                resultBoard.getCreatedDate(),
+                resultBoard.getEmail().equals(email) ? BOARD_OWNER : (boardContentInfos.get(0).getExchangeType() >= 1 ? 1 : boardContentInfos.get(0).getExchangeType()),
+                splitDesiredData(boardContentInfos.get(0).getDesiredData()));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -132,9 +170,28 @@ public class BoardFacade {
         awsS3Service.uploadFile(multipartFile, filePath);
     }
 
-    private void checkModifiable(String email, Long boardId){
-        String date=getAvailableDate();
+    private void checkModifiable(String email, Long boardId) {
+        String date = getAvailableDate();
         exchangeService.checkExchangeDate(date, boardId); //최근 교환 중인 날짜가 3일이 넘었는 지
         exchangeCompletionService.checkExchangeCompletionDate(date, email, boardId); //최근 교환 완료한 날짜가 3일이 넘었는 지
+    }
+
+    private List<String> splitDesiredData(String desiredData) {
+        return Arrays.stream(desiredData.split(SEPARATOR))
+                .collect(Collectors.toList());
+    }
+
+    private List<CommentInfoDto> createComments(List<BoardContentInfoDto> boardContentInfos) {
+        return boardContentInfos.stream()
+                .map(boardContentInfo -> new CommentInfoDto(
+                        boardContentInfo.getCommentId(),
+                        boardContentInfo.getWriter(),
+                        boardContentInfo.getContent(),
+                        boardContentInfo.getDepth(),
+                        boardContentInfo.getGroupId(),
+                        boardContentInfo.getCreatedDate(),
+                        boardContentInfo.getProfileImage()
+                ))
+                .collect(Collectors.toList());
     }
 }

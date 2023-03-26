@@ -54,4 +54,8 @@ public class CommentService {
                 Sort.by(Sort.Direction.DESC, "id"));
         return commentQueryRepository.getComments(pageRequest, boardId);
     }
+
+    public Long getCommentCount(Long boardId) {
+        return commentQueryRepository.getCountByBoardId(boardId);
+    }
 }
