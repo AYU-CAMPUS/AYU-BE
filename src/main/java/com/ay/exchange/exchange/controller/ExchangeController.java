@@ -2,7 +2,7 @@ package com.ay.exchange.exchange.controller;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
-import com.ay.exchange.exchange.dto.response.ExchangeResponse;
+import com.ay.exchange.exchange.dto.response.exchangeMyDataResponse;
 import com.ay.exchange.exchange.facade.ExchangeFacade;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +43,7 @@ public class ExchangeController {
                     @Parameter(name = "token", description = "액세스 토큰")}
     )
     @GetMapping("")
-    public ExchangeResponse getMyData(
+    public exchangeMyDataResponse getMyData(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @CookieValue(value = "token") String token
     ) {

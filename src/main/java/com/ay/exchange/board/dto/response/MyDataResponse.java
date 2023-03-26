@@ -1,6 +1,5 @@
-package com.ay.exchange.user.dto.response;
+package com.ay.exchange.board.dto.response;
 
-import com.ay.exchange.user.dto.MyDataInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

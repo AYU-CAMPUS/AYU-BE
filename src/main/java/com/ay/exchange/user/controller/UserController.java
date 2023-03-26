@@ -2,6 +2,8 @@ package com.ay.exchange.user.controller;
 
 import com.ay.exchange.common.error.dto.ErrorDto;
 import com.ay.exchange.common.util.FileValidator;
+import com.ay.exchange.exchange.dto.response.ExchangeResponse;
+import com.ay.exchange.board.dto.response.MyDataResponse;
 import com.ay.exchange.user.dto.DownloadFileInfo;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.ExchangeAccept;

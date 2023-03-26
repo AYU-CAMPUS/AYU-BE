@@ -3,11 +3,15 @@ package com.ay.exchange.board.service;
 import com.ay.exchange.board.dto.query.BoardInfoDto;
 import com.ay.exchange.board.dto.request.WriteRequest;
 
+import com.ay.exchange.board.dto.response.FilePathInfo;
+import com.ay.exchange.board.dto.response.MyDataResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.vo.*;
+import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.common.util.Approval;
+import com.ay.exchange.user.exception.NotExistsFileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -108,5 +112,28 @@ public class BoardService {
         if(cnt != 1L){
             throw new FailModifyBoardException();
         }
+    }
+
+    public void isBoardOwner(String email, Long boardId) {
+        boolean isOwner = boardRepository.existsBoard(email, boardId);
+        if(isOwner){
+            return;
+        }
+        throw new FailDeleteBoardException();
+    }
+
+    public FilePathInfo getFilePath(Long requesterBoardId, String email) {
+        FilePathInfo filePathInfo = boardRepository.getFilePath(requesterBoardId, email);
+        if (filePathInfo == null) {
+            throw new NotExistsFileException();
+        }
+        return filePathInfo;
+    }
+
+    public MyDataResponse getMyData(Integer page, String email) {
+        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
+                Sort.by(Sort.Direction.DESC, "id"));
+
+        return boardRepository.getMyData(pageRequest, email);
     }
 }

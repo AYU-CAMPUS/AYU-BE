@@ -1,33 +1,21 @@
 package com.ay.exchange.user.repository;
 
-
-import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.user.dto.*;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
-import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
-import com.ay.exchange.user.dto.response.DownloadableResponse;
-import com.ay.exchange.user.dto.response.ExchangeResponse;
 import com.ay.exchange.user.dto.response.LoginNotificationResponse;
-import com.ay.exchange.user.dto.response.MyDataResponse;
 
-import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.DateTemplate;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import java.util.*;
 
-import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
 import static com.ay.exchange.board.entity.QBoard.board;
 import static com.ay.exchange.exchange.entity.QExchange.exchange;
@@ -60,139 +48,6 @@ public class MyPageRepository {
                                         user.desiredData
                                 ))
                 ).get(email);
-    }
-
-    public Long getDownloadableCount(String email) {
-        return queryFactory.select(exchangeCompletion.count())
-                .from(exchangeCompletion)
-                .where(exchangeCompletion.email.eq(email))
-                .fetchOne();
-    }
-
-    public MyDataResponse getMyData(PageRequest pageRequest, String email) {
-        Long count = queryFactory.select(board.count())
-                .from(board)
-                .where(board.email.eq(email))
-                .fetchOne();
-
-        List<MyDataInfo> myDataInfos = queryFactory
-                .select(Projections.fields(
-                        MyDataInfo.class,
-                        board.createdDate,
-                        board.title,
-                        board.id.as("boardId"),
-                        board.boardCategory.category
-                ))
-                .from(board)
-                .where(board.email.eq(email)
-                        .and(board.approval.eq(Approval.AGREE.getApproval())))
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
-                .orderBy(board.id.desc())
-                .fetch();
-
-        return new MyDataResponse(count, myDataInfos);
-    }
-
-    public DownloadableResponse getDownloadable(PageRequest pageRequest, String email) {
-        Long count = getDownloadableCount(email);
-
-        List<DownloadableInfo> downloadableInfos = queryFactory
-                .select(Projections.fields(
-                        DownloadableInfo.class,
-                        exchangeCompletion.date.as("exchangeDate"),
-                        board.title,
-                        user.nickName.as("writer"),
-                        board.id.as("requesterBoardId"),
-                        board.boardCategory.category
-                ))
-                .from(exchangeCompletion)
-                .innerJoin(board)
-                .on(exchangeCompletion.requesterBoardId.eq(board.id))
-                .innerJoin(user)
-                .on(board.email.eq(user.email))
-                .where(exchangeCompletion.email.eq(email))
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
-                .orderBy(exchangeCompletion.Id.desc())
-                .fetch();
-
-        return new DownloadableResponse(count, downloadableInfos);
-    }
-
-    public FilePathInfo getFilePath(Long requesterBoardId, String email) {
-        FilePathInfo filePathInfo = queryFactory.select(Projections.fields(
-                        FilePathInfo.class,
-                        board.email,
-                        board.filePath
-                ))
-                .from(exchangeCompletion)
-                .innerJoin(board)
-                .on(board.id.eq(exchangeCompletion.requesterBoardId))
-                .where(exchangeCompletion.requesterBoardId.eq(requesterBoardId)
-                        .and(exchangeCompletion.email.eq(email)))
-                .fetchOne();
-        return filePathInfo;
-    }
-
-    public ExchangeResponse getExchanges(PageRequest pageRequest, String email) {
-        Long count = queryFactory.select(exchange.count())
-                .from(exchange)
-                .where(exchange.email.eq(email))
-                .fetchOne();
-        if (count == 0L) {
-            return new ExchangeResponse(0L, new ArrayList<>());
-        }
-
-        List<ExchangeInfo> exchangeInfos = queryFactory
-                .select(Projections.fields(
-                        ExchangeInfo.class,
-                        exchange.Id.as("exchangeId"),
-                        exchange.createdDate.as("applicationDate"),
-                        user.nickName.as("requesterNickName"),
-                        exchange.requesterEmail.as("requesterId"),
-                        board.title,
-                        exchange.boardId,
-                        board.id.as("requesterBoardId")
-                ))
-                .from(exchange)
-                .innerJoin(user)
-                .on(exchange.requesterEmail.eq(user.email))
-                .innerJoin(board)
-                .on(exchange.requesterBoardId.eq(board.id))
-                .where(exchange.email.eq(email)
-                        .and(exchange.type.eq(-3))) //-3: 교환요청을 받음
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
-                .orderBy(exchange.Id.desc())
-                .fetch();
-
-        return new ExchangeResponse(count, exchangeInfos);
-    }
-
-    public int acceptExchange(String currentDate, ExchangeAccept exchangeAccept, String email) {
-        //교환완료
-        String sql = "INSERT INTO exchange_completion(board_id,date,email,requester_board_id) VALUES(?,?,?,?),(?,?,?,?)";
-        Query query = em.createNativeQuery(sql)
-                .setParameter(1, exchangeAccept.getRequesterBoardId())
-                .setParameter(2, currentDate)
-                .setParameter(3, exchangeAccept.getRequesterId())
-                .setParameter(4, exchangeAccept.getBoardId())
-                .setParameter(5, exchangeAccept.getBoardId())
-                .setParameter(6, currentDate)
-                .setParameter(7, email)
-                .setParameter(8, exchangeAccept.getRequesterBoardId());
-        return query.executeUpdate();
-    }
-
-    public Long refuseExchange(ExchangeRefusal exchangeRefusal, String email) {
-        return queryFactory.delete(exchange)
-                .where(exchange.Id.eq(exchangeRefusal.getExchangeId())
-                        .or(exchange.requesterEmail.eq(email)
-                                .and(exchange.email.eq(exchangeRefusal.getRequesterId()))
-                                .and(exchange.boardId.eq(exchangeRefusal.getRequesterBoardId()))
-                                .and(exchange.requesterBoardId.eq(exchangeRefusal.getBoardId())))
-                ).execute();
     }
 
     public boolean updateProfile(String email, String filePath) {
@@ -248,34 +103,6 @@ public class MyPageRepository {
 
     private String mergeStrings(List<String> desiredData) {
         return StringUtils.join(desiredData, SEPARATOR);
-    }
-
-    public boolean checkExchangeCompletionDate(String date, String email) {
-        return queryFactory.select(exchangeCompletion.count())
-                .from(exchangeCompletion)
-                .where(getExchangeDate().gt(date)
-                        .and(exchangeCompletion.email.eq(email)))
-                .limit(1L)
-                .fetchOne() == 0L;
-    }
-
-    private DateTemplate getExchangeDate() {
-        return Expressions.dateTemplate(
-                String.class,
-                "DATE_FORMAT({0}, {1})",
-                exchangeCompletion.date,
-                ConstantImpl.create("%Y-%m-%d")
-        );
-    }
-
-    public Long deleteExchange(ExchangeAccept exchangeAccept) {
-        //교환신청삭제
-        Long count = queryFactory.delete(exchange)
-                .where(exchange.Id.eq(exchangeAccept.getExchangeId())
-                        .or(exchange.boardId.eq(exchangeAccept.getRequesterBoardId())
-                                .and(exchange.email.eq(exchangeAccept.getRequesterId()))))
-                .execute();
-        return count;
     }
 
     public int increaseExchangeCompletion(ExchangeAccept exchangeAccept, String email) {

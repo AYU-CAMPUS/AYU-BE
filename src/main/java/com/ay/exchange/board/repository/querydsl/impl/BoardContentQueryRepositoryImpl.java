@@ -9,10 +9,7 @@ import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.common.util.Approval;
-import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.DateTemplate;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -196,58 +193,4 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                 .fetchOne();
     }
 
-    @Override
-    public Boolean isBoardOwner(String email, Long boardId) {
-        Long count = queryFactory.select(board.count())
-                .from(board)
-                .where(board.email.eq(email)
-                        .and(board.id.eq(boardId))
-                        .and(board.approval.eq(Approval.AGREE.getApproval()))
-                )
-                .limit(1L)
-                .fetchOne();
-        return count == 1L;
-    }
-
-    @Override
-    public Boolean checkExchangeDate(String date, Long boardId) {
-        Long count = queryFactory.select(exchange.count())
-                .from(exchange)
-                .where(getExchangeDate().gt(date)
-                        .and(exchange.board.id.eq(boardId)
-                                .or(exchange.requesterBoardId.eq(boardId))))
-                .limit(1L)
-                .fetchOne();
-        return count == 0L;
-    }
-
-    @Override
-    public Boolean checkExchangeCompletionDate(String date, String email, Long boardId) {
-        Long count = queryFactory.select(exchangeCompletion.count())
-                .from(exchangeCompletion)
-                .where(getExchangeCompletionDate().gt(date)
-                        .and(exchangeCompletion.boardId.eq(boardId))
-                        .and(exchangeCompletion.email.eq(email)))
-                .limit(1L)
-                .fetchOne();
-        return count == 0L;
-    }
-
-    private DateTemplate getExchangeDate() {
-        return Expressions.dateTemplate(
-                String.class,
-                "DATE_FORMAT({0}, {1})",
-                exchange.createdDate,
-                ConstantImpl.create("%Y-%m-%d")
-        );
-    }
-
-    private DateTemplate getExchangeCompletionDate() {
-        return Expressions.dateTemplate(
-                String.class,
-                "DATE_FORMAT({0}, {1})",
-                exchangeCompletion.date,
-                ConstantImpl.create("%Y-%m-%d")
-        );
-    }
 }

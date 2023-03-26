@@ -1,7 +1,7 @@
 package com.ay.exchange.exchange.facade;
 
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
-import com.ay.exchange.exchange.dto.response.ExchangeResponse;
+import com.ay.exchange.exchange.dto.response.exchangeMyDataResponse;
 import com.ay.exchange.exchange.service.ExchangeService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class ExchangeFacade {
         exchangeService.requestExchange(exchangeRequest, email);
     }
 
-    public ExchangeResponse getMyData(Integer page, String token) {
+    public exchangeMyDataResponse getMyData(Integer page, String token) {
         return exchangeService.getMyData(page, jwtTokenProvider.getUserEmail(token));
     }
 }

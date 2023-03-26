@@ -18,6 +18,8 @@ import com.ay.exchange.board.service.BoardService;
 
 
 import com.ay.exchange.board.service.ModificationBoardService;
+import com.ay.exchange.exchange.service.ExchangeCompletionService;
+import com.ay.exchange.exchange.service.ExchangeService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +37,8 @@ import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
 public class BoardFacade {
     private final BoardService boardService;
     private final BoardContentService boardContentService;
+    private final ExchangeService exchangeService;
+    private final ExchangeCompletionService exchangeCompletionService;
     private final ModificationBoardService modificationBoardService;
     private final AwsS3Service awsS3Service;
     private final JwtTokenProvider jwtTokenProvider;
@@ -87,9 +91,10 @@ public class BoardFacade {
     public void deleteBoard(String token, DeleteRequest deleteRequest) {
         String email = jwtTokenProvider.getUserEmail(token);
 
-        boardContentService.checkDeleteable(email, deleteRequest.getBoardId()); //삭제 가능한 지
+        exchangeCompletionService.checkDeleteable(email, deleteRequest.getBoardId()); //삭제 가능한 지
+        boardService.isBoardOwner(email, deleteRequest.getBoardId()); //게시글 주인만 삭제 가능
 
-        String filePath = boardService.findFilePathByBoardId(deleteRequest.getBoardId());
+        String filePath = boardService.findFilePathByBoardId(deleteRequest.getBoardId()); //s3에 저장된 파일들으 삭제하기 위해서 파일 경로 가져옴
 
         boardService.delete(email, deleteRequest.getBoardId());
 
@@ -129,7 +134,7 @@ public class BoardFacade {
 
     private void checkModifiable(String email, Long boardId){
         String date=getAvailableDate();
-        boardContentService.checkExchangeDate(date, boardId); //최근 교환 중인 날짜가 3일이 넘었는 지
-        boardContentService.checkExchangeCompletionDate(date, email, boardId); //최근 교환 완료한 날짜가 3일이 넘었는 지
+        exchangeService.checkExchangeDate(date, boardId); //최근 교환 중인 날짜가 3일이 넘었는 지
+        exchangeCompletionService.checkExchangeCompletionDate(date, email, boardId); //최근 교환 완료한 날짜가 3일이 넘었는 지
     }
 }

@@ -1,4 +1,4 @@
-package com.ay.exchange.user.dto;
+package com.ay.exchange.board.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

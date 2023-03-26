@@ -1,10 +1,15 @@
 package com.ay.exchange.user.facade;
 
 import com.ay.exchange.aws.service.AwsS3Service;
+import com.ay.exchange.board.dto.response.FilePathInfo;
+import com.ay.exchange.board.dto.response.MyDataResponse;
+import com.ay.exchange.board.service.BoardService;
 import com.ay.exchange.common.service.RedisService;
+import com.ay.exchange.exchange.dto.response.ExchangeResponse;
+import com.ay.exchange.exchange.service.ExchangeCompletionService;
+import com.ay.exchange.exchange.service.ExchangeService;
 import com.ay.exchange.jwt.JwtTokenProvider;
 import com.ay.exchange.user.dto.DownloadFileInfo;
-import com.ay.exchange.user.dto.FilePathInfo;
 import com.ay.exchange.user.dto.MyPageInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
@@ -17,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +41,9 @@ public class UserFacade {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private final MyPageService myPageService;
+    private final ExchangeService exchangeService;
+    private final ExchangeCompletionService exchangeCompletionService;
+    private final BoardService boardService;
     private final String SEPARATOR = ";";
     private final int UPDATE_PROFILE = 1;
 
@@ -83,7 +89,7 @@ public class UserFacade {
                 myPageInfo.getProfileImage(),
                 myPageInfo.getExchangeSuccessCount(),
                 myPageInfo.getMyDataCounts().size(),
-                myPageService.getDownloadableCount(email),
+                exchangeCompletionService.getDownloadableCount(email),
                 myPageInfo.getExchangeRequestsCount(),
                 Arrays.stream(myPageInfo.getDesiredData().split(SEPARATOR))
                         .collect(Collectors.toList())
@@ -100,15 +106,15 @@ public class UserFacade {
     }
 
     public MyDataResponse getMyData(Integer page, String token) {
-        return myPageService.getMyData(page, jwtTokenProvider.getUserEmail(token));
+        return boardService.getMyData(page, jwtTokenProvider.getUserEmail(token));
     }
 
     public DownloadableResponse getDownloadable(Integer page, String token) {
-        return myPageService.getDownloadable(page, jwtTokenProvider.getUserEmail(token));
+        return exchangeCompletionService.getDownloadable(page, jwtTokenProvider.getUserEmail(token));
     }
 
     public DownloadFileInfo downloadFile(Long requesterBoardId, String token) {
-        FilePathInfo filePathInfo = myPageService.getFilePath(requesterBoardId, jwtTokenProvider.getUserEmail(token));
+        FilePathInfo filePathInfo = boardService.getFilePath(requesterBoardId, jwtTokenProvider.getUserEmail(token));
 
         String filePath = filePathInfo.toString();
         ByteArrayResource resource = awsS3Service.downloadFile(filePathInfo.getFilePath());
@@ -116,16 +122,16 @@ public class UserFacade {
     }
 
     public ExchangeResponse getExchanges(Integer page, String token) {
-        return myPageService.getExchanges(page, jwtTokenProvider.getUserEmail(token));
+        return exchangeService.getExchanges(page, jwtTokenProvider.getUserEmail(token));
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void acceptExchange(ExchangeAccept exchangeAccept, String token) {
         String email = jwtTokenProvider.getUserEmail(token);
 
-        myPageService.deleteExchange(exchangeAccept); //교환 요청 목록 삭제
+        exchangeService.deleteExchange(exchangeAccept); //교환 요청 목록 삭제
 
-        myPageService.acceptExchange(exchangeAccept, email); //교환 완료
+        exchangeCompletionService.acceptExchange(exchangeAccept, email); //교환 완료
 
         myPageService.increaseExchangeCompletion(exchangeAccept, email); //도메인에 비즈니스 로직을 하는 것이 좀 더 깔끔할 것 같다. 추후 비즈니스 로직을 도메인으로 변경하자.
 
@@ -136,7 +142,7 @@ public class UserFacade {
 
     @Transactional(rollbackFor = Exception.class)
     public void refuseExchange(ExchangeRefusal exchangeRefusal, String token) {
-        myPageService.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserEmail(token));
+        exchangeService.refuseExchange(exchangeRefusal, jwtTokenProvider.getUserEmail(token));
 
         //추후 알림도 생성
     }
@@ -160,10 +166,12 @@ public class UserFacade {
         String email = jwtTokenProvider.getUserEmail(token);
         String profilePath = myPageService.findProfilePath(email);
 
-        myPageService.checkExchangeCompletionDate(email);
+        exchangeCompletionService.checkMyPageExchangeCompletionDate(email);
+
         myPageService.withdrawalUser(email);
 
         awsS3Service.deleteProfile("profile/" + profilePath);
         awsS3Service.deleteUserFiles(email);
     }
+
 }

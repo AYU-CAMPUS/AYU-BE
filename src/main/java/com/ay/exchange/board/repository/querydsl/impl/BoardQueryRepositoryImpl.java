@@ -1,23 +1,29 @@
 package com.ay.exchange.board.repository.querydsl.impl;
 
 import com.ay.exchange.board.dto.query.BoardInfoDto;
+import com.ay.exchange.board.dto.response.FilePathInfo;
+import com.ay.exchange.board.dto.response.MyDataInfo;
+import com.ay.exchange.board.dto.response.MyDataResponse;
 import com.ay.exchange.board.entity.vo.Category;
 import com.ay.exchange.board.entity.vo.FileType;
 import com.ay.exchange.board.entity.vo.DepartmentType;
 import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.repository.querydsl.BoardQueryRepository;
 import com.ay.exchange.common.util.Approval;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 import static com.ay.exchange.board.entity.QBoard.board;
+import static com.ay.exchange.exchange.entity.QExchangeCompletion.exchangeCompletion;
 import static com.ay.exchange.user.entity.QUser.user;
 
 @RequiredArgsConstructor
@@ -91,6 +97,62 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                         .and(board.email.eq(email))
                         .and(board.approval.eq(Approval.AGREE.getApproval())))
                 .execute();
+    }
+
+    @Override
+    public boolean existsBoard(String email, Long boardId) {
+        Long count = queryFactory.select(board.count())
+                .from(board)
+                .where(board.email.eq(email)
+                        .and(board.id.eq(boardId))
+                        .and(board.approval.eq(Approval.AGREE.getApproval()))
+                )
+                .limit(1L)
+                .fetchOne();
+        return count == 1L;
+    }
+
+    @Override
+    public MyDataResponse getMyData(PageRequest pageRequest, String email) {
+        Long count = queryFactory.select(board.count())
+                .from(board)
+                .where(board.email.eq(email)
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
+                .fetchOne();
+
+        List<MyDataInfo> myDataInfos = queryFactory
+                .select(Projections.fields(
+                        MyDataInfo.class,
+                        board.createdDate,
+                        board.title,
+                        board.id.as("boardId"),
+                        board.boardCategory.category
+                ))
+                .from(board)
+                .where(board.email.eq(email)
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .orderBy(board.id.desc())
+                .fetch();
+
+        return new MyDataResponse(count, myDataInfos);
+    }
+
+    @Override
+    public FilePathInfo getFilePath(Long requesterBoardId, String email) {
+        FilePathInfo filePathInfo = queryFactory.select(Projections.fields(
+                        FilePathInfo.class,
+                        board.email,
+                        board.filePath
+                ))
+                .from(exchangeCompletion)
+                .innerJoin(board)
+                .on(board.id.eq(exchangeCompletion.requesterBoardId))
+                .where(exchangeCompletion.requesterBoardId.eq(requesterBoardId)
+                        .and(exchangeCompletion.email.eq(email)))
+                .fetchOne();
+        return filePathInfo;
     }
 
     private BooleanBuilder typeEq(List<String> types) {
