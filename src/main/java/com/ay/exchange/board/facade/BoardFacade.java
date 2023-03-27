@@ -23,6 +23,7 @@ import com.ay.exchange.board.service.BoardService;
 import com.ay.exchange.board.service.ModificationBoardService;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.service.CommentService;
+import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.exchange.service.ExchangeCompletionService;
 import com.ay.exchange.exchange.service.ExchangeService;
 import com.ay.exchange.jwt.JwtTokenProvider;
@@ -39,6 +40,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
+import static com.ay.exchange.common.util.ExchangeType.COMPLETION;
+import static com.ay.exchange.common.util.ExchangeType.OWNER;
 
 
 @Service
@@ -54,7 +57,6 @@ public class BoardFacade {
     private final JwtTokenProvider jwtTokenProvider;
     private final int UPLOAD_FILE = 0;
     private final String SEPARATOR = ";";
-    private final int BOARD_OWNER = -1;
 
     @Transactional(rollbackFor = Exception.class)
     public void writeBoard(WriteRequest writeRequest, MultipartFile multipartFile, String token) {
@@ -101,7 +103,7 @@ public class BoardFacade {
                     boardContentInfo2Dto.getNumberOfFilePages(),
                     boardContentInfo2Dto.getNumberOfSuccessfulExchanges(),
                     boardContentInfo2Dto.getCreatedDate(),
-                    boardContentInfo2Dto.getEmail().equals(email) ? BOARD_OWNER : (boardContentInfo2Dto.getExchangeType() >= 1 ? 1 : boardContentInfo2Dto.getExchangeType()), //-1이면 내가 쓴 글임,
+                    boardContentInfo2Dto.getEmail().equals(email) ? OWNER.getType() : (boardContentInfo2Dto.getExchangeType() >= COMPLETION.getType() ? COMPLETION.getType() : boardContentInfo2Dto.getExchangeType()), //-1이면 내가 쓴 글임,
                     splitDesiredData(boardContentInfo2Dto.getDesiredData()));
         }
 
@@ -121,7 +123,7 @@ public class BoardFacade {
                 resultBoard.getNumberOfFilePages(),
                 resultBoard.getExchangeSuccessCount(),
                 resultBoard.getCreatedDate(),
-                resultBoard.getEmail().equals(email) ? BOARD_OWNER : (boardContentInfos.get(0).getExchangeType() >= 1 ? 1 : boardContentInfos.get(0).getExchangeType()),
+                resultBoard.getEmail().equals(email) ? OWNER.getType() : (boardContentInfos.get(0).getExchangeType() >= COMPLETION.getType() ? COMPLETION.getType() : boardContentInfos.get(0).getExchangeType()),
                 splitDesiredData(boardContentInfos.get(0).getDesiredData()));
     }
 

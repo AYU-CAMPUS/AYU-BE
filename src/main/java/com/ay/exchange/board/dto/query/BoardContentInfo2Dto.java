@@ -16,7 +16,7 @@ public class BoardContentInfo2Dto {
     private Integer numberOfFilePages;
     private Integer numberOfSuccessfulExchanges;
     private String createdDate;
-    private Integer exchangeType;
+    private Long exchangeType;
     private String email;
     private String desiredData;
 }

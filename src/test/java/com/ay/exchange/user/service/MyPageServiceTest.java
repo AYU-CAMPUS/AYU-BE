@@ -7,6 +7,7 @@ import com.ay.exchange.board.entity.vo.DepartmentType;
 import com.ay.exchange.board.entity.vo.FileType;
 import com.ay.exchange.board.repository.BoardRepository;
 
+import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.user.dto.MyPageInfo;
@@ -142,7 +143,7 @@ class MyPageServiceTest {
                 .email(user.getEmail())
                 .requesterBoardId(board3.getId())
                 .requesterEmail(user2.getEmail())
-                .type(-3) //-3은 교환 받음
+                .type(ExchangeType.ACCEPT.getType()) //-3은 교환 받음
                 .build();
         exchangeRepository.save(exchange);
 
@@ -151,7 +152,7 @@ class MyPageServiceTest {
                 .email(user2.getEmail())
                 .requesterBoardId(board.getId())
                 .requesterEmail(user.getEmail())
-                .type(-2) //-2는 교환 요청함
+                .type(ExchangeType.REQUEST.getType()) //-2는 교환 요청함
                 .build();
         exchangeRepository.save(exchange2);
 
@@ -160,7 +161,7 @@ class MyPageServiceTest {
                 .email(user.getEmail())
                 .requesterBoardId(board4.getId())
                 .requesterEmail(user2.getEmail())
-                .type(-3) //-3은 교환 받음
+                .type(ExchangeType.ACCEPT.getType()) //-3은 교환 받음
                 .build();
         exchangeRepository.save(exchange3);
 
@@ -169,7 +170,7 @@ class MyPageServiceTest {
                 .email(user2.getEmail())
                 .requesterBoardId(board2.getId())
                 .requesterEmail(user.getEmail())
-                .type(-2) //-2는 교환 요청함
+                .type(ExchangeType.REQUEST.getType()) //-2는 교환 요청함
                 .build();
         exchangeRepository.save(exchange4);
     }

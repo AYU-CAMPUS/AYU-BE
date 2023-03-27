@@ -64,6 +64,6 @@ public class Exchange extends BaseEntity {
     private String requesterEmail;
 
     @Column(nullable = false)
-    private Integer type;
+    private Long type;
 
 }

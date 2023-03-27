@@ -1,5 +1,6 @@
 package com.ay.exchange.user.repository;
 
+import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.user.dto.*;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.UserInfoRequest;
@@ -34,7 +35,7 @@ public class MyPageRepository {
                 .on(board.email.eq(email)
                         .and(board.approval.eq(1)))
                 .leftJoin(exchange)
-                .on(exchange.email.eq(email).and(exchange.type.eq(-3)))
+                .on(exchange.email.eq(email).and(exchange.type.eq(ExchangeType.ACCEPT.getType())))
                 .where(user.email.eq(email))
                 .transform(
                         groupBy(user.email)

@@ -22,7 +22,7 @@ public class BoardContentInfoDto {
     private String createdDate;
     private BoardContent boardContent;
     private Board board;
-    private Integer exchangeType;
+    private Long exchangeType;
     private String profileImage;
     private String nickName;
     private String desiredData;
@@ -30,7 +30,7 @@ public class BoardContentInfoDto {
     @QueryProjection
     public BoardContentInfoDto(Long commentId, String writer, String content, Boolean depth,
                                Long groupId, String createdDate, BoardContent boardContent, Board board,
-                               Integer exchangeType, String profileImage, String nickName, String desiredData) {
+                               Long exchangeType, String profileImage, String nickName, String desiredData) {
         this.commentId = commentId;
         this.writer = writer;
         this.content = content;

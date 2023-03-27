@@ -2,6 +2,7 @@ package com.ay.exchange.exchange.repository.querydsl;
 
 import com.ay.exchange.common.util.Approval;
 
+import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.exchange.dto.MyDataInfo;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.dto.response.ExchangeInfo;
@@ -67,14 +68,14 @@ public class ExchangeQueryRepository {
                 .setParameter(3, exchangeRequest.getBoardId())
                 .setParameter(4, exchangeRequest.getRequesterBoardId())
                 .setParameter(5, email)
-                .setParameter(6, -3) //-3은 교환신청을 받음
+                .setParameter(6, ExchangeType.ACCEPT.getType()) //-3은 교환신청을 받음
                 .setParameter(7, boardUserEmail)
                 .setParameter(8, currentDate)
                 .setParameter(9, currentDate)
                 .setParameter(10, exchangeRequest.getRequesterBoardId())
                 .setParameter(11, exchangeRequest.getBoardId())
                 .setParameter(12, boardUserEmail)
-                .setParameter(13, -2) //-2는 교환요청을 함
+                .setParameter(13, ExchangeType.REQUEST.getType()) //-2는 교환요청을 함
                 .setParameter(14, email);
         return query.executeUpdate();
     }
@@ -161,7 +162,7 @@ public class ExchangeQueryRepository {
                 .innerJoin(board)
                 .on(exchange.requesterBoardId.eq(board.id))
                 .where(exchange.email.eq(email)
-                        .and(exchange.type.eq(-3))) //-3: 교환요청을 받음
+                        .and(exchange.type.eq(ExchangeType.ACCEPT.getType()))) //-3: 교환요청을 받음
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .orderBy(exchange.Id.desc())

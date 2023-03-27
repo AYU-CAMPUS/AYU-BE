@@ -6,6 +6,7 @@ import com.ay.exchange.board.entity.vo.Category;
 import com.ay.exchange.board.entity.vo.DepartmentType;
 import com.ay.exchange.board.entity.vo.FileType;
 import com.ay.exchange.board.repository.BoardRepository;
+import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.exception.UnableExchangeException;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -187,7 +187,7 @@ class ExchangeServiceTest {
                 .email("test@gmail.com")
                 .requesterBoardId(board2.getId())
                 .requesterEmail("test2@gmail.com")
-                .type(-3) //-3은 교환 받음
+                .type(ExchangeType.ACCEPT.getType()) //-3은 교환 받음
                 .build();
         exchangeRepository.save(exchange);
 
@@ -196,7 +196,7 @@ class ExchangeServiceTest {
                 .email("test2@gmail.com")
                 .requesterBoardId(board.getId())
                 .requesterEmail("test@gmail.com")
-                .type(-2) //-2는 교환 요청함
+                .type(ExchangeType.REQUEST.getType()) //-2는 교환 요청함
                 .build();
         exchangeRepository.save(exchange2);
 
@@ -253,7 +253,7 @@ class ExchangeServiceTest {
                 .email("test@gmail.com")
                 .requesterBoardId(board2.getId())
                 .requesterEmail("test2@gmail.com")
-                .type(-3) //-3은 교환 받음
+                .type(ExchangeType.ACCEPT.getType()) //-3은 교환 받음
                 .build();
         exchangeRepository.save(exchange);
 
@@ -262,7 +262,7 @@ class ExchangeServiceTest {
                 .email("test2@gmail.com")
                 .requesterBoardId(board.getId())
                 .requesterEmail("test@gmail.com")
-                .type(-2) //-2는 교환 요청함
+                .type(ExchangeType.REQUEST.getType()) //-2는 교환 요청함
                 .build();
         exchangeRepository.save(exchange2);
 

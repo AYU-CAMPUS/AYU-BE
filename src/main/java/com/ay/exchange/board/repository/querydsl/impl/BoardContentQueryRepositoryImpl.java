@@ -5,6 +5,7 @@ import com.ay.exchange.board.dto.query.BoardContentInfoDto;
 import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.repository.querydsl.BoardContentQueryRepository;
 import com.ay.exchange.common.util.Approval;
+import com.ay.exchange.common.util.ExchangeType;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,6 @@ import static com.ay.exchange.user.entity.QUser.user;
 @RequiredArgsConstructor
 public class BoardContentQueryRepositoryImpl implements BoardContentQueryRepository {
     private final JPAQueryFactory queryFactory;
-    private final Long INTERCHANGEABLE = 0L;
 
     @Override
     public BoardContentInfo2Dto findBoardContentWithNoComments(Long boardId, Pageable pageable, String email) {
@@ -37,7 +37,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         board.numberOfFilePages,
                         board.exchangeSuccessCount.as("numberOfSuccessfulExchanges"),
                         board.createdDate,
-                        exchange.type.coalesce(exchangeCompletion.Id.coalesce(INTERCHANGEABLE)).as("exchangeType"), //null
+                        exchange.type.coalesce(exchangeCompletion.Id.coalesce(ExchangeType.INTERCHANGEABLE.getType())).as("exchangeType"), //null
                         board.email,
                         user.desiredData
                 ))
@@ -70,7 +70,7 @@ public class BoardContentQueryRepositoryImpl implements BoardContentQueryReposit
                         comment.createdDate,
                         boardContent,
                         board,
-                        exchange.type.coalesce(exchangeCompletion.Id.coalesce(INTERCHANGEABLE)).as("exchangeType"),
+                        exchange.type.coalesce(exchangeCompletion.Id.coalesce(ExchangeType.INTERCHANGEABLE.getType())).as("exchangeType"),
                         user.profileImage.coalesce("default.svg"),
                         board.user.nickName,
                         user.desiredData

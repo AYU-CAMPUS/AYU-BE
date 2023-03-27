@@ -15,6 +15,7 @@ import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.comment.repository.CommentRepository;
 
 import com.ay.exchange.common.util.DateUtil;
+import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.exchange.repository.querydsl.ExchangeCompletionRepository;
@@ -158,7 +159,7 @@ class BoardContentServiceTest {
     void 게시글_상세_조회() {
         BoardContentInfo2Dto boardContentInfo2Dto = boardContentService.findBoardContentWithNoComments(board2.getId(), "test@mgail.com");
 
-        assertTrue(boardContentInfo2Dto.getExchangeType().equals(0));
+        assertTrue(boardContentInfo2Dto.getExchangeType().equals(ExchangeType.INTERCHANGEABLE.getType()));
     }
 
     @Test
@@ -169,7 +170,7 @@ class BoardContentServiceTest {
                 .email("test@gmail.com")
                 .requesterBoardId(board2.getId())
                 .requesterEmail("test2@gmail.com")
-                .type(-3) //-3은 교환 받음
+                .type(ExchangeType.ACCEPT.getType()) //-3은 교환 받음
                 .build();
         exchangeRepository.save(exchange);
 
@@ -178,14 +179,14 @@ class BoardContentServiceTest {
                 .email("test2@gmail.com")
                 .requesterBoardId(board.getId())
                 .requesterEmail("test@gmail.com")
-                .type(-2) //-2는 교환 요청함
+                .type(ExchangeType.REQUEST.getType()) //-2는 교환 요청함
                 .build();
         exchangeRepository.save(exchange2);
         BoardContentInfo2Dto boardContentInfo = boardContentService.findBoardContentWithNoComments(board2.getId(), "test@gmail.com");
         BoardContentInfo2Dto boardContentInfo2 = boardContentService.findBoardContentWithNoComments(board.getId(), "test2@gmail.com");
 
-        assertTrue(boardContentInfo.getExchangeType().equals(-2)); //교환 받음
-        assertTrue(boardContentInfo2.getExchangeType().equals(-3)); //교환 신청함
+        assertTrue(boardContentInfo.getExchangeType().equals(ExchangeType.REQUEST.getType())); //교환 받음
+        assertTrue(boardContentInfo2.getExchangeType().equals(ExchangeType.ACCEPT.getType())); //교환 신청함
     }
 
     @Test
@@ -197,8 +198,8 @@ class BoardContentServiceTest {
         BoardContentInfo2Dto boardContentInfo = boardContentService.findBoardContentWithNoComments(board2.getId(), "test@gmail.com");
         BoardContentInfo2Dto boardContentInfo2 = boardContentService.findBoardContentWithNoComments(board.getId(), "test2@gmail.com");
 
-        assertTrue(boardContentInfo.getExchangeType() >= 1); //교환 받음
-        assertTrue(boardContentInfo2.getExchangeType() >= 1); //교환 신청함
+        assertTrue(boardContentInfo.getExchangeType() >= ExchangeType.COMPLETION.getType()); //교환 받음
+        assertTrue(boardContentInfo2.getExchangeType() >= ExchangeType.COMPLETION.getType()); //교환 신청함
     }
 
     @AfterAll
