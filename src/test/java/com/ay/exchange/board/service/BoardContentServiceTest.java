@@ -14,6 +14,7 @@ import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.comment.repository.CommentRepository;
 
+import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.exchange.repository.querydsl.ExchangeCompletionRepository;
 import com.ay.exchange.user.entity.User;
@@ -45,6 +46,9 @@ class BoardContentServiceTest {
 
     @Autowired
     CommentRepository commentRepository;
+
+    @Autowired
+    ExchangeRepository exchangeRepository;
 
     Board board, board2;
 
@@ -150,6 +154,33 @@ class BoardContentServiceTest {
         BoardContentInfo2Dto boardContentInfo2Dto = boardContentService.findBoardContentWithNoComments(board2.getId(), "test@mgail.com");
 
         assertTrue(boardContentInfo2Dto.getExchangeType().equals(0));
+    }
+
+    @Test
+    @DisplayName("다른 사람 게시글이랑 교환 중인지")
+    void 게시글_상세_조회2() {
+        Exchange exchange = Exchange.builder()
+                .boardId(board.getId())
+                .email("test@gmail.com")
+                .requesterBoardId(board2.getId())
+                .requesterEmail("test2@gmail.com")
+                .type(-3) //-3은 교환 받음
+                .build();
+        exchangeRepository.save(exchange);
+
+        Exchange exchange2 = Exchange.builder()
+                .boardId(board2.getId())
+                .email("test2@gmail.com")
+                .requesterBoardId(board.getId())
+                .requesterEmail("test@gmail.com")
+                .type(-2) //-2는 교환 요청함
+                .build();
+        exchangeRepository.save(exchange2);
+        BoardContentInfo2Dto boardContentInfo = boardContentService.findBoardContentWithNoComments(board2.getId(), "test@gmail.com");
+        BoardContentInfo2Dto boardContentInfo2 = boardContentService.findBoardContentWithNoComments(board.getId(), "test2@gmail.com");
+
+        assertTrue(boardContentInfo.getExchangeType().equals(-2)); //교환 받음
+        assertTrue(boardContentInfo2.getExchangeType().equals(-3)); //교환 신청함
     }
 
     @AfterAll
