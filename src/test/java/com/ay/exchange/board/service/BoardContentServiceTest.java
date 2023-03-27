@@ -14,9 +14,11 @@ import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.comment.entity.Comment;
 import com.ay.exchange.comment.repository.CommentRepository;
 
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.exchange.entity.Exchange;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.exchange.repository.querydsl.ExchangeCompletionRepository;
+import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
@@ -49,6 +51,9 @@ class BoardContentServiceTest {
 
     @Autowired
     ExchangeRepository exchangeRepository;
+
+    @Autowired
+    ExchangeCompletionRepository exchangeCompletionRepository;
 
     Board board, board2;
 
@@ -181,6 +186,19 @@ class BoardContentServiceTest {
 
         assertTrue(boardContentInfo.getExchangeType().equals(-2)); //교환 받음
         assertTrue(boardContentInfo2.getExchangeType().equals(-3)); //교환 신청함
+    }
+
+    @Test
+    @DisplayName("교환 완료된 게시글 조회")
+    void 게시글_상세_조회3() {
+        ExchangeAccept exchangeAccept = new ExchangeAccept(null, "test2@gmail.com", board.getId(), board2.getId());
+        exchangeCompletionRepository.acceptExchange(DateUtil.getCurrentDate(), exchangeAccept, "test@gmail.com");
+
+        BoardContentInfo2Dto boardContentInfo = boardContentService.findBoardContentWithNoComments(board2.getId(), "test@gmail.com");
+        BoardContentInfo2Dto boardContentInfo2 = boardContentService.findBoardContentWithNoComments(board.getId(), "test2@gmail.com");
+
+        assertTrue(boardContentInfo.getExchangeType() >= 1); //교환 받음
+        assertTrue(boardContentInfo2.getExchangeType() >= 1); //교환 신청함
     }
 
     @AfterAll
