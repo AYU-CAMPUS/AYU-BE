@@ -1,5 +1,6 @@
 package com.ay.exchange.board.service;
 
+import com.ay.exchange.board.dto.query.BoardContentInfo2Dto;
 import com.ay.exchange.board.dto.query.BoardContentInfoDto;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
@@ -141,6 +142,14 @@ class BoardContentServiceTest {
         assertTrue(boardContentInfos.stream().anyMatch(info -> info.getDepth().equals(comment.getDepth())));
         assertTrue(boardContentInfos.stream().anyMatch(info -> info.getDepth().equals(comment2.getDepth())));
         assertTrue(boardContentInfos.get(0).getBoard().getEmail().equals("test@gmail.com"));
+    }
+
+    @Test
+    @DisplayName("교환이 안 된 다른 사람 게시글 인지")
+    void 게시글_상세_조회() {
+        BoardContentInfo2Dto boardContentInfo2Dto = boardContentService.findBoardContentWithNoComments(board2.getId(), "test@mgail.com");
+
+        assertTrue(boardContentInfo2Dto.getExchangeType().equals(0));
     }
 
     @AfterAll
