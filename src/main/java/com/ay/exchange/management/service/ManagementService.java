@@ -1,5 +1,6 @@
 package com.ay.exchange.management.service;
 
+import com.ay.exchange.common.util.PagingGenerator;
 import com.ay.exchange.management.dto.query.UserInfo;
 import com.ay.exchange.management.dto.request.BoardIdRequest;
 import com.ay.exchange.management.dto.request.SuspensionRequest;
@@ -8,8 +9,6 @@ import com.ay.exchange.management.exception.FailAcceptRequestBoard;
 import com.ay.exchange.management.exception.FailUpdatedSuspension;
 import com.ay.exchange.management.repository.ManagementRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +17,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagementService {
     private final ManagementRepository managementRepository;
-    private final int PAGE_LIMIT_LENGTH = 2;
 
     public List<BoardInfo> findRequestBoard(Integer page) {
-        List<BoardInfo> boardInfos = managementRepository.findRequestBoards(getPageRequest(page));
+        List<BoardInfo> boardInfos = managementRepository.findRequestBoards(PagingGenerator.getPageRequest(page));
         return boardInfos;
     }
 
@@ -47,13 +45,8 @@ public class ManagementService {
     }
 
     public List<UserInfo> getUserInfos(Integer page) {
-        List<UserInfo> userInfos = managementRepository.findUserInfos(getPageRequest(page));
+        List<UserInfo> userInfos = managementRepository.findUserInfos(PagingGenerator.getPageRequest(page));
         return userInfos;
-    }
-
-    private PageRequest getPageRequest(Integer page) {
-        return PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
-                Sort.by(Sort.Direction.DESC, "id"));
     }
 
     public Long findRequestBoardTotal() {

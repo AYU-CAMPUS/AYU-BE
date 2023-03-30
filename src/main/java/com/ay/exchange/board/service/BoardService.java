@@ -11,11 +11,10 @@ import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.common.util.Approval;
+import com.ay.exchange.common.util.PagingGenerator;
 import com.ay.exchange.user.exception.NotExistsFileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -29,18 +28,14 @@ import static com.ay.exchange.common.util.BoardTypeGenerator.*;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final String REGEX = "[0-9]+";
-    private final int PAGE_LIMIT_LENGTH = 2;
 
     public Page<BoardInfoDto> getBoardList(Integer page, Integer category,
                                       String department, String grade, String type
     ) {
-        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, PAGE_LIMIT_LENGTH,
-                Sort.by(Sort.Direction.DESC, "id"));
-
         Page<BoardInfoDto> pages = boardRepository.findBoards(
                 Approval.AGREE.getApproval(),
                 getCategory(category),
-                pageRequest,
+                PagingGenerator.getPageRequest(page),
                 getSeparateDepartmentConditions(department),
                 getSeparateGradeConditions(grade),
                 getSeparateTypeConditions(type));
@@ -131,9 +126,6 @@ public class BoardService {
     }
 
     public MyDataResponse getMyData(Integer page, String email) {
-        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
-                Sort.by(Sort.Direction.DESC, "id"));
-
-        return boardRepository.getMyData(pageRequest, email);
+        return boardRepository.getMyData(PagingGenerator.getPageRequest(page), email);
     }
 }

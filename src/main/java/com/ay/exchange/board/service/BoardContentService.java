@@ -6,9 +6,8 @@ import com.ay.exchange.board.dto.response.ModifiableBoardResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.BoardContent;
 import com.ay.exchange.board.repository.BoardContentRepository;
+import com.ay.exchange.common.util.PagingGenerator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardContentService {
     private final BoardContentRepository boardContentRepository;
-    private final int PAGE_LIMIT_LENGTH = 2;
 
     public ModifiableBoardResponse findModifiableBoard(String email, Long boardId) {
         return boardContentRepository.findModifiableBoard(email, boardId);
@@ -33,16 +31,10 @@ public class BoardContentService {
     }
 
     public BoardContentInfo2Dto findBoardContentWithNoComments(Long boardId, String email) {
-        PageRequest pageRequest = PageRequest.of(0, PAGE_LIMIT_LENGTH,
-                Sort.by(Sort.Direction.DESC, "id"));
-
-        return boardContentRepository.findBoardContentWithNoComments(boardId, pageRequest, email);
+        return boardContentRepository.findBoardContentWithNoComments(boardId, PagingGenerator.getPageRequest(0), email);
     }
 
     public List<BoardContentInfoDto> findBoardContentWithComments(Long boardId, String email) {
-        PageRequest pageRequest = PageRequest.of(0, PAGE_LIMIT_LENGTH,
-                Sort.by(Sort.Direction.DESC, "id"));
-
-        return boardContentRepository.findBoardContentWithComments(boardId, pageRequest, email);
+        return boardContentRepository.findBoardContentWithComments(boardId, PagingGenerator.getPageRequest(0), email);
     }
 }

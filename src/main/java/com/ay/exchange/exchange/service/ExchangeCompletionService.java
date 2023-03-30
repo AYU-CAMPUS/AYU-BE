@@ -3,14 +3,13 @@ package com.ay.exchange.exchange.service;
 import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.common.util.DateUtil;
+import com.ay.exchange.common.util.PagingGenerator;
 import com.ay.exchange.exchange.repository.querydsl.ExchangeCompletionRepository;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
 import com.ay.exchange.user.exception.FailAcceptFileException;
 import com.ay.exchange.user.exception.FailWithdrawalException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
@@ -53,9 +52,7 @@ public class ExchangeCompletionService {
     }
 
     public DownloadableResponse getDownloadable(Integer page, String email) {
-        PageRequest pageRequest = PageRequest.of(page > 0 ? (page - 1) : 0, 2,
-                Sort.by(Sort.Direction.DESC, "id"));
-        return exchangeCompletionRepository.getDownloadable(pageRequest, email);
+        return exchangeCompletionRepository.getDownloadable(PagingGenerator.getPageRequest(page), email);
     }
 
     public int getDownloadableCount(String email) {
