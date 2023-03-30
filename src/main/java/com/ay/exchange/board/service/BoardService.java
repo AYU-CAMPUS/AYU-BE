@@ -17,17 +17,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.ay.exchange.common.util.BoardTypeGenerator.*;
+import static com.ay.exchange.common.util.QueryConditionSeparator.*;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final String REGEX = "[0-9]+";
 
     public Page<BoardInfoDto> getBoardList(Integer page, Integer category,
                                       String department, String grade, String type
@@ -36,38 +32,11 @@ public class BoardService {
                 Approval.AGREE.getApproval(),
                 getCategory(category),
                 PagingGenerator.getPageRequest(page),
-                getSeparateDepartmentConditions(department),
-                getSeparateGradeConditions(grade),
-                getSeparateTypeConditions(type));
+                separateDepartmentConditions(department),
+                separateGradeConditions(grade),
+                separateTypeConditions(type));
 
         return pages;
-    }
-
-    private List<String> getSeparateTypeConditions(String type) {
-        return Arrays.stream(type.split(","))
-                .filter(t -> t.matches(REGEX))
-                .map(Integer::parseInt)
-                .filter(t -> (t >= 0 && t <= 3))
-                .map(t -> getFileType(t).name())
-                .collect(Collectors.toList());
-    }
-
-    private List<String> getSeparateGradeConditions(String grade) {
-        return Arrays.stream(grade.split(","))
-                .filter(g -> g.matches(REGEX))
-                .map(Integer::parseInt)
-                .filter(g -> (g >= 1 && g <= 4))
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    private List<String> getSeparateDepartmentConditions(String department) {
-        return Arrays.stream(department.split(","))
-                .filter(d -> d.matches(REGEX))
-                .map(Integer::parseInt)
-                .filter(d -> (d >= 0 && d <= 22)) //[하드코딩 리팩토링] 구현이 바뀔수도 있어서 나중에 할 예정
-                .map(d -> getDepartmentType(d).name())
-                .collect(Collectors.toList());
     }
 
     public Board save(WriteRequest writeRequest, String email, String filePath, String originalFileName) {
