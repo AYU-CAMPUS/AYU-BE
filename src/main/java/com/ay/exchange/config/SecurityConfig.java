@@ -10,9 +10,11 @@ import org.springframework.context.annotation.Bean;
 
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.web.cors.CorsUtils;
@@ -46,7 +48,7 @@ public class SecurityConfig {
                 .and()
                 .successHandler(oAuth2SuccessHandler);
         http
-                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, LogoutFilter.class)
                 .addFilterBefore(jwtFilter, CorsFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtFilter.class);
 
@@ -54,8 +56,37 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web
+                .httpFirewall(defaultHttpFirewall())
+                .ignoring()
+                .antMatchers(getPathInSwagger());
+    }
+
+    @Bean
     public HttpFirewall defaultHttpFirewall() {
         return new DefaultHttpFirewall();
     }
 
+    private String[] getPathInSwagger() {
+        return new String[]{
+                "/swagger",
+                "/swagger-ui/index.html",
+                "/swagger-ui/swagger-ui.css",
+                "/swagger-ui/index.css",
+                "/swagger-ui/swagger-ui-bundle.js",
+                "/swagger-ui/swagger-ui-standalone-preset.js",
+                "/swagger-ui/swagger-initializer.js",
+                "/v3/api-docs/swagger-config",
+                "/swagger-ui/favicon-32x32.png",
+                "/v3/api-docs/user-api",
+                "/v3/api-docs/board-api",
+                "/v3/api-docs/comment-api",
+                "/v3/api-docs/report-api",
+                "/v3/api-docs/oauth2-api",
+                "/v3/api-docs/exchange-api",
+                "/v3/api-docs/management-api",
+                "/favicon.ico"
+        };
+    }
 }

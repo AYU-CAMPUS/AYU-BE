@@ -39,24 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final RedisService redisService;
     private static final Set<String> passUri = new HashSet<>(List.of(
             "/login/oauth2/code/google",
-            "/oauth2/authorization/google",
-            "/swagger",
-            "/swagger-ui/index.html",
-            "/swagger-ui/swagger-ui.css",
-            "/swagger-ui/index.css",
-            "/swagger-ui/swagger-ui-bundle.js",
-            "/swagger-ui/swagger-ui-standalone-preset.js",
-            "/swagger-ui/swagger-initializer.js",
-            "/v3/api-docs/swagger-config",
-            "/swagger-ui/favicon-32x32.png",
-            "/v3/api-docs/user-api",
-            "/v3/api-docs/board-api",
-            "/v3/api-docs/comment-api",
-            "/v3/api-docs/report-api",
-            "/v3/api-docs/oauth2-api",
-            "/v3/api-docs/exchange-api",
-            "/v3/api-docs/management-api",
-            "/favicon.ico"));
+            "/oauth2/authorization/google"));
     private static final String regexUri = "/board/content/\\d+|/board/\\d+";
 
 
