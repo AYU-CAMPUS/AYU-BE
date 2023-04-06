@@ -49,7 +49,7 @@ public class RedisService {
     }
 
     public boolean hasKey(String email) {
-        return Objects.equals(redisTemplate.hasKey(email), false);
+        return Objects.equals(redisTemplate.hasKey(email), true);
     }
 
     public String getRefreshToken(String token) {

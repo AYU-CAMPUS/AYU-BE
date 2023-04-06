@@ -22,9 +22,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import java.util.regex.Pattern;
 
@@ -37,10 +34,7 @@ import static com.ay.exchange.common.util.EncryptionUtil.*;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
-    private static final Set<String> passUri = new HashSet<>(List.of(
-            "/login/oauth2/code/google",
-            "/oauth2/authorization/google"));
-    private static final String regexUri = "/board/content/\\d+|/board/\\d+";
+    private static final String regexUri = "/board/content/\\d+";
 
 
     @Override
@@ -57,15 +51,9 @@ public class JwtFilter extends OncePerRequestFilter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
 
-        if (passUri.contains(request.getRequestURI())) {
-            return true;
-        }
         log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
         log.info("url: {}, ", request.getHeader("url"));
 
-        if (Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET")) {
-            return true;
-        }
         if (request.getMethod().equals("OPTIONS")) {
             return true;
         }
@@ -77,14 +65,21 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("USER TOKEN {}", token);
         String origin = request.getHeader(HttpHeaders.ORIGIN);
 
+        boolean isShowBoardContent = Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET");
+
         if (token == null) {
             setCorsHeader(response, origin);
+            if(isShowBoardContent){
+                return true;
+            }
             throw new JwtException("유효하지 않은 토큰");
         }
 
+
+
         try {
             String email = jwtTokenProvider.getUserEmail(token);
-            if (redisService.hasKey(email)) {
+            if (!redisService.hasKey(email)) {
                 throw new JwtException("유효하지 않은 토큰");
             }
         } catch (JwtException | IllegalArgumentException e) { //액세스 토큰 만료
