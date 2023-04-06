@@ -23,6 +23,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.ay.exchange.common.util.CookieUtil.makeCookie;
@@ -35,6 +38,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private static final String regexUri = "/board/content/\\d+";
+    private static final Set<String> passUri = new HashSet<>(List.of(
+            "/login/oauth2/code/google",
+            "/oauth2/authorization/google"));
 
 
     @Override
@@ -46,11 +52,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        if (passUri.contains(request.getRequestURI())) { //oauth2로그인은 Security Filter Chain에서 로직을 수행하기 때문에 ignore해주면 안된다.
+            return true;
+        }
         ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime seoulCurrentTime = ZonedDateTime.now(seoulZoneId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
-
         log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
         log.info("url: {}, ", request.getHeader("url"));
 

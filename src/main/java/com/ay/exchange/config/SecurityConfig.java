@@ -60,7 +60,7 @@ public class SecurityConfig {
         return (web) -> web
                 .httpFirewall(defaultHttpFirewall())
                 .ignoring()
-                .regexMatchers("/board/\\d+")
+                .regexMatchers("/board/\\d+(\\?.*)?")
                 .antMatchers(getPathInSwagger());
     }
 
@@ -71,8 +71,6 @@ public class SecurityConfig {
 
     private String[] getPathInSwagger() {
         return new String[]{
-                "/login/oauth2/code/google",
-                "/oauth2/authorization/google",
                 "/swagger",
                 "/swagger-ui/index.html",
                 "/swagger-ui/swagger-ui.css",
