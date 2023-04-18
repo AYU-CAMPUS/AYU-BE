@@ -154,7 +154,8 @@ public class ExchangeQueryRepository {
                         exchange.requesterEmail.as("requesterId"),
                         board.title,
                         exchange.boardId,
-                        board.id.as("requesterBoardId")
+                        board.id.as("requesterBoardId"),
+                        exchange.board.title.as("myTitle")
                 ))
                 .from(exchange)
                 .innerJoin(user)
