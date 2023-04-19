@@ -98,6 +98,90 @@ class ExchangeServiceTest {
     }
 
     @Test
+    @DisplayName("이미 교환 중인 자료를 다른 자료를 요청할 경우")
+    void 교환_요청_실패3() {
+        Board board = Board.builder()
+                .title("title")
+                .numberOfFilePages(1)
+                .filePath("filePath")
+                .originalFileName("fileName")
+                .approval(1)
+                .email("test@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.신학과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject")
+                        .professorName("professor")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board);
+
+        Board board2 = Board.builder()
+                .title("title3")
+                .numberOfFilePages(1)
+                .filePath("filePath3")
+                .originalFileName("fileName3")
+                .approval(1)
+                .email("test2@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.기독교교육과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject3")
+                        .professorName("professor3")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board2);
+
+        Exchange exchange = Exchange.builder()
+                .boardId(board.getId())
+                .email("test@gmail.com")
+                .requesterBoardId(board2.getId())
+                .requesterEmail("test2@gmail.com")
+                .type(ExchangeType.ACCEPT.getType()) //-3은 교환 받음
+                .build();
+        exchangeRepository.save(exchange);
+
+        Exchange exchange2 = Exchange.builder()
+                .boardId(board2.getId())
+                .email("test2@gmail.com")
+                .requesterBoardId(board.getId())
+                .requesterEmail("test@gmail.com")
+                .type(ExchangeType.REQUEST.getType()) //-2는 교환 요청함
+                .build();
+        exchangeRepository.save(exchange2);
+
+        Board board3 = Board.builder()
+                .title("title3")
+                .numberOfFilePages(1)
+                .filePath("filePath3")
+                .originalFileName("fileName3")
+                .approval(1)
+                .email("test2@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.기독교교육과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject3")
+                        .professorName("professor3")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board3);
+
+        ExchangeRequest exchangeRequest = new ExchangeRequest(board.getId(), board3.getId());
+        assertThrows(UnableExchangeException.class, () -> {
+            exchangeService.requestExchange(exchangeRequest, "test2@gmail.com");
+        });
+    }
+
+    @Test
     void 교환_요청_성공() {
         Board board = Board.builder()
                 .title("title")
