@@ -21,8 +21,6 @@ public class ExchangeFacade {
 
         String email = jwtTokenProvider.getUserEmail(token);
 
-        exchangeService.existsExchange(exchangeRequest, email);
-
         exchangeService.requestExchange(exchangeRequest, email);
     }
 

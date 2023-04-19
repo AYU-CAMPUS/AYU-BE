@@ -55,12 +55,6 @@ public class ExchangeService {
         }
     }
 
-    public void existsExchange(ExchangeRequest exchangeRequest, String email) {
-        if (exchangeQueryRepository.existsExchange(exchangeRequest, email)) {
-            throw new UnableExchangeException();
-        }
-    }
-
     public void checkExchangeDate(String date, Long boardId) {
         boolean isExchangeDatePassed3Days = exchangeQueryRepository.checkExchangeDate(date, boardId);
         if (isExchangeDatePassed3Days) {
