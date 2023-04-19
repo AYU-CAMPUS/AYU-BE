@@ -21,20 +21,10 @@ import org.springframework.stereotype.Service;
 public class ExchangeService {
     private final ExchangeQueryRepository exchangeQueryRepository;
 
-    public void requestExchange(ExchangeRequest exchangeRequest, String email) {
-        String boardUserEmail = exchangeQueryRepository.findBoardUserEmail(exchangeRequest.getBoardId(), email);
-        if (boardUserEmail == null) {
-            throw new UnableExchangeException();
-        }
-
-        boolean isRequesterBoard = exchangeQueryRepository.existsRequesterBoard(exchangeRequest.getRequesterBoardId(), email);
-        if (!isRequesterBoard) {
-            throw new UnableExchangeException();
-        }
-
+    public void requestExchange(ExchangeRequest exchangeRequest, String email, String boardOwnerEmail) {
         int successExchangeCount = 0;
         try { //중복된 자료일 경우 UniQue 제약조건에 의해 MySQLIntegrityConstraintViolationException 발생한다. 422 예외코드를 넘기자.
-            successExchangeCount = exchangeQueryRepository.requestExchange(exchangeRequest, boardUserEmail, email, DateUtil.getCurrentDate());
+            successExchangeCount = exchangeQueryRepository.requestExchange(exchangeRequest, boardOwnerEmail, email, DateUtil.getCurrentDate());
         } catch (Exception e) {
             throw new UnableExchangeException();
         }
@@ -47,12 +37,6 @@ public class ExchangeService {
 
     public exchangeMyDataResponse getMyData(Integer page, String email) {
         return exchangeQueryRepository.getMyData(PagingGenerator.getPageRequest(page), email);
-    }
-
-    public void existsExchangeCompletion(ExchangeRequest exchangeRequest) {
-        if (exchangeQueryRepository.existsExchangeCompletion(exchangeRequest)) {
-            throw new UnableExchangeException();
-        }
     }
 
     public void checkExchangeDate(String date, Long boardId) {

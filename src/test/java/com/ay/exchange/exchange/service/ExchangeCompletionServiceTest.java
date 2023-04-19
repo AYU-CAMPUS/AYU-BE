@@ -9,7 +9,9 @@ import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.common.util.ExchangeType;
+import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.entity.Exchange;
+import com.ay.exchange.exchange.exception.UnableExchangeException;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
 import com.ay.exchange.user.dto.DownloadableInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
@@ -189,6 +191,37 @@ class ExchangeCompletionServiceTest {
         assertDoesNotThrow(()->{
             exchangeCompletionService.checkExchangeCompletionDate(simpleDateFormat.format(date), "test@gmail.com", board.getId());
         });
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("교환 완료된 자료인지 확인")
+    void 교환_완료_확인() {
+        Board board3 = Board.builder()
+                .title("title3")
+                .numberOfFilePages(1)
+                .filePath("filePath3")
+                .originalFileName("fileName3")
+                .approval(1)
+                .email("test2@gmail.com")
+                .boardCategory(BoardCategory.builder().
+                        category(Category.신학대학)
+                        .departmentType(DepartmentType.기독교교육과)
+                        .fileType(FileType.중간고사)
+                        .gradeType("1")
+                        .subjectName("subject3")
+                        .professorName("professor3")
+                        .build())
+                .exchangeSuccessCount(0)
+                .build();
+        boardRepository.save(board3);
+
+        ExchangeRequest exchangeRequest = new ExchangeRequest(board.getId(), board3.getId());
+
+        assertThrows(UnableExchangeException.class, ()->{
+            exchangeCompletionService.existsExchangeCompletion(exchangeRequest, "test2@gmail.com", "test@gmail.com");
+        });
+
     }
 
     @AfterAll

@@ -12,6 +12,7 @@ import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.BoardRepository;
 import com.ay.exchange.common.util.Approval;
 import com.ay.exchange.common.util.PagingGenerator;
+import com.ay.exchange.exchange.exception.UnableExchangeException;
 import com.ay.exchange.user.exception.NotExistsFileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -96,5 +97,13 @@ public class BoardService {
 
     public MyDataResponse getMyData(Integer page, String email) {
         return boardRepository.getMyData(PagingGenerator.getPageRequest(page), email);
+    }
+
+    public String findBoardOwnerEmail(Long boardId, String email) {
+        String boardOwnerEmail = boardRepository.findBoardOwnerEmail(boardId, email);
+        if (boardOwnerEmail == null) {
+            throw new UnableExchangeException();
+        }
+        return boardOwnerEmail;
     }
 }

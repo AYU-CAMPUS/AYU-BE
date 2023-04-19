@@ -4,6 +4,8 @@ import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.common.util.PagingGenerator;
+import com.ay.exchange.exchange.dto.request.ExchangeRequest;
+import com.ay.exchange.exchange.exception.UnableExchangeException;
 import com.ay.exchange.exchange.repository.querydsl.ExchangeCompletionRepository;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
@@ -25,6 +27,12 @@ public class ExchangeCompletionService {
             return;
         }
         throw new FailDeleteBoardException();
+    }
+
+    public void existsExchangeCompletion(ExchangeRequest exchangeRequest, String email, String requesterEmail) {
+        if (exchangeCompletionRepository.existsExchangeCompletion(exchangeRequest, email, requesterEmail)) {
+            throw new UnableExchangeException();
+        }
     }
 
     public void checkExchangeCompletionDate(String date, String email, Long boardId) {

@@ -10,8 +10,10 @@ import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.exchange.dto.response.ExchangeResponse;
 import com.ay.exchange.exchange.entity.Exchange;
+import com.ay.exchange.exchange.entity.ExchangeCompletion;
 import com.ay.exchange.exchange.exception.UnableExchangeException;
 import com.ay.exchange.exchange.repository.ExchangeRepository;
+import com.ay.exchange.exchange.repository.querydsl.ExchangeCompletionRepository;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.request.ExchangeRefusal;
 import com.ay.exchange.user.entity.User;
@@ -40,6 +42,9 @@ class ExchangeServiceTest {
     @Autowired
     ExchangeRepository exchangeRepository;
 
+    @Autowired
+    ExchangeCompletionRepository exchangeCompletionRepository;
+
     @BeforeAll
     void init() {
         User user = User.builder()
@@ -60,46 +65,8 @@ class ExchangeServiceTest {
     }
 
     @Test
-    @DisplayName("해당 자료 작성자가 존재하지 않음")
+    @DisplayName("이미 교환 중인 자료를 다른 자료로 요청할 경우")
     void 교환_요청_실패() {
-        ExchangeRequest exchangeRequest = new ExchangeRequest(1L, 2L);
-
-        assertThrows(UnableExchangeException.class, () -> {
-            exchangeService.requestExchange(exchangeRequest, "test@gmail.com");
-        });
-    }
-
-    @Test
-    @DisplayName("내 자료가 존재하지 않음")
-    void 교환_요청_실패2() {
-        Board board = Board.builder()
-                .title("title")
-                .numberOfFilePages(1)
-                .filePath("filePath")
-                .originalFileName("fileName")
-                .approval(1)
-                .email("test2@gmail.com")
-                .boardCategory(BoardCategory.builder().
-                        category(Category.신학대학)
-                        .departmentType(DepartmentType.신학과)
-                        .fileType(FileType.중간고사)
-                        .gradeType("1")
-                        .subjectName("subject")
-                        .professorName("professor")
-                        .build())
-                .exchangeSuccessCount(0)
-                .build();
-        boardRepository.save(board);
-        ExchangeRequest exchangeRequest = new ExchangeRequest(board.getId(), board.getId() + 1);
-
-        assertThrows(UnableExchangeException.class, () -> {
-            exchangeService.requestExchange(exchangeRequest, "test@gmail.com");
-        });
-    }
-
-    @Test
-    @DisplayName("이미 교환 중인 자료를 다른 자료를 요청할 경우")
-    void 교환_요청_실패3() {
         Board board = Board.builder()
                 .title("title")
                 .numberOfFilePages(1)
@@ -177,7 +144,7 @@ class ExchangeServiceTest {
 
         ExchangeRequest exchangeRequest = new ExchangeRequest(board.getId(), board3.getId());
         assertThrows(UnableExchangeException.class, () -> {
-            exchangeService.requestExchange(exchangeRequest, "test2@gmail.com");
+            exchangeService.requestExchange(exchangeRequest, "test2@gmail.com", "test@gmail.com");
         });
     }
 
@@ -223,7 +190,7 @@ class ExchangeServiceTest {
         ExchangeRequest exchangeRequest = new ExchangeRequest(board2.getId(), board.getId());
 
         assertDoesNotThrow(() -> {
-            exchangeService.requestExchange(exchangeRequest, "test@gmail.com");
+            exchangeService.requestExchange(exchangeRequest, "test@gmail.com", "test2@gmail.com");
         });
     }
 
@@ -360,7 +327,7 @@ class ExchangeServiceTest {
     }
 
     @Test
-    void 교환_신청_조회(){
+    void 교환_신청_조회() {
         Board board = Board.builder()
                 .title("title")
                 .numberOfFilePages(1)
@@ -417,7 +384,7 @@ class ExchangeServiceTest {
                 .build();
         exchangeRepository.save(exchange2);
 
-        ExchangeResponse exchangeResponse = exchangeService.getExchanges(0,"test@gmail.com");
+        ExchangeResponse exchangeResponse = exchangeService.getExchanges(0, "test@gmail.com");
 
         assertEquals("title", exchangeResponse.getExchangeInfos().get(0).getMyTitle());
         assertEquals("title2", exchangeResponse.getExchangeInfos().get(0).getTitle());

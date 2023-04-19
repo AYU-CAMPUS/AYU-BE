@@ -21,4 +21,8 @@ public interface BoardQueryRepository {
 
     MyDataResponse getMyData(PageRequest pageRequest, String email);
 
+    String findBoardOwnerEmail(Long boardId, String email);
+
+    boolean existsRequesterBoard(Long requesterBoardId, String email);
+
 }

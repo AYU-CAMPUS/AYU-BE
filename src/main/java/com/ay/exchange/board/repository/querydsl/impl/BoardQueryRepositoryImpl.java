@@ -155,6 +155,27 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
         return filePathInfo;
     }
 
+    @Override
+    public String findBoardOwnerEmail(Long boardId, String email) {
+        String ownerEmail = queryFactory.select(board.email)
+                .from(board)
+                .where(board.id.eq(boardId)
+                        .and(board.approval.eq(Approval.AGREE.getApproval()))
+                        .and(board.email.ne(email)))
+                .fetchOne();
+        return ownerEmail;
+    }
+
+    @Override
+    public boolean existsRequesterBoard(Long requesterBoardId, String email) {
+        return queryFactory.selectOne()
+                .from(board)
+                .where(board.id.eq(requesterBoardId)
+                        .and(board.email.eq(email))
+                        .and(board.approval.eq(Approval.AGREE.getApproval())))
+                .fetchFirst() != null;
+    }
+
     private BooleanBuilder typeEq(List<String> types) {
         if (types.size() == 0) return null;
 

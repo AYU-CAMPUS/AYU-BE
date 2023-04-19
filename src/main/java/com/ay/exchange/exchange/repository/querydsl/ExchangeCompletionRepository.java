@@ -1,5 +1,6 @@
 package com.ay.exchange.exchange.repository.querydsl;
 
+import com.ay.exchange.exchange.dto.request.ExchangeRequest;
 import com.ay.exchange.user.dto.DownloadableInfo;
 import com.ay.exchange.user.dto.request.ExchangeAccept;
 import com.ay.exchange.user.dto.response.DownloadableResponse;
@@ -93,6 +94,16 @@ public class ExchangeCompletionRepository {
                 .from(exchangeCompletion)
                 .where(exchangeCompletion.email.eq(email))
                 .fetchOne();
+    }
+
+    public boolean existsExchangeCompletion(ExchangeRequest exchangeRequest, String email, String requesterEmail) {
+        return queryFactory.selectOne()
+                .from(exchangeCompletion)
+                .where((exchangeCompletion.email.eq(email)
+                        .and(exchangeCompletion.requesterBoardId.eq(exchangeRequest.getBoardId())))
+                        .or(exchangeCompletion.boardId.eq(exchangeRequest.getRequesterBoardId())
+                                .and(exchangeCompletion.email.eq(requesterEmail))))
+                .fetchFirst() != null;
     }
 
     private DateTemplate getExchangeCompletionDate() {
