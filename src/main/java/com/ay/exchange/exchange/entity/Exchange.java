@@ -46,7 +46,7 @@ public class Exchange extends BaseEntity {
     @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user; //게시물 작성자
 
-    @Column(name = "email", nullable = false, length = 200)
+    @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
@@ -60,7 +60,7 @@ public class Exchange extends BaseEntity {
     @JoinColumn(name = "requester_email", nullable = false, insertable = false, updatable = false)
     private User requesterUser; //요청자 아이디
 
-    @Column(name = "requester_email", nullable = false, length = 200)
+    @Column(name = "requester_email", nullable = false, length = 50)
     private String requesterEmail;
 
     @Column(nullable = false)

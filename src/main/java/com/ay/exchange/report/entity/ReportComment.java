@@ -31,7 +31,7 @@ public class ReportComment {
     @JoinColumn(name = "email", insertable = false, updatable = false, nullable = false)
     private User user;
 
-    @Column(name = "email", nullable = false, length = 200)
+    @Column(name = "email", nullable = false, length = 50)
     private String email; //신고자 아이디
 
     @ManyToOne(targetEntity = Comment.class, fetch = FetchType.LAZY)

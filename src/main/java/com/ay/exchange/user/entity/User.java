@@ -24,7 +24,7 @@ import java.util.List;
 @Getter
 public class User extends BaseEntity implements Persistable<String> {
     @Id
-    @Column(name = "email", nullable = false, length = 200)
+    @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @Column(nullable = false, unique = true, length = 20)

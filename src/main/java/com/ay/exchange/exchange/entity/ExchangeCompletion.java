@@ -34,7 +34,7 @@ public class ExchangeCompletion {
     @JoinColumn(name = "email", nullable = false, insertable = false, updatable = false)
     private User user;
 
-    @Column(name = "email", nullable = false, length = 200)
+    @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)

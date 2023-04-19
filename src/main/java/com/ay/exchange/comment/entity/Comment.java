@@ -35,7 +35,7 @@ public class Comment {
     @JoinColumn(name = "email", updatable = false, insertable = false, nullable = false)
     private User user;
 
-    @Column(name = "email", nullable = false, length = 200)
+    @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @OneToMany(mappedBy = "comment", orphanRemoval = true)
