@@ -32,10 +32,17 @@ public class ExchangeService {
             throw new UnableExchangeException();
         }
 
-        int successExchangeCount = exchangeQueryRepository.requestExchange(exchangeRequest, boardUserEmail, email, DateUtil.getCurrentDate());
+        int successExchangeCount = 0;
+        try { //중복된 자료일 경우 UniQue 제약조건에 의해 MySQLIntegrityConstraintViolationException 발생한다. 422 예외코드를 넘기자.
+            successExchangeCount = exchangeQueryRepository.requestExchange(exchangeRequest, boardUserEmail, email, DateUtil.getCurrentDate());
+        } catch (Exception e) {
+            throw new UnableExchangeException();
+        }
+
         if (successExchangeCount != 2) {
             throw new UnableExchangeException();
         }
+
     }
 
     public exchangeMyDataResponse getMyData(Integer page, String email) {
