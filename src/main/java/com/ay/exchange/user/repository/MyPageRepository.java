@@ -76,7 +76,7 @@ public class MyPageRepository {
                 .set(user.nickName, userInfoRequest.getNickName())
                 .set(user.desiredData, mergeStrings(userInfoRequest.getDesiredData()))
                 .where(user.email.eq(email))
-                .execute() != 1L;
+                .execute() == 1L;
     }
 
     public LoginNotificationResponse findUserNotificationByEmail(String userEmail) {
