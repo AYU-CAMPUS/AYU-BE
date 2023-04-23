@@ -94,6 +94,10 @@ public class BoardFacade {
 
         if (commentCount == 0) { //댓글이 없으면 댓글 테이블을 제외하고 join시킴
             BoardContentInfo2Dto boardContentInfo2Dto = boardContentService.findBoardContentWithNoComments(boardId, email);
+            if(boardContentInfo2Dto == null){
+                return new BoardContentResponse();
+            }
+
             return new BoardContentResponse(commentCount,
                     new ArrayList<>(),
                     boardContentInfo2Dto.getContent(),
@@ -109,6 +113,9 @@ public class BoardFacade {
 
         //댓글 존재
         List<BoardContentInfoDto> boardContentInfos = boardContentService.findBoardContentWithComments(boardId, email);
+        if(boardContentInfos.isEmpty()){
+            return new BoardContentResponse();
+        }
 
         List<CommentInfoDto> comments = createComments(boardContentInfos);
 

@@ -5,10 +5,12 @@ import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class BoardContentResponse {
     @Schema(description = "댓글 전체 페이지 수")
