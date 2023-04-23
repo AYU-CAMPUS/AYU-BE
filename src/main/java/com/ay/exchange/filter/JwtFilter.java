@@ -45,9 +45,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        long startTime = System.nanoTime();
+
         if (isAuthentication(request, response)) {
             filterChain.doFilter(request, response);
         }
+
+        double elapsedTimeInMilliseconds = (double) (System.nanoTime() - startTime) / 1_000_000;
+        log.info("총 실행 시간: {} ms", elapsedTimeInMilliseconds);
     }
 
     @Override
@@ -59,8 +64,7 @@ public class JwtFilter extends OncePerRequestFilter {
         ZonedDateTime seoulCurrentTime = ZonedDateTime.now(seoulZoneId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd hh:mm");
         String formattedDate = seoulCurrentTime.format(formatter);
-        log.info("{} {} {} => {} {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod());
-        log.info("url: {}, ", request.getHeader("url"));
+        log.info("{} {} {} => {} {} url: {}", request.getHeader(HttpHeaders.ORIGIN), formattedDate, request.getRequestURI(), getClientIP(request), request.getMethod(), request.getHeader("url"));
 
         if (request.getMethod().equals("OPTIONS")) {
             return true;
@@ -70,7 +74,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String token = findToken(request.getCookies());
-        log.info("USER TOKEN {}", token);
         String origin = request.getHeader(HttpHeaders.ORIGIN);
 
         boolean isShowBoardContent = Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET");
@@ -82,8 +85,6 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             throw new JwtException("유효하지 않은 토큰");
         }
-
-
 
         try {
             String email = jwtTokenProvider.getUserEmail(token);
