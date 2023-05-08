@@ -15,14 +15,25 @@ public class ModificationBoardService {
     private final ModificationBoardRepository modificationBoardRepository;
 
     public void save(ModificationRequest modificationRequest, String email, String originalFilename, String filePath) {
+        Integer categoryIndex = Integer.parseInt(modificationRequest.getCategory());
+
+        Integer departmentIndex = modificationRequest.getDepartmentType() == null
+                ? null
+                : Integer.parseInt(modificationRequest.getDepartmentType());
+
+        Integer fileTypeIndex = modificationRequest.getFileType() == null
+                ? null
+                : Integer.parseInt(modificationRequest.getFileType());
+
         BoardCategory boardCategory = BoardCategory.builder()
-                .category(getCategory(Integer.parseInt(modificationRequest.getCategory())))
-                .departmentType(getDepartmentType(Integer.parseInt(modificationRequest.getDepartmentType())))
-                .fileType(getFileType(Integer.parseInt(modificationRequest.getFileType())))
+                .category(getCategory(categoryIndex))
+                .departmentType(getDepartmentType(departmentIndex))
+                .fileType(getFileType(fileTypeIndex))
                 .gradeType(modificationRequest.getGradeType())
                 .subjectName(modificationRequest.getSubjectName())
                 .professorName(modificationRequest.getProfessorName())
                 .build();
+
         Long cnt = modificationBoardRepository.save(modificationRequest, email, originalFilename, filePath, boardCategory);
         if (cnt != 1L) {
             throw new FailModifyBoardException();

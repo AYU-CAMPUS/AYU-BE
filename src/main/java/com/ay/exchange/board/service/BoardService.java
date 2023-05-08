@@ -27,7 +27,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     public Page<BoardInfoDto> getBoardList(Integer page, Integer category,
-                                      String department, String grade, String type
+                                           String department, String grade, String type
     ) {
         Page<BoardInfoDto> pages = boardRepository.findBoards(
                 Approval.AGREE.getApproval(),
@@ -41,10 +41,23 @@ public class BoardService {
     }
 
     public Board save(WriteRequest writeRequest, String email, String filePath, String originalFileName) {
+        //교양자료에서 departmentType은 존재하지 않는다.
+        //카테고리별에서 departmentType과 fileType은 존재하지 않는데 Integer.parseInt(null)로 인하여 문제가 발생한다.
+
+        Integer categoryIndex = Integer.parseInt(writeRequest.getCategory());
+
+        Integer departmentIndex = writeRequest.getDepartmentType() == null
+                ? null
+                : Integer.parseInt(writeRequest.getDepartmentType());
+
+        Integer fileTypeIndex = writeRequest.getFileType() == null
+                ? null
+                : Integer.parseInt(writeRequest.getFileType());
+
         BoardCategory boardCategory = BoardCategory.builder()
-                .category(getCategory(Integer.parseInt(writeRequest.getCategory())))
-                .departmentType(getDepartmentType(Integer.parseInt(writeRequest.getDepartmentType())))
-                .fileType(getFileType(Integer.parseInt(writeRequest.getFileType())))
+                .category(getCategory(categoryIndex))
+                .departmentType(getDepartmentType(departmentIndex))
+                .fileType(getFileType(fileTypeIndex))
                 .gradeType(writeRequest.getGradeType())
                 .subjectName(writeRequest.getSubjectName())
                 .professorName(writeRequest.getProfessorName())
@@ -74,14 +87,14 @@ public class BoardService {
 
     public void updateApproval(String email, Long boardId) {
         Long cnt = boardRepository.updateApproval(email, boardId);
-        if(cnt != 1L){
+        if (cnt != 1L) {
             throw new FailModifyBoardException();
         }
     }
 
     public void isBoardOwner(String email, Long boardId) {
         boolean isOwner = boardRepository.existsBoard(email, boardId);
-        if(isOwner){
+        if (isOwner) {
             return;
         }
         throw new FailDeleteBoardException();
