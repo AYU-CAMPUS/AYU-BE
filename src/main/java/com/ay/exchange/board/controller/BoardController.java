@@ -44,7 +44,7 @@ public class BoardController {
                             "글로벌경영학과(12), 행정학과(13), 관광경영학과(14), 식품영양학과(15), " +
                             "컴퓨터공학과(16), 정보전기전자공학과(17), 통계데이터사이언스학과(18), 소프트웨어학과(19), " +
                             "도시정보공학과(20), 환경에너지공학과(21), AI융합학과(22)"),
-                    @Parameter(name = "fileType", description = "중간고사(0), 기말고사(1), 과제(2), 요약(3)"),
+                    @Parameter(name = "fileType", description = "중간고사(0), 기말고사(1), 필기요약(2)"),
                     @Parameter(name = "gradeType", description = "1학년(1), 2학년(2), 3학년(3), 4학년(4)"),
                     @Parameter(name = "subjectName", description = "전공 또는 교양 선택 시 과목명 입력"),
                     @Parameter(name = "professorName", description = "전공 또는 교양 선택 시 교수명 입력"),
