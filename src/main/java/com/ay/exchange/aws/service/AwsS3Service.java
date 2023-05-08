@@ -11,6 +11,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -29,17 +30,18 @@ public class AwsS3Service {
     public void uploadFile(MultipartFile multipartFile, String filePath) {
         validateFileExists(multipartFile);
 
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
-
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, filePath, inputStream, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            byte[] bytes = IOUtils.toByteArray(inputStream);
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(bytes.length);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            objectMetadata.setContentType(multipartFile.getContentType());
+
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, filePath, byteArrayInputStream, objectMetadata);
+            amazonS3Client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             throw new FileUploadFailedException();
         }
-        //System.out.println("amazon Url: " + amazonS3Client.getUrl(bucketName, fileName).toString());
-        // https://exchange-data-s3-bucket.s3.ap-northeast-2.amazonaws.com/profile
     }
 
     public ByteArrayResource downloadFile(String filePath) {
