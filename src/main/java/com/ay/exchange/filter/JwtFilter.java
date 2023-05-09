@@ -79,7 +79,7 @@ public class JwtFilter extends OncePerRequestFilter {
         boolean isShowBoardContent = Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET");
 
         if (token == null) {
-            setCorsHeader(response, origin);
+            //setCorsHeader(response, origin);
             if(isShowBoardContent){
                 return true;
             }
@@ -93,7 +93,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         } catch (JwtException | IllegalArgumentException e) { //액세스 토큰 만료
             String refreshToken = redisService.getRefreshToken(token);
-            setCorsHeader(response, origin);
+            //setCorsHeader(response, origin);
             if (refreshToken != null) { //리프레쉬 토큰이 존재하면 액세스 토큰 재발급
                 log.info("재발급 완료");
                 String email = jwtTokenProvider.getUserEmail(refreshToken);
@@ -108,21 +108,21 @@ public class JwtFilter extends OncePerRequestFilter {
                 throw new JwtException("유효하지 않은 토큰");
             }
         }
-        setCorsHeader(response, origin);
+        //setCorsHeader(response, origin);
         return true;
     }
 
-    private void setCorsHeader(HttpServletResponse response, String url) {
-        if (url == null) return;
-        if (url.equals(getClientUrl()) || url.equals(getDevUrl())) {
-            response.setHeader("Access-Control-Allow-Origin", url);
-            response.setHeader("Access-Control-Allow-Credentials", "true");
-            response.setHeader("Access-Control-Allow-Methods", "*");
-            response.setHeader("Access-Control-Max-Age", "3600");
-            response.setHeader("Access-Control-Allow-Headers",
-                    "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-        }
-    }
+//    private void setCorsHeader(HttpServletResponse response, String url) {
+//        if (url == null) return;
+//        if (url.equals(getClientUrl()) || url.equals(getDevUrl())) {
+//            response.setHeader("Access-Control-Allow-Origin", url);
+//            response.setHeader("Access-Control-Allow-Credentials", "true");
+//            response.setHeader("Access-Control-Allow-Methods", "*");
+//            response.setHeader("Access-Control-Max-Age", "3600");
+//            response.setHeader("Access-Control-Allow-Headers",
+//                    "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//        }
+//    }
 
     private String findToken(Cookie[] cookies) {
         if (cookies == null) return null;

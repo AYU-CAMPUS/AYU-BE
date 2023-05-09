@@ -13,12 +13,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.filter.CorsFilter;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
@@ -26,7 +24,7 @@ public class SecurityConfig {
     //private final CorsConfig corsConfig;
     private final Oauth2Facade oauth2Facade;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final CorsFilter corsFilter;
+    //private final CorsFilter corsFilter;
     private final JwtFilter jwtFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
 
@@ -48,8 +46,8 @@ public class SecurityConfig {
                 .and()
                 .successHandler(oAuth2SuccessHandler);
         http
-                .addFilterBefore(corsFilter, LogoutFilter.class)
-                .addFilterBefore(jwtFilter, CorsFilter.class)
+                //.addFilterBefore(corsFilter, LogoutFilter.class)
+                .addFilterBefore(jwtFilter, LogoutFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtFilter.class);
 
         return http.build();
