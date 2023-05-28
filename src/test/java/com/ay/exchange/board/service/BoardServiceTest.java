@@ -6,7 +6,9 @@ import com.ay.exchange.board.entity.vo.BoardCategory;
 import com.ay.exchange.board.entity.vo.Category;
 import com.ay.exchange.board.entity.vo.DepartmentType;
 import com.ay.exchange.board.entity.vo.FileType;
+import com.ay.exchange.board.exception.ExceedCreationBoardException;
 import com.ay.exchange.board.repository.BoardRepository;
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.user.entity.User;
 import com.ay.exchange.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
@@ -92,6 +94,7 @@ class BoardServiceTest {
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board.getId())));
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board2.getId())));
     }
+
     @Test
     @DisplayName("신학과 기독교교육과 필터링")
     void 게시글_조회2() {
@@ -243,6 +246,34 @@ class BoardServiceTest {
 
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board.getId())));
         assertTrue(boardInfos.stream().anyMatch(boardInfo -> boardInfo.getId().equals(board2.getId())));
+    }
+
+    @Test
+    @DisplayName("하루 게시글 생성 제한 7개 초과")
+    void 게시글_생성_실패() {
+        for (int i = 0; i < 7; i++) {
+            boardRepository.save(Board.builder()
+                    .title("title")
+                    .numberOfFilePages(1)
+                    .filePath("filePath")
+                    .originalFileName("fileName")
+                    .approval(1)
+                    .email("test@gmail.com")
+                    .boardCategory(BoardCategory.builder().
+                            category(Category.신학대학)
+                            .departmentType(DepartmentType.기독교교육과)
+                            .fileType(FileType.기말고사)
+                            .gradeType("2")
+                            .subjectName("subject")
+                            .professorName("professor")
+                            .build())
+                    .exchangeSuccessCount(0)
+                    .build());
+        }
+
+        assertThrows(ExceedCreationBoardException.class, () -> {
+            boardService.checkCreationExceed(DateUtil.getCurrentDate(), "test@gmail.com");
+        });
     }
 
     @AfterAll
