@@ -7,6 +7,7 @@ import com.ay.exchange.board.dto.response.FilePathInfo;
 import com.ay.exchange.board.dto.response.MyDataResponse;
 import com.ay.exchange.board.entity.Board;
 import com.ay.exchange.board.entity.vo.*;
+import com.ay.exchange.board.exception.ExceedCreationBoardException;
 import com.ay.exchange.board.exception.FailDeleteBoardException;
 import com.ay.exchange.board.exception.FailModifyBoardException;
 import com.ay.exchange.board.repository.BoardRepository;
@@ -118,5 +119,12 @@ public class BoardService {
             throw new UnableExchangeException();
         }
         return boardOwnerEmail;
+    }
+
+    public void checkCreationExceed(String currentDate, String email) {
+        Long dailyCreateBoardCount = boardRepository.countByCreatedDateAndEmail(currentDate, email);
+        if (dailyCreateBoardCount >= 7L) {
+            throw new ExceedCreationBoardException();
+        }
     }
 }

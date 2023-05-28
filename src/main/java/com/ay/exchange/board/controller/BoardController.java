@@ -55,7 +55,7 @@ public class BoardController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ByteArrayResource.class))),
                     @ApiResponse(responseCode = "400", description = "입력 형식이 잘못되었습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
-                    @ApiResponse(responseCode = "422", description = "게시글 작성에 실패하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
+                    @ApiResponse(responseCode = "422", description = "게시글 작성에 실패하였습니다.  or  하루에 작성할 수 있는 자료 수(5)를 초과하였습니다.", content = @Content(schema = @Schema(implementation = ErrorDto.class)))}
     )
     @PostMapping("")
     public ResponseEntity<Boolean> writeBoard(
@@ -171,7 +171,7 @@ public class BoardController {
             @RequestPart(value = "file", required = false) MultipartFile multipartFile,
             @CookieValue(value = "token") String token
     ) {
-        if(multipartFile != null && !FileValidator.isAllowedFileType(multipartFile)){
+        if (multipartFile != null && !FileValidator.isAllowedFileType(multipartFile)) {
             throw new FileInvalidException();
         }
         boardFacade.requestModificationBoard(modificationRequest, multipartFile, token);

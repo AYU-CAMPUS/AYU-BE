@@ -23,6 +23,7 @@ import com.ay.exchange.board.service.BoardService;
 import com.ay.exchange.board.service.ModificationBoardService;
 import com.ay.exchange.comment.dto.response.CommentInfoDto;
 import com.ay.exchange.comment.service.CommentService;
+import com.ay.exchange.common.util.DateUtil;
 import com.ay.exchange.common.util.ExchangeType;
 import com.ay.exchange.exchange.service.ExchangeCompletionService;
 import com.ay.exchange.exchange.service.ExchangeService;
@@ -40,6 +41,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.ay.exchange.common.util.DateUtil.getAvailableDate;
+import static com.ay.exchange.common.util.DateUtil.getCurrentDate;
 import static com.ay.exchange.common.util.ExchangeType.COMPLETION;
 import static com.ay.exchange.common.util.ExchangeType.OWNER;
 
@@ -63,6 +65,9 @@ public class BoardFacade {
         String email = jwtTokenProvider.getUserEmail(token);
 
         //예외 발생 시 커스텀 예외를 사용하기 위해 로직들을 try문으로 감쌌는데 이게 옳은 지는 잘 모르겠다.
+
+        boardService.checkCreationExceed(getCurrentDate(), email);
+
         try {
             String originalFileName = multipartFile.getOriginalFilename();
             String filePath = awsS3Service.buildFileName(originalFileName, email, 0);

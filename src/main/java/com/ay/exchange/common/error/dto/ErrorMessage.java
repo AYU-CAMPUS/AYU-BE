@@ -7,13 +7,14 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorMessage {
-    NOT_USER(HttpStatus.NOT_FOUND,"안양대학교 웹메일만 로그인이 가능합니다."),
+    NOT_USER(HttpStatus.NOT_FOUND, "안양대학교 웹메일만 로그인이 가능합니다."),
 
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
     FILE_INVALID(HttpStatus.BAD_REQUEST, "파일 형식이 잘못되었습니다."),
-    FAIL_WRITE_BOARD(HttpStatus.UNPROCESSABLE_ENTITY,"게시글 작성에 실패하였습니다."),
-    FAIL_DELETE_BOARD(HttpStatus.UNPROCESSABLE_ENTITY,"게시글 삭제에 실패하였습니다."),
-    FAIL_MODIFY_BOARD(HttpStatus.UNPROCESSABLE_ENTITY,"최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요."),
+    FAIL_WRITE_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "게시글 작성에 실패하였습니다."),
+    FAIL_DELETE_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "게시글 삭제에 실패하였습니다."),
+    FAIL_MODIFY_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "최근 교환일이 3일이 경과되거나 교환요청이 없는 경우 수정이 가능해요."),
+    EXCEED_CREATION_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "하루에 작성할 수 있는 자료 수(5)를 초과하였습니다."),
 
     FILE_UPLOAD_ERROR(HttpStatus.NOT_FOUND, "파일 업로드에 실패하였습니다."),
     FILE_NOT_EXISTS(HttpStatus.NOT_FOUND, "파일이 없습니다."),
@@ -32,11 +33,11 @@ public enum ErrorMessage {
     FAIL_REPORT(HttpStatus.UNPROCESSABLE_ENTITY, "이미 신고가 접수되었거나 오류로 신고에 실패하였습니다."),
 
     FAIL_WRITE_COMMENT(HttpStatus.UNPROCESSABLE_ENTITY, "댓글 작성에 실패하였습니다."),
-    FAIL_DELETE_COMMENT(HttpStatus.UNPROCESSABLE_ENTITY,"댓글 삭제에 실패하였습니다."),
+    FAIL_DELETE_COMMENT(HttpStatus.UNPROCESSABLE_ENTITY, "댓글 삭제에 실패하였습니다."),
 
     FAIL_ACCEPT_REQUEST_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "게시글 허가에 실패하였습니다"),
     FAIL_REJECTION_REQUEST_BOARD(HttpStatus.UNPROCESSABLE_ENTITY, "게시글 거절에 실패하였습니다"),
-    FAIL_UPDATED_SUSPENSION(HttpStatus.UNPROCESSABLE_ENTITY,"유저 정지에 실패하였습니다");
+    FAIL_UPDATED_SUSPENSION(HttpStatus.UNPROCESSABLE_ENTITY, "유저 정지에 실패하였습니다");
 
     private final HttpStatus status;
     private final String description;
