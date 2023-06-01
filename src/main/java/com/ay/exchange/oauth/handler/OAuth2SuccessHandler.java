@@ -39,10 +39,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         settingResponse(response);
 
         String email = (String) oAuth2User.getAttribute("email");
-//        if (!oauth2Service.isAnyangDomain((String) oAuth2User.getAttribute("hd"))) {
-//            makeError(response);
-//            return;
-//        }
+        if (!oauth2Facade.isAnyangDomain((String) oAuth2User.getAttribute("hd"))) {
+            makeError(response);
+            return;
+        }
         redisService.deleteBeforeToken(email);  //이중로그인 방지와 반복된 로그인 요청에 쌓이는 데이터를 막기 위해 이전 토큰들은 삭제한다.
 
         UserInfoDto userInfoDto = oauth2Facade.findUserByEmail(email);
