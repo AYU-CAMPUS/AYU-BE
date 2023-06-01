@@ -39,7 +39,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         settingResponse(response);
 
         String email = (String) oAuth2User.getAttribute("email");
-        if (!oauth2Facade.isAnyangDomain((String) oAuth2User.getAttribute("hd"))) {
+        if (!isDeveloper(email) && !oauth2Facade.isAnyangDomain((String) oAuth2User.getAttribute("hd"))) {
             makeError(response);
             return;
         }
