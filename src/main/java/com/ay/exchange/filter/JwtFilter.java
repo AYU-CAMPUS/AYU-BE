@@ -77,7 +77,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String origin = request.getHeader(HttpHeaders.ORIGIN);
 
         boolean isShowBoardContent = Pattern.matches(regexUri, request.getRequestURI()) && request.getMethod().equals("GET");
-        setCorsHeader(response, origin);
+        //setCorsHeader(response, origin);
 
         if (token == null) {
             if(isShowBoardContent){
