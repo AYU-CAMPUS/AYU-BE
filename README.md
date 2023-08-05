@@ -3,6 +3,7 @@
 
 
 ## 🎠 About
+<a href="https://github.com/AYU-CAMPUS/AYU-FE" target="_blank">웹 페이지 설명</a>
 - 안양대 학생들끼리 서료 필요한 자료들을 교환하는 웹 사이트
 - 학교 생활하면서 쌓인 자료들을 등록하고 학기 중에 필요한 자료들을 찾아 서로 교환한다!
 
